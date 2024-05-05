@@ -4,25 +4,24 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "stadium")
+@Table(name = "user")
 @Getter @Setter
-public class Stadium {
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "stadium_id")
+    @Column(name = "user_id")
     private Long id;
-
-    @OneToOne(mappedBy = "stadium", fetch = FetchType.LAZY)
-    private Game game;
 
     private String name;
 
-    private String address;
+    @Embedded
+    private Address address;
 
-    @OneToMany(mappedBy = "stadium")
-    private List<Seat> seats;
+    @OneToMany(mappedBy = "user")
+    private List<Ticketing> orders = new ArrayList<>();
 }

@@ -6,24 +6,23 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import static jakarta.persistence.FetchType.LAZY;
-
 @Entity
 @Table(name = "game")
 @Getter @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Game {
 
-    @Id @GeneratedValue
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "game_id")
     private Long id;
 
-    @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "team_id")
+    @ManyToOne
+    @JoinColumn(name = "home_team_id")
     private Team homeTeam;
 
-    @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "team_id")
+    @ManyToOne
+    @JoinColumn(name = "away_team_id")
     private Team awayTeam;
 
     @OneToOne(fetch = FetchType.LAZY)
