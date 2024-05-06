@@ -16,13 +16,14 @@ import java.util.List;
 public class Team {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "team_id", insertable=false, updatable=false)
-    private Long id;
+    @Column(name = "team_id")
+    private String id;
 
     private String name;
 
-    private String stadium;
+    @ManyToOne
+    @JoinColumn(name = "stadium_id", nullable = false)
+    private Stadium stadium;
 
     @OneToMany(mappedBy = "homeTeam")
     private List<Game> homeGames;
