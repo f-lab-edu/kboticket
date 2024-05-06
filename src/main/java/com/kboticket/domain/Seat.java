@@ -13,11 +13,17 @@ public class Seat {
     @Column(name = "seat_id")
     private Long id;
 
-    private String seatLevel;
-
-    private String seatNumber;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "stadium_id")
     private Stadium stadium;
+
+    private String seatLevel;
+
+    private String seatBlock;
+
+    private String seatNumber;
+
+    private boolean reserved;
+
+
 }
