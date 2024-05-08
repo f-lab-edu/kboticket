@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Table(name = "game")
@@ -25,7 +26,7 @@ public class Game {
     @JoinColumn(name = "away_team_id")
     private Team awayTeam;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "stadium_id")
     private Stadium stadium;
 
@@ -35,5 +36,6 @@ public class Game {
 
     private String gameInfo;
 
+    @ColumnDefault("0")
     private int attendance;     // 관중수
 }
