@@ -9,6 +9,26 @@
         th {
             text-align: center;
         }
+        ul {
+            margin-top: 1%;
+        }
+        ul li {
+            display: inline;
+        }
+        .tab-schedule li a:hover, .tab-schedule li.on a {
+            background: #222;
+            color: #fff;
+        }
+        .tab-schedule li a {
+            padding: 13px 21px;
+            height: 22px;
+            line-height: 22px;
+            font-size: 15px;
+            font-weight: 700;
+            color: black;
+            vertical-align: middle;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -24,23 +44,48 @@
         </div>
     </div>
 </div>
+<div>
+    <ul class="tab-schedule container">
+        <li class="on" attr-value=""><a href="#none"><span>전체</span></a></li>
+        <li class="" attr-value="LG"><a href="#none"><img src="//lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/emblem/regular/2024/initial_LG.png" alt="LG"><span>LG</span></a></li>
+        <li class="" attr-value="KT"><a href="#none"><img src="//lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/emblem/regular/2024/initial_KT.png" alt="kt"><span>KT</span></a></li>
+        <li class="" attr-value="SK"><a href="#none"><img src="//lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/emblem/regular/2024/initial_SK.png" alt="SSG"><span>SSG</span></a></li>
+        <li class="" attr-value="NC"><a href="#none"><img src="//lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/emblem/regular/2024/initial_NC.png" alt="NC"><span>NC</span></a></li>
+        <li class="" attr-value="OB"><a href="#none"><img src="//lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/emblem/regular/2024/initial_OB.png" alt="두산"><span>두산</span></a></li>
+        <li class="" attr-value="HT"><a href="#none"><img src="//lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/emblem/regular/2024/initial_HT.png" alt="KIA"><span>KIA</span></a></li>
+        <li class="" attr-value="LT"><a href="#none"><img src="//lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/emblem/regular/2024/initial_LT.png" alt="롯데"><span>롯데</span></a></li>
+        <li class="" attr-value="SS"><a href="#none"><img src="//lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/emblem/regular/2024/initial_SS.png" alt="삼성"><span>삼성</span></a></li>
+        <li class="" attr-value="HH"><a href="#none"><img src="//lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/emblem/regular/2024/initial_HH.png" alt="한화"><span>한화</span></a></li>
+        <li class="" attr-value="WO"><a href="#none"><img src="//lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/emblem/regular/2024/initial_WO.png" alt="키움"><span>키움</span></a></li>
+    </ul>
 
-<div class="container" style="background-color: #f5f5f5;">
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th align="center">날짜</th>
-                <th align="center">시간</th>
-                <th align="center">경기</th>
-                <th align="center">구장</th>
-                <th align="center">비고</th>
-            </tr>
-        </thead>
-        <tbody>
+    <div class="container" style="background-color: #f5f5f5;">
 
-        </tbody>
-    </table>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th align="center">날짜</th>
+                    <th align="center">시간</th>
+                    <th align="center">경기</th>
+                    <th align="center">구장</th>
+                    <th align="center">비고</th>
+                    <th align="center">예매</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="item : ${gameList}">
+                    <td align="center" th:text="${item.gameDate}"></td>
+                    <td align="center" th:text="${item.startTime}"></td>
+                    <td align="center" th:text="${item.homeTeamNm + ' vs ' + item.awayTeamNm}" ></td>
+                    <td align="center" th:text="${item.stadiumNm}"></td>
+                    <td align="center" th:text="${item.gameInfo}"></td>
+                    <td align="center">
+                        <button type="button" class="btn btn-secondary" onclick="">예매</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </div>
-
 <script src="/js/article.js"></script>
 </body>
