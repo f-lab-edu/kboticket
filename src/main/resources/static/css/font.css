@@ -1,0 +1,8 @@
+@font-face {
+    font-family: 'KboFont';
+    src: url('../fonts/KBO_Dia_Gothic_bold.ttf');
+}
+
+body {
+    font-family: 'KboFont', sans-serif;
+}
