@@ -11,12 +11,12 @@ import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
-public class HomeController {
+public class GameController {
 
     private final GameService gameService;
 
-    @GetMapping("/home")
-    public String Home(Model model) {
+    @GetMapping("/game")
+    public void list(Model model) {
 
         List<GameDto> gameList = gameService.findGames()
                 .stream()
@@ -25,7 +25,6 @@ public class HomeController {
 
         model.addAttribute("gameList", gameList);
 
-        return "home";
     }
 
 }
