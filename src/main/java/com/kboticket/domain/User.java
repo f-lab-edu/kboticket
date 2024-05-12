@@ -33,7 +33,7 @@ public class User implements UserDetails{
     private Address address;
 
     @OneToMany(mappedBy = "user")
-    private List<Ticketing> orders = new ArrayList<>();
+    private List<Order> orders = new ArrayList<>();
 
 
     @Builder

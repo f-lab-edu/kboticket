@@ -30,10 +30,11 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-devtools'
 	implementation 'io.jsonwebtoken:jjwt:0.9.1'
 	implementation 'javax.xml.bind:jaxb-api:2.3.1'
-	implementation 'org.projectlombok:lombok:1.18.18'
+    implementation 'junit:junit:4.12'
+	implementation 'org.projectlombok:lombok:1.18.20'
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	compileOnly 'org.projectlombok:lombok'
-	annotationProcessor 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok:1.18.20'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
 }

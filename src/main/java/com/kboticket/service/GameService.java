@@ -1,7 +1,6 @@
 package com.kboticket.service;
 
 import com.kboticket.domain.Game;
-import com.kboticket.dto.GameDto;
 import com.kboticket.repository.GameRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

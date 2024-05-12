@@ -23,7 +23,17 @@ public class Seat {
 
     private String seatNumber;
 
-    private boolean reserved;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "reserved")
+    private RsrvStatus reserved = RsrvStatus.VACANCY;
 
+    private int price;
 
+    public void isReserved() {
+        this.reserved = RsrvStatus.RESERVED;
+    }
+
+    public void cancelReserved() {
+        this.reserved = RsrvStatus.VACANCY;
+    }
 }
