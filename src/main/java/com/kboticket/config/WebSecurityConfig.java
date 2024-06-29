@@ -1,6 +1,8 @@
 package com.kboticket.config;
 
-import com.kboticket.service.UserService;
+import com.kboticket.config.jwt.JwtTokenProvider;
+import com.kboticket.service.LoginService;
+import com.kboticket.service.LogoutService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,19 +13,25 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutHandler;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 
-import static org.springframework.boot.autoconfigure.security.servlet.PathRequest.toH2Console;
 
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-public class WebSecurityConfig {
+public class WebSecurityConfig{
 
     private final UserDetailsService userService;
+    private final LogoutService logoutService;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Bean
     public WebSecurityCustomizer configure() {
@@ -32,31 +40,28 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-        return httpSecurity
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
+        return http
                 .authorizeHttpRequests(auth -> auth
-                .requestMatchers(
-                        new AntPathRequestMatcher("/login"),
-                        new AntPathRequestMatcher("/signup"),
-                        new AntPathRequestMatcher("/user"),
-                        new AntPathRequestMatcher("/"),
-                        new AntPathRequestMatcher("/img/**")
-                ).permitAll()
-                .anyRequest().authenticated())
-                .formLogin(formLogin -> formLogin
-                .loginPage("/login")
-                .defaultSuccessUrl("/home"))
+                    .requestMatchers( "/login",
+                            "/users/signup",
+                            "/api/sms/**",
+                            "/user"
+                    ).permitAll()
+                    .anyRequest().authenticated())
                 .logout(logout -> logout
-                .logoutSuccessUrl("/login")
-                .invalidateHttpSession(true))
+                    .logoutUrl("/logout")
+                    .addLogoutHandler(logoutService)
+                    .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext()))
                 .csrf(AbstractHttpConfigurer::disable)
+                .addFilterBefore(new TokenAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity httpSecurity,
-                                                       BCryptPasswordEncoder bCryptPasswordEncoder,
-                                                       UserDetailsService UserDetailsService) {
+                                                       BCryptPasswordEncoder bCryptPasswordEncoder) {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(userService);
         authProvider.setPasswordEncoder(bCryptPasswordEncoder);
@@ -68,4 +73,5 @@ public class WebSecurityConfig {
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
 }

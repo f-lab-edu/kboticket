@@ -3,7 +3,6 @@ package com.kboticket.domain;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -14,9 +13,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Entity
 @Table(name = "user")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Getter
-public class User implements UserDetails{
-
+@Getter @Setter
+public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id", updatable = false)
@@ -27,23 +25,23 @@ public class User implements UserDetails{
 
     private String password;
 
-    private String name;
+    private String phone;
 
     @Embedded
     private Address address;
 
     @OneToMany(mappedBy = "user")
-    private List<Order> orders = new ArrayList<>();
+    private List<Order> orders;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Agreed> agreedList;
 
     @Builder
-    public User (String email, String name, String password){
+    public User(String email, String password, String phone) {
         this.email = email;
-        this.name = name;
         this.password = password;
+        this.phone = phone;
     }
-
-
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -52,30 +50,31 @@ public class User implements UserDetails{
 
     @Override
     public String getUsername() {
-        return name;
+        return email;
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
     }
 
     @Override
     public boolean isAccountNonExpired() {
-
         return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-
         return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-            // 패스워드 만료 여부 확인 로직
         return true;
     }
 
     @Override
     public boolean isEnabled() {
-        // 계정 사용 가능 여부 로직
         return true;
     }
 }

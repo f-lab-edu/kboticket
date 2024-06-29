@@ -15,7 +15,7 @@ public class HomeController {
 
     private final GameService gameService;
 
-    @GetMapping("/home")
+    @GetMapping("/")
     public String Home(Model model) {
 
         List<GameDto> gameList = gameService.findGames()
