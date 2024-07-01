@@ -13,6 +13,10 @@ public class GameRepository {
 
     private final EntityManager em;
 
+    public Game findOne(Long id) {
+        return em.find(Game.class, id);
+    }
+
     public List<Game> findAll () {
        return em.createQuery("select g from Game g", Game.class)
                  .getResultList();

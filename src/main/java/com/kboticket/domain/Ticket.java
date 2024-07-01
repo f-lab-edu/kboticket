@@ -19,6 +19,26 @@ public class Ticket {
     private Game game;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ticketing_id")
-    private Ticketing ticketing;
+    @JoinColumn(name = "order_id")
+    private Order order;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "seat_id")
+    private Seat seat;
+
+    // 티켓 생성
+    public static Ticket createTicket(Game game, Seat seat) {
+        Ticket ticket = new Ticket();
+        ticket.setGame(game);
+        ticket.setSeat(seat);
+        seat.isReserved();
+        // 전체 표수에서 예매한 개수 빼기
+
+        return ticket;
+    }
+
+    // 티켓 취소
+    public void cancel() {
+        getSeat().cancelReserved();
+    }
 }
