@@ -20,16 +20,16 @@ public class RefreshToken {
     @Column(name="user_id", updatable = false, unique = true)
     private Long userId;
 
-    @Column(name="refresh_token", updatable = false)
-    private String refreshToken;
+    @Column(name="token", updatable = false)
+    private String token;
 
-    public RefreshToken(Long userId, String refreshToken) {
+    public RefreshToken(Long userId, String token) {
         this.userId = userId;
-        this.refreshToken = refreshToken;
+        this.token = token;
     }
 
-    public RefreshToken update(String newRefreshToken) {
-        this.refreshToken = newRefreshToken;
+    public RefreshToken update(String token) {
+        this.token = token;
         return this;
     }
 }

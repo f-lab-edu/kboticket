@@ -25,17 +25,20 @@ public class UserController {
      * 회원가입
      */
     @PostMapping("/signup")
-    @ResponseBody
-    public ResponseEntity<UserSignupResponse> signup(@RequestBody UserSignupRequest request) {
-
+    @ResponseStatus(HttpStatus.CREATED)
+    public void signup(@RequestBody UserSignupRequest request) {
+        // commonresponsivee
         boolean isAgreeAllMandaotryTerms = termsService.checkAllMandatoryTermsAgreed(request.getTerms());
         if (!isAgreeAllMandaotryTerms) {
             throw new TermsCheckedException(ErrorCode.NOT_CHCKED_MANDATORY_TERMS);
         }
         // 회원가입
-        UserSignupResponse response = userService.signup(request);
+        userService.signup(request);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        // restcontroller, response body
+        //return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        // 응답값을 줘야할 경우에맘ㄴ
+        // ㄷ단순액션요청일경우에는 필요없x
     }
 
     /**

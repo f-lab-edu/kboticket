@@ -43,7 +43,7 @@ public class UserService {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("Unexpected user"));
     }
-
+//
     @Transactional
     public UserSignupResponse signup(UserSignupRequest request) {
         // 이메일 중복 검사
@@ -58,13 +58,13 @@ public class UserService {
 
         // 인증키 확인
         String phone = jwtTokenProvider.getPhoneFromToken(request.getVerificationKey());
-        log.info("phone ======== > " + phone);
         if (phone == null) {
             throw new InvalidVerificationKeyException(ErrorCode.INVALID_VERIFICATION_KEY);
         }
 
-
+        // 엔티티매니저 직접 사용하면 안됨, agreement
         // 특정 유저 A 의 약관 동의 리스트
+        // user도 같이 저장,foreach 로 한번
         List<Agreed> agreedList = request.getTerms().stream()
                 .map(t -> {
                     Terms terms = entityManager.find(Terms.class, new TermsPk(t.getTitle(), t.getVersion()));
@@ -87,7 +87,7 @@ public class UserService {
             t.setAgreedDate(LocalDateTime.now());
         });
 
-        user.setAgreedList(agreedList);
+        user.setAgreedList(agreedList);// 확인, 없어도될듯, transactional
         // 유저 정보 저장
         userRepository.saveAndFlush(user);
 

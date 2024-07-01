@@ -23,7 +23,13 @@ public class LoginService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final RedisTemplate<String, Object> redisTemplate;
-
+    // refresh, access 토큰 발급
+    // api 추가 access 토큰 refresh
+    // 레디스에 저장 이유
+    // 만료가된 토큰인지 , 로그아웃할 때
+    // refresh, access 기존에 것 레디스에 넣어야하ㅏㅁ, 유효기간 만큼, ttl기,
+    // 로그인할때 저장해두고 (화이트리스트) , 내가 발급했던 엑세스 토큰인지, 해당 엑세스는 사용못하게
+    // 레디스에 저장할 땐는 ttl 저장
     @Transactional
     public String login(LoginRequestDto loginRequestDto) {
         // 이메일로 존재하는 유저인지 확인

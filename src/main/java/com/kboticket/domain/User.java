@@ -1,8 +1,10 @@
 package com.kboticket.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -30,11 +32,13 @@ public class User implements UserDetails {
     @Embedded
     private Address address;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user")
-    private List<Order> orders;
+    private List<Order> orders = new ArrayList<>();
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Agreed> agreedList;
+    private List<Agreed> agreedList = new ArrayList<>();
 
     @Builder
     public User(String email, String password, String phone) {
