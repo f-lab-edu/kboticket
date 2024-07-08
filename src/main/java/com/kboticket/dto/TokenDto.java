@@ -1,10 +1,13 @@
 package com.kboticket.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 
+@Data
 @AllArgsConstructor
-@Getter
-public class CreateAccessTokenResponse {
+public class TokenDto {
+
     private String accessToken;
+    private String refreshToken;
+
 }

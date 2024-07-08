@@ -1,25 +1,24 @@
 package com.kboticket.controller;
 
+import com.kboticket.common.CommonResponse;
+import com.kboticket.common.constants.ResponseCode;
 import com.kboticket.domain.Seat;
 import com.kboticket.service.SeatService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
 public class SeatController {
 
     private final SeatService seatService;
 
     @GetMapping("/items")
-    public String list(Model model) {
+    public CommonResponse<List<Seat>> list() {
         List<Seat> Seats = seatService.findSeats();
-        model.addAttribute("items", Seats);
-
-        return "items/itemList";
+        return new CommonResponse<>(ResponseCode.SUCCESS, null, Seats);
     }
 }
