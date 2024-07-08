@@ -1,4 +1,4 @@
-package com.kboticket.common.constants.constants;
+package com.kboticket.common.constants;
 
 import lombok.experimental.UtilityClass;
 

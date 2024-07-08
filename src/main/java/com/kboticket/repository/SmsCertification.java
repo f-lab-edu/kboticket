@@ -21,7 +21,6 @@ public class SmsCertification {
                 .set(PREFIX + phone, cerNumber, Duration.ofSeconds(LIMIT_TIME));
     }
 
-
     // 전화번호에 해당하는 인증번호 불러오기
     public String getSmsCertification(String phone) {
         return stringRedisTemplate.opsForValue()

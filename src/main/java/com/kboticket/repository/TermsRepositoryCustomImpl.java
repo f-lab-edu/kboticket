@@ -5,7 +5,6 @@ import com.kboticket.domain.Terms;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -13,7 +12,7 @@ import java.util.List;
 
 @Repository
 @AllArgsConstructor
-public class TremRepositoryCustomImpl implements TermsRepositoryCustom {
+public class TermsRepositoryCustomImpl implements TermsRepositoryCustom {
 
     private EntityManager em;
 
@@ -27,11 +26,11 @@ public class TremRepositoryCustomImpl implements TermsRepositoryCustom {
         return queryFactory
                 .select(terms)
                 .from(terms)
-                .where(terms.version.eq(
+                .where(terms.termsPk.version.eq(
                         JPAExpressions
-                                .select(termsSub.version.max())
+                                .select(termsSub.termsPk.version.max())
                                 .from(termsSub)
-                                .where(termsSub.title.eq(terms.title))
+                                .where(termsSub.termsPk.title.eq(terms.termsPk.title))
                 ))
                 .fetch();
     }

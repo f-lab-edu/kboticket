@@ -1,6 +1,7 @@
 package com.kboticket.service;
 
-import com.kboticket.common.constants.constants.SmsConstant;
+import com.kboticket.common.constants.SmsConstant;
+import com.kboticket.domain.User;
 import com.kboticket.dto.SmsRequestDto;
 import com.kboticket.enums.ErrorCode;
 import com.kboticket.exception.CectificationNumMismatchException;
@@ -8,23 +9,29 @@ import com.kboticket.exception.PhoneDuplicateException;
 import com.kboticket.exception.SmsSendFailureException;
 import com.kboticket.repository.SmsCertification;
 import com.kboticket.repository.UserRepository;
-import com.kboticket.util.coolSms.SmsMessageTemplate;
+import com.kboticket.util.coolSms.SmsTemplate;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.nurigo.java_sdk.api.Message;
 import net.nurigo.java_sdk.exceptions.CoolsmsException;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.Random;
+import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class SmsSenderService {
 
     private final SmsCertification smsCertification;
     private final UserRepository userRepository;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Value("${coolsms.apikey}")
     private String apiKey;
@@ -35,16 +42,10 @@ public class SmsSenderService {
     @Value("${coolsms.fromnumber}")
     private String fromNumber;
 
-    public void sendSMS(String phone) {
+    public void sendSMS(String phone, String key, String content) {
 
-        if (userRepository.existsByPhone(phone)) {
-            throw new PhoneDuplicateException(ErrorCode.PHONE_DUPLICATE);
-        }
         /*
         Message coolsms = new Message(apiKey, apiSecret);
-
-        String certNumber = createRandomNumber();
-        String content = makeSmsContent(certNumber);
 
         HashMap<String, String> params = makeParams(phone, content);
 
@@ -54,10 +55,10 @@ public class SmsSenderService {
             if (result.get("success_count").toString().equals("0")) {
                 throw new SmsSendFailureException(ErrorCode.SMS_SEND_FAILED);
             }
-        } catch (CoolsmsException exception) {
+        } catch (SmsSendFailureException | CoolsmsException exception) {
             exception.printStackTrace();
         }
-        smsCertification.createSmsCertification(phone, certNumber);
+        smsCertification.createSmsCertification(phone, key);
         */
 
         // redis 임시 인증 번호 저장
@@ -72,11 +73,6 @@ public class SmsSenderService {
             randomNumberBuilder.append(random.nextInt(10));
         }
         return randomNumberBuilder.toString();
-    }
-
-    private String makeSmsContent(String certNumber) {
-        SmsMessageTemplate content = new SmsMessageTemplate();
-        return content.builderCertificationContent(certNumber);
     }
 
     private HashMap<String, String> makeParams(String to, String content) {
@@ -101,9 +97,35 @@ public class SmsSenderService {
         return (smsCertification.hasKey(smsRequestDto.getPhone()) &&
                 smsCertification.getSmsCertification(smsRequestDto.getPhone())
                         .equals(smsRequestDto.getCertificationNumber()));
+    }
 
+    public void sendVeritificationKey(String phone) {
+        if (userRepository.existsByPhone(phone)) {
+            throw new PhoneDuplicateException(ErrorCode.PHONE_DUPLICATE);
+        }
+
+        String certNumber = createRandomNumber();
+        String content = SmsTemplate.builderContent(SmsTemplate.CERT_TEMPLATE, certNumber);
+
+        sendSMS(phone, certNumber, content);
     }
 
 
+    public String sendResetPassword(String phone) {
+        Optional<User> optionalUser = userRepository.findByPhone(phone);
+        User user = optionalUser.get();
 
+        String tempPassword = UUID.randomUUID().toString().replaceAll("-", "").substring(0, 9);
+        String content = SmsTemplate.builderContent(SmsTemplate.TEMP_PASSWORD_TEMPLATE, tempPassword);
+
+        log.info("tempPassword======>" + tempPassword);
+
+        String encodedPassword = bCryptPasswordEncoder.encode(tempPassword);
+        user.setPassword(encodedPassword);
+        userRepository.save(user);
+
+        sendSMS(phone, tempPassword, content);
+
+        return tempPassword;
+    }
 }

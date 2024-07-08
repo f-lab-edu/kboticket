@@ -7,18 +7,13 @@ import java.util.List;
 
 @Entity
 @Table(name = "terms")
-@IdClass(TermsPk.class)
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Terms {
 
     @Id
-    @Column(name = "title")
-    private String title;
-
-    @Id
-    @Column(name = "version")
-    private String version;
+    @EmbeddedId
+    private TermsPk termsPk;
 
     @Column(columnDefinition = "LONGTEXT")
     private String content;
@@ -29,14 +24,12 @@ public class Terms {
     private List<Agreed> agreed;
 
     public Terms(String title, String version) {
-        this.title = title;
-        this.version = version;
+        this.termsPk = new TermsPk(title, version);
     }
 
     @Builder
     public Terms(String title, String version, String content, boolean mandatory) {
-        this.title = title;
-        this.version = version;
+        this.termsPk = new TermsPk(title, version);
         this.content = content;
         this.mandatory = mandatory;
 

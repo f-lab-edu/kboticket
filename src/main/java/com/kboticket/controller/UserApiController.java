@@ -1,16 +1,18 @@
 package com.kboticket.controller;
 
+import com.kboticket.common.CommonResponse;
+import com.kboticket.common.constants.ResponseCode;
 import com.kboticket.config.jwt.JwtTokenProvider;
 import com.kboticket.dto.SmsRequestDto;
+import com.kboticket.dto.response.VerificationResponse;
+import com.kboticket.enums.ErrorCode;
+import com.kboticket.enums.TokenType;
+import com.kboticket.exception.KboTicketException;
 import com.kboticket.service.SmsSenderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
@@ -21,27 +23,31 @@ public class UserApiController {
     private final SmsSenderService smsSenderService;
     private final JwtTokenProvider jwtTokenProvider;
 
-    // 인증 번호 발송
+    /**
+     * 인증 번호 발송
+     */
     @PostMapping("/send")
-    public ResponseEntity<Void> sendSms(@RequestBody SmsRequestDto smsRequestDto) {
-
-        smsSenderService.sendSMS(smsRequestDto.getPhone());
-        return ResponseEntity.status(HttpStatus.OK).build();
+    @ResponseStatus(HttpStatus.OK)
+    public void sendSms(@RequestBody SmsRequestDto smsRequestDto) {
+        smsSenderService.sendVeritificationKey(smsRequestDto.getPhone());
     }
 
 
-    // 인증 번호 확인
+    /**
+     * 인증 번호 확인 후 토큰 발급
+     */
     @PostMapping("/verify")
-    public ResponseEntity<Void> smsVerification(@RequestBody SmsRequestDto smsRequestDto) {
+    public CommonResponse<Void> smsVerification(@RequestBody SmsRequestDto smsRequestDto) {
         boolean isValid = smsSenderService.verifySms(smsRequestDto);
 
-        if (isValid) {
-            String verification =jwtTokenProvider.generateToken(smsRequestDto.getPhone());
-            log.info(verification);
-            return ResponseEntity.status(HttpStatus.OK).build();
-        } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        if (!isValid) {
+            throw new KboTicketException(ErrorCode.INVALID_VERIFICATION_CODE);
         }
+
+        String verificationToken = jwtTokenProvider.generateToken(smsRequestDto.getPhone(), TokenType.ACCESS);
+        log.info(verificationToken);
+
+        return new CommonResponse(ResponseCode.SUCCESS, null, new VerificationResponse(verificationToken));
     }
 
 }

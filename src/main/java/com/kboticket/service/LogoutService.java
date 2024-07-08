@@ -21,9 +21,11 @@ public class LogoutService implements LogoutHandler {
         String token =  jwtTokenProvider.resolveToken(request.getHeader("Authorization"));
 
         if (token != null && jwtTokenProvider.validToken(token)) {
+            String email = jwtTokenProvider.getEmailFromToken(token);
             // 토큰 무효화 처리
-            jwtTokenProvider.addToBlacklist(token);
+            jwtTokenProvider.deleteStoredToken("access:" + email);
+            jwtTokenProvider.deleteStoredToken("refresh:" + email);
         }
-
+        // 토큰이 없거나 로그아웃이 안되면 error throw exception
     }
 }

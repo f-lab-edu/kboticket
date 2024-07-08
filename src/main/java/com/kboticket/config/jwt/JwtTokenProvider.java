@@ -1,9 +1,13 @@
 package com.kboticket.config.jwt;
 
+import com.kboticket.enums.ErrorCode;
+import com.kboticket.enums.TokenType;
+import com.kboticket.exception.KboTicketException;
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -13,10 +17,8 @@ import org.springframework.util.StringUtils;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
-/**
- * JWT 토큰에 관련된 암호화, 복호화, 검증로직
- */
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -25,9 +27,9 @@ public class JwtTokenProvider {
     private final JwtProperties jwtProperties;
     private final RedisTemplate<String, Object> redisTemplate;
 
-    public String generateToken(String email){
+    public String generateToken(String email, TokenType type){
         Date now = new Date();
-        return makeToken(new Date(now.getTime() + jwtProperties.getExpired()), email);
+        return makeToken(new Date(now.getTime() + type.getExpireTime()), email);
     }
 
     private String makeToken(Date expiry, String email) {
@@ -89,11 +91,43 @@ public class JwtTokenProvider {
         return null;
     }
 
-    public void addToBlacklist(String token) {
-        redisTemplate.opsForValue().set("black:" + token, "black", jwtProperties.getExpired());
+    public String reissueAccessToken(String refreshToken) throws Exception {
+
+        if (!validToken(refreshToken)) {
+            throw new KboTicketException(ErrorCode.PASSWORD_NOT_FOUND);
+        }
+
+        String email = getEmailFromToken(refreshToken);
+        String storedRefreshToken = (String) redisTemplate.opsForValue().get("refresh:" + email);
+
+        if (!refreshToken.equals(storedRefreshToken)) {
+            throw new KboTicketException(ErrorCode.PHONE_DUPLICATE);
+        }
+
+        String tokenType = TokenType.ACCESS.toString().toLowerCase();
+        String tokenKey = tokenType + ":" + email;
+        deleteStoredToken(tokenType);
+
+        // 새로운 Access Token 생성
+        return generateNewAccessToken(email, tokenKey);
+
     }
 
-    public boolean isTokenBlacklisted(String token) {
-        return redisTemplate.hasKey("black:" + token);
+    public String getEmailFromToken(String token) {
+        Claims claims = Jwts.parser().setSigningKey(jwtProperties.getSecretKey()).parseClaimsJws(token).getBody();
+
+        return claims.getSubject();
+    }
+
+    public void deleteStoredToken(String tokenKey) {
+        // 기존에 redis에 있는 accessToken 무효화
+        redisTemplate.delete(tokenKey);
+    }
+
+    private String generateNewAccessToken(String email, String tokenKey) {
+        String newAccessToken = generateToken(email, TokenType.ACCESS);
+        redisTemplate.opsForValue().set(tokenKey, newAccessToken, 6 * 60 * 60 * 1000L, TimeUnit.MILLISECONDS);
+
+        return newAccessToken;
     }
 }

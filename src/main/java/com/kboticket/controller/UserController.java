@@ -1,14 +1,19 @@
 package com.kboticket.controller;
 
+import com.kboticket.common.CommonResponse;
+import com.kboticket.common.constants.ResponseCode;
+import com.kboticket.dto.TokenDto;
 import com.kboticket.dto.UserSignupRequest;
-import com.kboticket.dto.UserSignupResponse;
+import com.kboticket.dto.response.EmailResponse;
+import com.kboticket.dto.response.PasswordResponse;
 import com.kboticket.enums.ErrorCode;
-import com.kboticket.exception.TermsCheckedException;
+import com.kboticket.exception.KboTicketException;
+import com.kboticket.service.SmsSenderService;
 import com.kboticket.service.TermsService;
 import com.kboticket.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -18,8 +23,8 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final UserService userService;
-
     private final TermsService termsService;
+    private final SmsSenderService smsSenderService;
 
     /**
      * 회원가입
@@ -27,70 +32,66 @@ public class UserController {
     @PostMapping("/signup")
     @ResponseStatus(HttpStatus.CREATED)
     public void signup(@RequestBody UserSignupRequest request) {
-        // commonresponsivee
         boolean isAgreeAllMandaotryTerms = termsService.checkAllMandatoryTermsAgreed(request.getTerms());
-        if (!isAgreeAllMandaotryTerms) {
-            throw new TermsCheckedException(ErrorCode.NOT_CHCKED_MANDATORY_TERMS);
-        }
-        // 회원가입
-        userService.signup(request);
 
-        // restcontroller, response body
-        //return ResponseEntity.status(HttpStatus.CREATED).body(response);
-        // 응답값을 줘야할 경우에맘ㄴ
-        // ㄷ단순액션요청일경우에는 필요없x
+        if (!isAgreeAllMandaotryTerms) {
+            throw new KboTicketException(ErrorCode.NOT_CHECKED_MANDATORY_TERMS);
+        }
+        userService.signup(request);
+    }
+
+    /**
+     * 재발급
+     */
+    @PostMapping("/reissued")
+    public CommonResponse<TokenDto> reissued(HttpServletRequest request) throws Exception {
+        TokenDto tokenDto = userService.reissue(request);
+
+        return new CommonResponse(ResponseCode.SUCCESS, null, tokenDto);
     }
 
     /**
      * email 중복 검사
      */
     @GetMapping("/check-email")
-    public ResponseEntity<Boolean> checkDuplicateEmail(@RequestParam String email) {
+    public CommonResponse<Void> checkDuplicateEmail(@RequestParam String email) {
         boolean isDuplicate = userService.isExistEmail(email);
-        return ResponseEntity.status(HttpStatus.OK).body(isDuplicate);
+
+        if (isDuplicate) {
+            throw new KboTicketException(ErrorCode.EMAIL_DUPLICATTE);
+        }
+
+        return new CommonResponse<>(ResponseCode.SUCCESS);
     }
 
     /**
      * 이메일 찾기
      */
     @GetMapping("/find/email")
-    @ResponseBody
-    public ResponseEntity<String> findEmail(@RequestParam String phone) {
+    public CommonResponse<EmailResponse> findEmail(@RequestParam String phone) {
         String email = userService.findbyPhone(phone);
 
-        return ResponseEntity.status(HttpStatus.OK).body(email);
+        return new CommonResponse<>(ResponseCode.SUCCESS, null, new EmailResponse(email));
     }
 
     /**
      * 패스워드 찾기 (이메일로 유저 정보 있는지 확인)
      */
     @GetMapping("/find/password")
-    public ResponseEntity<String> findPassword(@RequestParam String email) {
+    public CommonResponse<PasswordResponse> findPassword(@RequestParam String email,
+                                               @RequestParam String phone) {
         boolean isExistEmail = userService.isExistEmail(email);
+        boolean isExistPhone = userService.isExistPhone(phone);
 
-        if (isExistEmail) {
-            return ResponseEntity.ok("Email exists. Redirect to /find/password/auth.");
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Email not found.");
+        if (!isExistEmail) {
+            throw new KboTicketException(ErrorCode.EMAIL_NOT_FOUND);
         }
+        if (!isExistPhone) {
+            throw new KboTicketException(ErrorCode.PHONE_NOT_FOUND);
+        }
+        String tempPassword = smsSenderService.sendResetPassword(phone);
+
+        return new CommonResponse<>(ResponseCode.SUCCESS, null, new PasswordResponse(tempPassword));
+
     }
-
-    @PostMapping("/find/send")
-    public ResponseEntity<Void> sendEmail(@RequestParam String email) {
-        userService.sendPasswordToEmail(email);
-        return ResponseEntity.status(HttpStatus.OK).build();
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
 }

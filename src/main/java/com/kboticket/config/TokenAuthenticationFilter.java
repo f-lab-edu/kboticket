@@ -27,12 +27,6 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
         String token = getAccessToken(authorizationHeader);
         if (token != null) {
-
-            if (jwtTokenProvider.isTokenBlacklisted(token)) {
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token is blacklisted");
-                return;
-            }
-
             // 토큰 유효성 검사
             try {
                 if (jwtTokenProvider.validToken(token)) {
