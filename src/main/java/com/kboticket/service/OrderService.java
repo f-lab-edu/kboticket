@@ -28,10 +28,11 @@ public class OrderService {
      */
     @Transactional
     public Long order(Long userId, Long gameId, Long[] seatIds) {
-        // 엔티티 조회
         Optional<User> optionalUser = userRepository.findById(userId);
         User user = optionalUser.get();
-        Game game = gameRepository.findOne(gameId);
+
+        Optional<Game> optionalGame = gameRepository.findById(gameId);
+        Game game = optionalGame.get();
 
         Ticket ticket = new Ticket();
         List<Ticket> ticketList = new ArrayList<>();

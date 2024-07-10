@@ -1,8 +1,6 @@
 package com.kboticket.dto;
 
 import com.kboticket.domain.Game;
-import com.kboticket.domain.Stadium;
-import com.kboticket.domain.Team;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;

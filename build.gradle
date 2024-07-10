@@ -16,6 +16,7 @@ configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
 	}
+	querydsl.extendsFrom compileClasspath
 }
 
 repositories {
@@ -69,3 +70,8 @@ tasks.named('test') {
 tasks.withType(JavaCompile) {
 	options.encoding = 'UTF-8'
 }
+
+compileQuerydsl{
+	options.annotationProcessorPath = configurations.querydsl
+}
+

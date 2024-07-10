@@ -4,7 +4,7 @@ import com.kboticket.domain.Terms;
 
 import java.util.List;
 
-public interface TermsRepositoryCustom {
+public interface TermsCustomRepository {
 
     List<Terms> findFirstByTitleOrderByVersionDesc();
 }

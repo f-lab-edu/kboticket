@@ -1,12 +1,12 @@
 package com.kboticket.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -21,13 +21,15 @@ public class Team {
 
     private String name;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "stadium_id", nullable = false)
     private Stadium stadium;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "homeTeam")
     private List<Game> homeGames;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "awayTeam")
     private List<Game> awayGames;
 

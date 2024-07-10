@@ -4,7 +4,6 @@ import lombok.Data;
 
 @Data
 public class TermsDto {
-
     private String title;
     private String version;
     private String content;

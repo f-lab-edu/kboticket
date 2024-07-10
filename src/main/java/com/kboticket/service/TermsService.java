@@ -3,7 +3,7 @@ package com.kboticket.service;
 import com.kboticket.domain.Terms;
 import com.kboticket.dto.TermsDto;
 import com.kboticket.repository.TermsRepository;
-import com.kboticket.repository.TermsRepositoryCustom;
+import com.kboticket.repository.TermsCustomRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +15,7 @@ import java.util.List;
 public class TermsService {
 
     private final TermsRepository termsRepository;
-    private final TermsRepositoryCustom termsRepositoryCustom;
+    private final TermsCustomRepository termsRepositoryCustom;
 
     public List<Terms> getAllTerms() {
         return termsRepository.findAll();
@@ -26,7 +26,7 @@ public class TermsService {
                 .title(termsDto.getTitle())
                 .version(termsDto.getVersion())
                 .content(Base64.getEncoder().encodeToString(termsDto.getContent().getBytes()))
-                .mandatory(termsDto.isMandatory())  // boolean 의 getter은 isMandatory~
+                .mandatory(termsDto.isMandatory())
                 .build();
 
         return termsRepository.save(terms);
