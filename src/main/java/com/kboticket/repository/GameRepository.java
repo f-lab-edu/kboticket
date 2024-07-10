@@ -1,24 +1,19 @@
 package com.kboticket.repository;
 
 import com.kboticket.domain.Game;
-import jakarta.persistence.EntityManager;
-import lombok.RequiredArgsConstructor;
+import jakarta.persistence.Id;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
-@RequiredArgsConstructor
-public class GameRepository {
+public interface GameRepository extends JpaRepository<Game, Id>, GameCustomRepository {
 
-    private final EntityManager em;
+    Optional<Game> findById(Long id);
 
-    public Game findOne(Long id) {
-        return em.find(Game.class, id);
-    }
+    List<Game> findAll();
 
-    public List<Game> findAll () {
-       return em.createQuery("select g from Game g", Game.class)
-                 .getResultList();
-    }
+
 }

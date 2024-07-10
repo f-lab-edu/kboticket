@@ -12,7 +12,7 @@ import java.util.List;
 
 @Repository
 @AllArgsConstructor
-public class TermsRepositoryCustomImpl implements TermsRepositoryCustom {
+public class TermsCustomRepositoryImpl implements TermsCustomRepository {
 
     private EntityManager em;
 
