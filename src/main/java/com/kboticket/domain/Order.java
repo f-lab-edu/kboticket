@@ -50,7 +50,7 @@ public class Order {
 
     public void cancel() {
         for (Ticket ticket : tickets) {
-            ticket.cancel();
+            //ticket.cancel();
         }
     }
 }

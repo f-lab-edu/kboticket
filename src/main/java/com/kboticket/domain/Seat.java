@@ -17,23 +17,18 @@ public class Seat {
     @JoinColumn(name = "stadium_id")
     private Stadium stadium;
 
+    @Column(name = "seat_x")
+    private String seatX;
+
+    @Column(name = "seat_y")
+    private String seatY;
+
+    @Column(name = "seat_z")
+    private String seatZ;
+
+    @Column(name = "seat_level")
     private String seatLevel;
-
-    private String seatBlock;
-
-    private String seatNumber;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "reserved")
-    private RsrvStatus reserved = RsrvStatus.VACANCY;
 
     private int price;
 
-    public void isReserved() {
-        this.reserved = RsrvStatus.RESERVED;
-    }
-
-    public void cancelReserved() {
-        this.reserved = RsrvStatus.VACANCY;
-    }
 }

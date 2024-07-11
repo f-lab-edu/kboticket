@@ -31,14 +31,13 @@ public class Ticket {
         Ticket ticket = new Ticket();
         ticket.setGame(game);
         ticket.setSeat(seat);
-        seat.isReserved();
         // 전체 표수에서 예매한 개수 빼기
 
         return ticket;
     }
 
     // 티켓 취소
-    public void cancel() {
-        getSeat().cancelReserved();
-    }
+//    public void cancel() {
+//        getSeat().cancelReserved();
+//    }
 }
