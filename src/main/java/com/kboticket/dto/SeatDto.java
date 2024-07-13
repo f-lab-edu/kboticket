@@ -8,9 +8,9 @@ import lombok.Data;
 public class SeatDto {
 
     private Long id;
-    private String seatX;
-    private String seatY;
-    private String seatZ;
+    private Double seatX;
+    private Double seatY;
+    private Double seatZ;
     private String seatLevel;
     private int price;
 }

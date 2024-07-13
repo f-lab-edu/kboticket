@@ -1,12 +1,14 @@
 package com.kboticket.domain;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @Table(name = "ticket")
 @Getter @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Ticket {
 
     @Id
@@ -26,18 +28,10 @@ public class Ticket {
     @JoinColumn(name = "seat_id")
     private Seat seat;
 
-    // 티켓 생성
-    public static Ticket createTicket(Game game, Seat seat) {
-        Ticket ticket = new Ticket();
-        ticket.setGame(game);
-        ticket.setSeat(seat);
-        // 전체 표수에서 예매한 개수 빼기
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
-        return ticket;
-    }
+    private TicketStatus reserved;
 
-    // 티켓 취소
-//    public void cancel() {
-//        getSeat().cancelReserved();
-//    }
 }

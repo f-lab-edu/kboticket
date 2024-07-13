@@ -8,6 +8,7 @@ import com.kboticket.service.GameService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,13 +22,13 @@ public class GameController {
 
     @GetMapping("/list")
     public CommonResponse<List<GameResponse>> list(@RequestBody GameSearchDto gameSearchDto,
-                                                   @RequestParam(value = "cursor", required = false) Long cursor,
+                                                   @RequestParam(value = "cursor", required = false) String cursor,
                                                    @RequestParam(value = "limit", defaultValue = "10") int limit) {
 
         Pageable pageable = PageRequest.of(0, limit);
-        List<GameResponse> gameList = gameService.getGameList(pageable, gameSearchDto, cursor, limit);
+        Slice<GameResponse> gameList = gameService.getGameList(pageable, gameSearchDto, cursor);
 
-        return new CommonResponse<>(
+        return new CommonResponse(
                 ResponseCode.SUCCESS, null, gameList);
     }
 }

@@ -6,9 +6,13 @@ import com.kboticket.dto.response.GameResponse;
 import com.kboticket.repository.GameRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
@@ -18,9 +22,11 @@ public class GameService {
 
     private final GameRepository gameRepository;
 
-    public List<GameResponse> getGameList(Pageable pageable, GameSearchDto gameSearchDto, Long cursor, int limit) {
+    public Slice<GameResponse> getGameList(Pageable pageable, GameSearchDto gameSearchDto, String cursor) {
 
-        return gameRepository.getByCursor(pageable, gameSearchDto, cursor, limit);
+
+
+        return gameRepository.getByCursor(pageable, gameSearchDto, cursor);
 
 
     }

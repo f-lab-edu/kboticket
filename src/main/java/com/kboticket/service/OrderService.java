@@ -30,13 +30,13 @@ public class OrderService {
         Optional<Game> optionalGame = gameRepository.findById(gameId);
         Game game = optionalGame.get();
 
-        Ticket ticket = new Ticket();
+        Ticket ticket = null;
         List<Ticket> ticketList = new ArrayList<>();
         for (Long seatId : seatIds) {
             Optional<Seat> optionalSeat = seatRepository.findById(seatId);
             Seat seat = optionalSeat.get();
-            // 티켓 생성
-            ticket = ticket.createTicket(game, seat);
+            // 티켓 생성 추가
+            ticket = Ticket.builder().build();
             ticketList.add(ticket);
         }
         // 얘매 생성
