@@ -1,25 +1,24 @@
 package com.kboticket.repository;
 
 import com.kboticket.domain.Seat;
-import jakarta.persistence.EntityManager;
-import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
-@RequiredArgsConstructor
-public class SeatRepository {
+public interface SeatRepository extends JpaRepository<Seat, Long> {
 
-    private final EntityManager em;
+    Optional<Seat> findById(Long id);
 
-    public Seat findOne(Long id) {
-        return em.find(Seat.class, id);
-    }
+    List<Seat> findAll();
 
-    public List<Seat> findAll() {
-        return em.createQuery(
-                "select s from Seat s", Seat.class
-        ).getResultList();
-    }
+    List<Seat> findByStadiumId(String stadiumId);
+
+    @Query("SELECT s FROM Seat s WHERE s.stadium.id = :stadiumId AND s.id NOT IN (SELECT t.seat.id FROM Ticket t WHERE t.game.id = :gameId)")
+    List<Seat> findAvailableSeats(@Param("stadiumId") String stadiumId, @Param("gameId") Long gameId);
+
 }

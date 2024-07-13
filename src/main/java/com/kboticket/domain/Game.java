@@ -8,7 +8,7 @@ import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 
 @Entity
-@Table(name = "game")
+@Table(name = "game", uniqueConstraints = {@UniqueConstraint(columnNames = {"home_team_id", "away_team_id", "gameDate"})})
 @Getter @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Game {

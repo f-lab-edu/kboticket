@@ -32,8 +32,14 @@ public enum ErrorCode {
      */
     SMS_SEND_FAILED(20001, "SMS send failed", HttpStatus.BAD_REQUEST),
     CERT_NUMBER_MISMATCH(20002, "Certification Number is Mismatch!", HttpStatus.NOT_FOUND),
-    AUTHENTICATION_ERR(20004, "invalid token", HttpStatus.BAD_REQUEST);
+    AUTHENTICATION_ERR(20004, "invalid token", HttpStatus.BAD_REQUEST),
 
+
+    NOT_FOUND_SEAT_INFO(30001, "seat not found", HttpStatus.NOT_FOUND),
+    NOT_FOUND_TICKET(3002, "Ticket not found", HttpStatus.NOT_FOUND),
+    NOT_FOUND_USER(30003, "user not found", HttpStatus.NOT_FOUND),
+    NOT_FOUND_GAME(30004, "game not found", HttpStatus.NOT_FOUND),
+    SEAT_ALREADY_RESERVED(30005, "seat already reserved", HttpStatus.CONFLICT);
 
 
     public final int code;

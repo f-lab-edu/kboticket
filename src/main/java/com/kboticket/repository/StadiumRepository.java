@@ -1,13 +1,12 @@
 package com.kboticket.repository;
 
-import com.kboticket.domain.Order;
+import com.kboticket.domain.Stadium;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 @Repository
-public interface OrderRepository extends JpaRepository<Order, Long> {
-
-    Optional<Order> findById(Long id);
+public interface StadiumRepository extends JpaRepository<Stadium, String> {
+    Optional<Stadium> findById(String stadiumId);
 }

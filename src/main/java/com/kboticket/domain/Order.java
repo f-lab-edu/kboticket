@@ -45,12 +45,12 @@ public class Order {
 
     private void addOrderItem(Ticket ticket) {
         tickets.add(ticket);
-        ticket.setOrder(this);
+      //  ticket.setOrder(this);
     }
 
     public void cancel() {
         for (Ticket ticket : tickets) {
-            ticket.cancel();
+            //ticket.cancel();
         }
     }
 }

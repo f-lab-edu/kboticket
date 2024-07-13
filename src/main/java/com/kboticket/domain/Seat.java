@@ -5,7 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name = "seat")
+
+@Table(name = "seat", uniqueConstraints = {@UniqueConstraint(columnNames = {"seat_x", "seat_y", "seat_z", "stadium_id"})})
 @Getter @Setter
 public class Seat {
     @Id
@@ -17,23 +18,18 @@ public class Seat {
     @JoinColumn(name = "stadium_id")
     private Stadium stadium;
 
+    @Column(name = "seat_x")
+    private double seatX;
+
+    @Column(name = "seat_y")
+    private double seatY;
+
+    @Column(name = "seat_z")
+    private double seatZ;
+
+    @Column(name = "seat_level")
     private String seatLevel;
-
-    private String seatBlock;
-
-    private String seatNumber;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "reserved")
-    private RsrvStatus reserved = RsrvStatus.VACANCY;
 
     private int price;
 
-    public void isReserved() {
-        this.reserved = RsrvStatus.RESERVED;
-    }
-
-    public void cancelReserved() {
-        this.reserved = RsrvStatus.VACANCY;
-    }
 }

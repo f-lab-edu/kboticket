@@ -17,15 +17,11 @@ import java.util.Optional;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class OrderService {
-
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
     private final GameRepository gameRepository;
     private final SeatRepository seatRepository;
 
-    /**
-     * 티켓 예매
-     */
     @Transactional
     public Long order(Long userId, Long gameId, Long[] seatIds) {
         Optional<User> optionalUser = userRepository.findById(userId);
@@ -34,12 +30,13 @@ public class OrderService {
         Optional<Game> optionalGame = gameRepository.findById(gameId);
         Game game = optionalGame.get();
 
-        Ticket ticket = new Ticket();
+        Ticket ticket = null;
         List<Ticket> ticketList = new ArrayList<>();
         for (Long seatId : seatIds) {
-            Seat seat = seatRepository.findOne(seatId);
-            // 티켓 생성
-            ticket = ticket.createTicket(game, seat);
+            Optional<Seat> optionalSeat = seatRepository.findById(seatId);
+            Seat seat = optionalSeat.get();
+            // 티켓 생성 추가
+            ticket = Ticket.builder().build();
             ticketList.add(ticket);
         }
         // 얘매 생성
@@ -57,12 +54,13 @@ public class OrderService {
     @Transactional
     public void cancelOrder(Long orderId) {
         // 주문 엔티티 조회
-        Order order = orderRepository.findOne(orderId);
+        Optional<Order> optionalOrder = orderRepository.findById(orderId);
+        Order order = optionalOrder.get();
 
         List<Ticket> tickets = order.getTickets();
         for (Ticket ticket : tickets) {
             // ticket -> cancel
-            ticket.cancel();
+            //ticket.cancel();
         }
         // 주문 취소
         order.cancel();

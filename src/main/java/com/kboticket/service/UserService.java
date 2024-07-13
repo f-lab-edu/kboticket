@@ -8,10 +8,7 @@ import com.kboticket.domain.User;
 import com.kboticket.dto.TokenDto;
 import com.kboticket.dto.UserSignupRequest;
 import com.kboticket.enums.ErrorCode;
-import com.kboticket.exception.EmailDuplicateException;
-import com.kboticket.exception.InvalidVerificationKeyException;
-import com.kboticket.exception.PasswordMismatchException;
-import com.kboticket.exception.TermsNotFoundException;
+import com.kboticket.exception.*;
 import com.kboticket.repository.TermsRepository;
 import com.kboticket.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
@@ -96,6 +93,11 @@ public class UserService {
 
         return new TokenDto(newAccessToken, refreshToken);
 
+    }
+
+    public User findById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new KboTicketException(ErrorCode.NOT_FOUND_USER));
     }
 
 
