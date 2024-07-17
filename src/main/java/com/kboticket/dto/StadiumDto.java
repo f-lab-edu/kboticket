@@ -1,6 +1,5 @@
 package com.kboticket.dto;
 
-import com.kboticket.domain.Seat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

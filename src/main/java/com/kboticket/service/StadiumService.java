@@ -26,4 +26,7 @@ public class StadiumService {
                 .build();
     }
 
+    public boolean isExistsId(String stadiumId) {
+        return stadiumRepository.existsById(stadiumId);
+    }
 }

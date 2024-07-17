@@ -17,6 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @Transactional(readOnly = false)
@@ -123,8 +125,32 @@ public class SeatService {
                 .seatX(seat.getSeatX())
                 .seatY(seat.getSeatY())
                 .seatZ(seat.getSeatZ())
-                .seatLevel(seat.getSeatLevel())
+                .level(seat.getSeatLevel())
                 .price(seat.getPrice())
                 .build();
+    }
+
+    public List<SeatDto> getSeatsPriceByStadium(String stadiumId) {
+        List<Seat> seats = seatRepository.findByStadiumId(stadiumId);
+
+        return seats.stream()
+                .map(seat -> SeatDto.builder()
+                    .id(seat.getId())
+                    .level(seat.getSeatLevel())
+                    .price(seat.getPrice()).build())
+                .collect(Collectors.toList());
+    }
+
+    public List<SeatDto> getSeatsLocationByStadium(String stadiumId) {
+        List<Seat> seats = seatRepository.findByStadiumId(stadiumId);
+
+        return seats.stream()
+                .map(seat -> SeatDto.builder()
+                        .id(seat.getId())
+                        .seatX(seat.getSeatX())
+                        .seatY(seat.getSeatY())
+                        .seatZ(seat.getSeatZ())
+                        .level(seat.getSeatLevel()).build())
+                .collect(Collectors.toList());
     }
 }
