@@ -1,5 +1,8 @@
 package com.kboticket.enums;
 
+import lombok.Getter;
+
+@Getter
 public enum TeamEnum {
 
     HH("HH", "한화 이글스", "DJ"),

@@ -11,7 +11,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/teams")
@@ -23,19 +26,15 @@ public class TeamController {
      */
     @GetMapping
     public CommonResponse<TeamsResponse> list() {
-        List<TeamDto> teamDtoList = new ArrayList<>();
-        for (TeamEnum team : TeamEnum.values()) {
-
-            TeamDto teamDto = TeamDto.builder()
+        List<TeamDto> teamDtos = Stream.of(TeamEnum.values())
+                .sorted(Comparator.comparing(TeamEnum::getName))
+                .map(team -> TeamDto.builder()
                     .code(team.code)
                     .name(team.name)
-                    .stadiumCode(team.stadiumCode)
-                    .build();
+                    .stadiumCode(team.stadiumCode).build())
+                .collect(Collectors.toList());
 
-            teamDtoList.add(teamDto);
-        }
-
-        TeamsResponse response = new TeamsResponse(teamDtoList);
+        TeamsResponse response = new TeamsResponse(teamDtos);
         return new CommonResponse<>(response);
     }
 }
