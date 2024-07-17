@@ -2,58 +2,69 @@ package com.kboticket.util;
 
 import com.kboticket.domain.Seat;
 import com.kboticket.domain.Stadium;
+import com.kboticket.enums.SeatLevel;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class SeatArrangement {
-    public static List<Seat> generateSeats(Stadium stadium, int numberOfSeats, double radius) {
-        List<Seat> seats = new ArrayList<>();
-        double centerX = 0.0;
-        double centerY = 0.0;
+    public static List<Seat> generateSeats(Stadium stadium) {
+        /*
+            1 개의 블록 : A~E 열, 0~10까지 존재 (A01 ~ E10)
+            seat_number = row[x] + 01
+        */
+        String[] blocks = {"101", "102", "103", "104", "105", "106",
+                           "201", "202", "203", "204", "205", "206",
+                           "301", "302", "303", "304", "305", "306",
+                           "401", "402", "403", "404", "405", "406",
+                           "501", "502", "503", "504", "505", "506"};
+        String[] rows = {"A", "B", "C", "D", "E"};
 
+        List<Seat> seatList = new ArrayList<>();
+        for (String block : blocks) {
+            SeatLevel level = SeatLevel.fromBlock(block);
 
-        for (int j=0; j<3; j++) {
-            for (int i=0; i<numberOfSeats; i++) {
-                // 좌석을 순서대로 1, 직사각형 (1, 1, 1), 좌석 번호 문자열로(R1)
-                double angle = 2 * Math.PI * i / numberOfSeats;
-                double x = centerX + radius * Math.cos(angle);
-                double y = centerY + radius * Math.sin(angle);
-                double z = j;
+            for (String row : rows) {
+                for (int i = 1; i <= 10; i++) {
 
+                    Seat seat = Seat.builder()
+                            .stadium(stadium)
+                            .level(level.level)
+                            .price(level.price)
+                            .block(block)
+                            .number(row + String.format("%02d", i))
+                            .seatZ(setSeatZ(level, row))
+                            .build();
 
-                Seat seat = new Seat();
-                seat.setStadium(stadium);
-                seat.setSeatX(x);
-                seat.setSeatY(y);
-                seat.setSeatZ(z);
-
-                String level = null;
-                int price = 0;
-                if (x > 0 && y > 0) {
-                    level = "VIP";
-                    price = 39000;
-                } else if (x<0 && y>0) {
-                    level = "TABLE";
-                    price = 29000;
-
-                } else if (x>0 && y<0) {
-                    level = "EXCITING";
-                    price = 19000;
-
-                } else {
-                    level = "NORMAL";
-                    price = 9000;
+                    seatList.add(seat);
                 }
-                seat.setSeatLevel(level);
-                seat.setPrice(price);
-
-                System.out.printf("Seat %d: (%.2f, %.2f)%n", i + 1, x, y);
-
-                seats.add(seat);
             }
-
         }
-        return seats;
+        setSeatXY(seatList);
+
+        return seatList;
     }
+
+    private static int setSeatZ(SeatLevel level, String seatNumber) {
+        if (level == SeatLevel.IN &&
+                (seatNumber.startsWith("D") || seatNumber.startsWith("E"))) {
+            return 2;
+        }
+        return 1;
+    }
+
+    private static void setSeatXY(List<Seat> seatList) {
+        int x = 1;
+        int y = 1;
+        for (Seat seat : seatList) {
+            seat.setSeatX(x);
+            seat.setSeatY(y);
+            if (y == 30) {
+                y = 1;
+                x++;
+            } else {
+                y++;
+            }
+        }
+    }
+
 }

@@ -40,18 +40,18 @@ public enum ErrorCode {
      * logic error code
      * 3xxxxx ~
      */
-    NOT_FOUND_SEAT_INFO(30001, "seat not found", HttpStatus.NOT_FOUND),
-    NOT_FOUND_TICKET(3002, "Ticket not found", HttpStatus.NOT_FOUND),
-    NOT_FOUND_USER(30003, "user not found", HttpStatus.NOT_FOUND),
-    NOT_FOUND_GAME(30004, "game not found", HttpStatus.NOT_FOUND),
-    NOT_FOUND_TEAM(30005, "game not found", HttpStatus.NOT_FOUND),
-    NOT_FOUND_STADIUM(30006, "stadium not found", HttpStatus.NOT_FOUND),
-    SEAT_ALREADY_RESERVED(30007, "seat already reserved", HttpStatus.CONFLICT),
+    NOT_FOUND_SEAT_INFO(30001, "Seat could not be found", HttpStatus.NOT_FOUND),
+    NOT_FOUND_TICKET(3002, "Ticket could not be found", HttpStatus.NOT_FOUND),
+    NOT_FOUND_USER(30003, "User could not be found", HttpStatus.NOT_FOUND),
+    NOT_FOUND_GAME(30004, "Game could not be found", HttpStatus.NOT_FOUND),
+    NOT_FOUND_TEAM(30005, "Team could not be found", HttpStatus.NOT_FOUND),
+    NOT_FOUND_STADIUM(30006, "Stadium could not be found", HttpStatus.NOT_FOUND),
+    NOT_FOUND_ORDER(30012, "Order could not be found", HttpStatus.NOT_FOUND),
+    SEAT_ALREADY_RESERVED(30007, "Seat already reserved", HttpStatus.CONFLICT),
     INVALID_DATE_RANGE(30008, "Start date must be earlier than the end date", HttpStatus.BAD_REQUEST),
     SAME_TEAM_EXCEPTION(30009, "homeTeam and awayTeam must be different", HttpStatus.BAD_REQUEST),
     INVALID_HOMETEAM_STADIUM(30010, "The hometeam does not match the stadium", HttpStatus.BAD_REQUEST),
     DATE_OUT_OF_RANGE(30011, "Check the game schedule for one month before and after today", HttpStatus.BAD_REQUEST),
-    NOT_FOUND_ORDER(30012, "order not found", HttpStatus.NOT_FOUND),
     EXCEED_TICKET_LIMIT(30013, "Attempting to reserve more tickets than allowed.", HttpStatus.BAD_REQUEST),
     TICKET_ALREADY_EXISTS(30014, "ticket already exists", HttpStatus.BAD_REQUEST),
     ORDER_ALREADY_CANCELED(30015, "order is already canceled", HttpStatus.BAD_REQUEST),
@@ -62,7 +62,9 @@ public enum ErrorCode {
     INVALID_TICKET_STATUS(30020, "ticket invalid", HttpStatus.BAD_REQUEST),
 
 
-    PAYMENT_FAILURE(30021, "Payment failed", HttpStatus.BAD_REQUEST)
+    PAYMENT_FAILURE(30021, "Payment failed", HttpStatus.BAD_REQUEST),
+    NOT_FOUND_SEAT_BLOCK(30022, "Seat block could not be found", HttpStatus.NOT_FOUND),
+    INVALID_SEAT_LEVEL(30023, "Seat block could not be found", HttpStatus.BAD_REQUEST)
     ;
 
     public final int code;

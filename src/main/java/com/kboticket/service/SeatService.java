@@ -3,7 +3,6 @@ package com.kboticket.service;
 import com.kboticket.domain.Game;
 import com.kboticket.domain.Seat;
 import com.kboticket.domain.Ticket;
-import com.kboticket.domain.TicketStatus;
 import com.kboticket.dto.SeatDto;
 import com.kboticket.enums.ErrorCode;
 import com.kboticket.exception.KboTicketException;
@@ -17,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = false)
@@ -94,7 +94,6 @@ public class SeatService {
         Game game = gameRepository.findById(gameId).orElseThrow(() -> new KboTicketException(ErrorCode.NOT_FOUND_GAME));
         List<Ticket> tickets = ticketRepository.findByGame(game);
 
-
         for (Long seatId : seatIds) {
             if (ticketRepository.existsBySeatIdAndGameId(seatId, gameId)) {
                 throw new KboTicketException(ErrorCode.SEAT_ALREADY_RESERVED);
@@ -105,7 +104,6 @@ public class SeatService {
 
     // 좌석 생성 임시
     public void saveSeats(List<Seat> seatList) {
-
         seatRepository.saveAll(seatList);
     }
 
@@ -123,8 +121,32 @@ public class SeatService {
                 .seatX(seat.getSeatX())
                 .seatY(seat.getSeatY())
                 .seatZ(seat.getSeatZ())
-                .seatLevel(seat.getSeatLevel())
+                .level(seat.getLevel())
                 .price(seat.getPrice())
                 .build();
+    }
+
+    public List<SeatDto> getSeatsPriceByStadium(String stadiumId) {
+        List<Seat> seats = seatRepository.findByStadiumId(stadiumId);
+
+        return seats.stream()
+                .map(seat -> SeatDto.builder()
+                    .id(seat.getId())
+                    .level(seat.getLevel())
+                    .price(seat.getPrice()).build())
+                .collect(Collectors.toList());
+    }
+
+    public List<SeatDto> getSeatsLocationByStadium(String stadiumId) {
+        List<Seat> seats = seatRepository.findByStadiumId(stadiumId);
+
+        return seats.stream()
+                .map(seat -> SeatDto.builder()
+                        .id(seat.getId())
+                        .seatX(seat.getSeatX())
+                        .seatY(seat.getSeatY())
+                        .seatZ(seat.getSeatZ())
+                        .level(seat.getLevel()).build())
+                .collect(Collectors.toList());
     }
 }
