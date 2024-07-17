@@ -28,7 +28,7 @@ public class SeatController {
     @GetMapping("/list")
     public CommonResponse<List<Seat>> list() {
         List<Seat> Seats = seatService.findAll();
-        return new CommonResponse<>(ResponseCode.SUCCESS, null, Seats);
+        return new CommonResponse<>(Seats);
     }
 
     /**
@@ -41,7 +41,7 @@ public class SeatController {
         List<SeatDto> availableSeats = seatService.getAvailableSeats(stadiumId, gameId);
         stadium.setSeatList(availableSeats);
 
-        return new CommonResponse<>(ResponseCode.SUCCESS, null, stadium);
+        return new CommonResponse<>(stadium);
     }
 
     /**
@@ -52,7 +52,7 @@ public class SeatController {
 
         SeatDto seatDto = seatService.getSeatInfo(seatId);
 
-        return new CommonResponse(ResponseCode.SUCCESS, null, seatDto);
+        return new CommonResponse(seatDto);
     }
 
     /**

@@ -4,17 +4,12 @@ import com.kboticket.common.constants.SmsConstant;
 import com.kboticket.domain.User;
 import com.kboticket.dto.SmsRequestDto;
 import com.kboticket.enums.ErrorCode;
-import com.kboticket.exception.CectificationNumMismatchException;
-import com.kboticket.exception.PhoneDuplicateException;
-import com.kboticket.exception.SmsSendFailureException;
+import com.kboticket.exception.KboTicketException;
 import com.kboticket.repository.SmsCertification;
 import com.kboticket.repository.UserRepository;
 import com.kboticket.util.coolSms.SmsTemplate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.nurigo.java_sdk.api.Message;
-import net.nurigo.java_sdk.exceptions.CoolsmsException;
-import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -87,7 +82,7 @@ public class SmsSenderService {
 
     public boolean verifySms(SmsRequestDto smsRequestDto) {
         if (!isVerify(smsRequestDto)) {
-            throw new CectificationNumMismatchException(ErrorCode.CERT_NUMBER_MISMATCH);
+            throw new KboTicketException(ErrorCode.CERT_NUMBER_MISMATCH);
         }
         return smsCertification.deleteSmsCertification(smsRequestDto.getPhone());
     }
@@ -101,7 +96,7 @@ public class SmsSenderService {
 
     public void sendVeritificationKey(String phone) {
         if (userRepository.existsByPhone(phone)) {
-            throw new PhoneDuplicateException(ErrorCode.PHONE_DUPLICATE);
+            throw new KboTicketException(ErrorCode.PHONE_DUPLICATE);
         }
 
         String certNumber = createRandomNumber();

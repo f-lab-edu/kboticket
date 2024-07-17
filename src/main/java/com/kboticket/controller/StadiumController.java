@@ -31,6 +31,6 @@ public class StadiumController {
         List<SeatDto> seat = seatService.getSeatsByStadium(stadiumId);
         stadium.setSeatList(seat);
 
-        return new CommonResponse<>(ResponseCode.SUCCESS, null, stadium);
+        return new CommonResponse<>( stadium);
     }
 }

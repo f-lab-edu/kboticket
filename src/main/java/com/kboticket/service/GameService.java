@@ -24,10 +24,7 @@ public class GameService {
 
     public Slice<GameResponse> getGameList(Pageable pageable, GameSearchDto gameSearchDto, String cursor) {
 
-
-
         return gameRepository.getByCursor(pageable, gameSearchDto, cursor);
-
 
     }
 }

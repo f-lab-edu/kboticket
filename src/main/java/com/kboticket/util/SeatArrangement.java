@@ -15,6 +15,7 @@ public class SeatArrangement {
 
         for (int j=0; j<3; j++) {
             for (int i=0; i<numberOfSeats; i++) {
+                // 좌석을 순서대로 1, 직사각형 (1, 1, 1), 좌석 번호 문자열로(R1)
                 double angle = 2 * Math.PI * i / numberOfSeats;
                 double x = centerX + radius * Math.cos(angle);
                 double y = centerY + radius * Math.sin(angle);

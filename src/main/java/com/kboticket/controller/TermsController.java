@@ -14,7 +14,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/terms")
 @RequiredArgsConstructor
-public class TermsContoller {
+public class TermsController {
 
     private final TermsService termsService;
 
@@ -34,6 +34,6 @@ public class TermsContoller {
     @PostMapping("/latest")
     public CommonResponse<List<Terms>> termsList() {
         List<Terms> response = termsService.findLatestTermsByTitle();
-        return new CommonResponse<>(ResponseCode.SUCCESS, "termsList", response);
+        return new CommonResponse<>(response);
     }
 }

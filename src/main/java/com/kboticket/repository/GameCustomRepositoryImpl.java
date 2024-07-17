@@ -48,6 +48,8 @@ public class GameCustomRepositoryImpl implements GameCustomRepository{
         BooleanBuilder builder = createSearchBuilder(gameSearchDto);
 
         if (cursor!= null) {
+            // 수정
+            // 이렇게 사용하려면 클래스를 만들어야함
             String cursorDate = cursor.split("_")[0];
             Long cursorId = Long.parseLong(cursor.split("_")[1]);
 
@@ -104,6 +106,11 @@ public class GameCustomRepositoryImpl implements GameCustomRepository{
     }
 
     private BooleanExpression homeTeamLike(String homeTeamStr) {
+        // 팀 검색 dropbox 로 명확하게 검색
+        // like 되게 느림
+        // 유저쪽에서 쓰는 건 문제가 됨, 관리자쪽은 괜춘
+        // full scan, team -> enum으로
+        // 팀 여러개 -> or
         return StringUtils.hasText(homeTeamStr) ? homeTeam.name.like("%" + homeTeamStr + "%") : null;
     }
 

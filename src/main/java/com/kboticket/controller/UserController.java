@@ -47,21 +47,20 @@ public class UserController {
     public CommonResponse<TokenDto> reissued(HttpServletRequest request) throws Exception {
         TokenDto tokenDto = userService.reissue(request);
 
-        return new CommonResponse(ResponseCode.SUCCESS, null, tokenDto);
+        return new CommonResponse(tokenDto);
     }
 
     /**
      * email 중복 검사
      */
     @GetMapping("/check-email")
-    public CommonResponse<Void> checkDuplicateEmail(@RequestParam String email) {
+    @ResponseStatus(HttpStatus.OK)
+    public void checkDuplicateEmail(@RequestParam String email) {
         boolean isDuplicate = userService.isExistEmail(email);
 
         if (isDuplicate) {
             throw new KboTicketException(ErrorCode.EMAIL_DUPLICATTE);
         }
-
-        return new CommonResponse<>(ResponseCode.SUCCESS);
     }
 
     /**
@@ -71,7 +70,7 @@ public class UserController {
     public CommonResponse<EmailResponse> findEmail(@RequestParam String phone) {
         String email = userService.findbyPhone(phone);
 
-        return new CommonResponse<>(ResponseCode.SUCCESS, null, new EmailResponse(email));
+        return new CommonResponse<>(new EmailResponse(email));
     }
 
     /**
@@ -91,7 +90,7 @@ public class UserController {
         }
         String tempPassword = smsSenderService.sendResetPassword(phone);
 
-        return new CommonResponse<>(ResponseCode.SUCCESS, null, new PasswordResponse(tempPassword));
+        return new CommonResponse<>(new PasswordResponse(tempPassword));
 
     }
 }
