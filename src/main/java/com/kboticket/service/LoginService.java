@@ -5,8 +5,7 @@ import com.kboticket.domain.User;
 import com.kboticket.dto.LoginRequestDto;
 import com.kboticket.enums.ErrorCode;
 import com.kboticket.enums.TokenType;
-import com.kboticket.exception.EmailNotFoundException;
-import com.kboticket.exception.PasswordMismatchException;
+import com.kboticket.exception.KboTicketException;
 import com.kboticket.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -56,7 +55,7 @@ public class LoginService {
 
         boolean isExist = userRepository.existsByEmail(email);
         if (!isExist) {
-            throw new EmailNotFoundException(ErrorCode.EMAIL_NOT_FOUND);
+            throw new KboTicketException(ErrorCode.EMAIL_NOT_FOUND);
         }
     }
 
@@ -69,7 +68,7 @@ public class LoginService {
         String storedPassword = user.getPassword();
 
         if (!bCryptPasswordEncoder.matches(inputPassword, storedPassword)) {
-            throw new PasswordMismatchException(ErrorCode.PASSWORD_MISMATCH);
+            throw new KboTicketException(ErrorCode.PASSWORD_MISMATCH);
         }
     }
 }

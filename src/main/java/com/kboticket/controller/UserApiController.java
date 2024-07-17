@@ -47,7 +47,7 @@ public class UserApiController {
         String verificationToken = jwtTokenProvider.generateToken(smsRequestDto.getPhone(), TokenType.ACCESS);
         log.info(verificationToken);
 
-        return new CommonResponse(ResponseCode.SUCCESS, null, new VerificationResponse(verificationToken));
+        return new CommonResponse(new VerificationResponse(verificationToken));
     }
 
 }

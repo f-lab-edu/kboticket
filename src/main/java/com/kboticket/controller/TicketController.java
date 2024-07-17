@@ -31,7 +31,7 @@ public class TicketController {
 
         List<TicketDto> ticketDto = ticketService.findAll();
 
-        return new CommonResponse<>(ResponseCode.SUCCESS, null, ticketDto);
+        return new CommonResponse<>(ticketDto);
     }
 
     /**
@@ -43,7 +43,7 @@ public class TicketController {
         User user = userService.findById(userId);
         Ticket ticket = ticketService.findOne(tickketId, user);
 
-        return new CommonResponse<>(ResponseCode.SUCCESS, null, ticket);
+        return new CommonResponse<>(ticket);
     }
 
     /**

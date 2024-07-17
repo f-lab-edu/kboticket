@@ -1,7 +1,6 @@
 package com.kboticket.controller;
 
 import com.kboticket.common.CommonResponse;
-import com.kboticket.common.constants.ResponseCode;
 import com.kboticket.dto.GameSearchDto;
 import com.kboticket.dto.response.GameResponse;
 import com.kboticket.service.GameService;
@@ -14,9 +13,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequestMapping("/games")
 @RequiredArgsConstructor
-@RequestMapping("/game")
-public class GameController {
+public class GameSrchController {
 
     private final GameService gameService;
 
@@ -25,10 +24,11 @@ public class GameController {
                                                    @RequestParam(value = "cursor", required = false) String cursor,
                                                    @RequestParam(value = "limit", defaultValue = "10") int limit) {
 
+        // game pk id
+        // 스크롤 pageable 이용안해도됨 -> 쿼리 두번발생, 전체 문서갯수
         Pageable pageable = PageRequest.of(0, limit);
         Slice<GameResponse> gameList = gameService.getGameList(pageable, gameSearchDto, cursor);
 
-        return new CommonResponse(
-                ResponseCode.SUCCESS, null, gameList);
+        return new CommonResponse(gameList);
     }
 }
