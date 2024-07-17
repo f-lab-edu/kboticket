@@ -1,17 +1,18 @@
 package com.kboticket.controller;
 
 import com.kboticket.common.CommonResponse;
-import com.kboticket.common.constants.ResponseCode;
 import com.kboticket.domain.Seat;
 import com.kboticket.domain.Stadium;
 import com.kboticket.dto.SeatDto;
 import com.kboticket.dto.StadiumDto;
+import com.kboticket.enums.StadiumInfo;
 import com.kboticket.service.SeatService;
 import com.kboticket.service.StadiumService;
 import com.kboticket.util.SeatArrangement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -66,15 +67,18 @@ public class SeatController {
 
     }
 
+    /**
+     * 경기장 좌석 세팅
+     */
     @GetMapping("/save")
     public void saveSeats() {
-        Stadium stadium = new Stadium();
-        String[] id = {"DJ", "KJ", "GO", "IN", "DG", "CH", "SE"};
-        for (int i=0; i<id.length; i++) {
-            stadium.setId(id[i]);
-            List<Seat> seatList = SeatArrangement.generateSeats(stadium, 100, 10);
-            seatService.saveSeats(seatList);
-        }
+        Arrays.stream(StadiumInfo.values())
+                .map(stadiumInfo -> {
+                    Stadium stadium = new Stadium();
+                    stadium.setId(stadiumInfo.code);
+                    return SeatArrangement.generateSeats(stadium);
+                })
+                .forEach(seatService::saveSeats);
 
     }
 }

@@ -10,9 +10,9 @@ import lombok.Data;
 public class SeatDto {
 
     private Long id;
-    private Double seatX;
-    private Double seatY;
-    private Double seatZ;
+    private int seatX;
+    private int seatY;
+    private int seatZ;
     private String level;
     private Integer price;
 }

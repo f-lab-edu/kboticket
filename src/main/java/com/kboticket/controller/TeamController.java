@@ -3,14 +3,12 @@ package com.kboticket.controller;
 import com.kboticket.common.CommonResponse;
 import com.kboticket.dto.TeamDto;
 import com.kboticket.dto.response.TeamsResponse;
-import com.kboticket.enums.TeamEnum;
-import com.kboticket.service.TeamServie;
+import com.kboticket.enums.KboTeam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,8 +24,8 @@ public class TeamController {
      */
     @GetMapping
     public CommonResponse<TeamsResponse> list() {
-        List<TeamDto> teamDtos = Stream.of(TeamEnum.values())
-                .sorted(Comparator.comparing(TeamEnum::getName))
+        List<TeamDto> teamDtos = Stream.of(KboTeam.values())
+                .sorted(Comparator.comparing(KboTeam::getName))
                 .map(team -> TeamDto.builder()
                     .code(team.code)
                     .name(team.name)

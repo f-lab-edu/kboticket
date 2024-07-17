@@ -1,13 +1,14 @@
 package com.kboticket.domain;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
-
-@Table(name = "seat", uniqueConstraints = {@UniqueConstraint(columnNames = {"seat_x", "seat_y", "seat_z", "stadium_id"})})
+@Builder
+@Table(name = "seat", uniqueConstraints = {@UniqueConstraint(columnNames = {"stadium_id", "seat_level", "seat_block", "seat_number"})})
 @Getter @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Seat {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,26 +21,25 @@ public class Seat {
 
     // 위치 정보
     @Column(name = "seat_x")
-    private double seatX;
+    private int seatX;
 
     @Column(name = "seat_y")
-    private double seatY;
+    private int seatY;
 
     @Column(name = "seat_z")
-    private double seatZ;
+    private int seatZ;
 
     // 좌석 level (VIP, TABLE ...)
     @Column(name = "seat_level")
-    private String seatLevel;
+    private String level;
 
     // 좌석 블록 (A~Z)
     @Column(name = "seat_block")
-    private String seatBlock;
+    private String block;
 
     // 좌석 번호 (R01, R02 ...)
     @Column(name = "seat_number")
-    private String seatNumber;
+    private String number;
 
     private int price;
-
 }

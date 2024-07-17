@@ -3,7 +3,7 @@ package com.kboticket.enums;
 import lombok.Getter;
 
 @Getter
-public enum TeamEnum {
+public enum KboTeam {
 
     HH("HH", "한화 이글스", "DJ"),
     HT("HT", "KIA 타이거즈", "KJ"),
@@ -20,7 +20,7 @@ public enum TeamEnum {
     public final String name;
     public final String stadiumCode;
 
-    TeamEnum(String code, String name, String stadiumCode) {
+    KboTeam(String code, String name, String stadiumCode) {
         this.code = code;
         this.name = name;
         this.stadiumCode = stadiumCode;

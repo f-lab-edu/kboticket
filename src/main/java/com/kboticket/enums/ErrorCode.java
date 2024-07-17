@@ -62,7 +62,9 @@ public enum ErrorCode {
     INVALID_TICKET_STATUS(30020, "ticket invalid", HttpStatus.BAD_REQUEST),
 
 
-    PAYMENT_FAILURE(30021, "Payment failed", HttpStatus.BAD_REQUEST)
+    PAYMENT_FAILURE(30021, "Payment failed", HttpStatus.BAD_REQUEST),
+    NOT_FOUND_SEAT_BLOCK(30022, "Seat block could not be found", HttpStatus.NOT_FOUND),
+    INVALID_SEAT_LEVEL(30023, "Seat block could not be found", HttpStatus.BAD_REQUEST)
     ;
 
     public final int code;
