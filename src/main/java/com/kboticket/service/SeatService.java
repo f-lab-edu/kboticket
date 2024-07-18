@@ -53,19 +53,7 @@ public class SeatService {
 
         return seatDtoList;
     }
-
-    // 선택 가능한 좌석
-    public List<SeatDto> getAvailableSeats(String stadiumId, Long gameId) {
-        List<Seat> seats = seatRepository.findAvailableSeats(stadiumId, gameId);
-
-        List<SeatDto> seatDtoList = new ArrayList<>();
-        for (Seat seat : seats) {
-            SeatDto seatDto = convertToSeatDto(seat);
-
-            seatDtoList.add(seatDto);
-        }
-        return seatDtoList;
-    }
+    
 
     // 좌석 선택
     public List<SeatDto> selectSeats(Long[] seatIds, Long userId, Long gameId){

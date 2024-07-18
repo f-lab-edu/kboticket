@@ -1,11 +1,14 @@
 package com.kboticket.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
+
+import java.util.List;
 
 @Entity
 @Table(name = "game", uniqueConstraints = {@UniqueConstraint(columnNames = {"home_team_id", "away_team_id", "gameDate"})})
@@ -29,6 +32,10 @@ public class Game {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "stadium_id")
     private Stadium stadium;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "game")
+    private List<Reservation> reservations;
 
     private String gameDate;
 

@@ -1,7 +1,10 @@
 package com.kboticket.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 @Entity
 @Builder
@@ -42,4 +45,8 @@ public class Seat {
     private String number;
 
     private int price;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "seat")
+    private List<Reservation> reservations;
 }

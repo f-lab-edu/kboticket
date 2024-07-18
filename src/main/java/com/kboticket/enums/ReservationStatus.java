@@ -1,5 +1,8 @@
 package com.kboticket.enums;
 
 public enum ReservationStatus {
-    AVAILABLE, RESERVED
+    HOLD,
+    RESERVED,
+    PAYMENT,
+    CANCEL
 }

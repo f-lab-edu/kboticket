@@ -4,7 +4,6 @@ import com.kboticket.common.CommonResponse;
 import com.kboticket.domain.Seat;
 import com.kboticket.domain.Stadium;
 import com.kboticket.dto.SeatDto;
-import com.kboticket.dto.StadiumDto;
 import com.kboticket.enums.StadiumInfo;
 import com.kboticket.service.SeatService;
 import com.kboticket.service.StadiumService;
@@ -30,19 +29,6 @@ public class SeatController {
     public CommonResponse<List<Seat>> list() {
         List<Seat> Seats = seatService.findAll();
         return new CommonResponse<>(Seats);
-    }
-
-    /**
-     * 예약 가능한 좌석 목록
-     */
-    @GetMapping("/available")
-    public CommonResponse<StadiumDto> getAvailableList(@RequestParam String stadiumId,
-                                                       @RequestParam Long gameId) {
-        StadiumDto stadium = stadiumService.view(stadiumId);
-        List<SeatDto> availableSeats = seatService.getAvailableSeats(stadiumId, gameId);
-        stadium.setSeatList(availableSeats);
-
-        return new CommonResponse<>(stadium);
     }
 
     /**
