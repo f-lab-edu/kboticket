@@ -19,11 +19,10 @@ public class GameSrchController {
 
     private final GameService gameService;
 
-    @GetMapping("/list")
+    @GetMapping("/search")
     public CommonResponse<List<GameResponse>> list(@RequestBody GameSearchDto gameSearchDto,
                                                    @RequestParam(value = "cursor", required = false) String cursor,
                                                    @RequestParam(value = "limit", defaultValue = "10") int limit) {
-
         // game pk id
         // 스크롤 pageable 이용안해도됨 -> 쿼리 두번발생, 전체 문서갯수
         Pageable pageable = PageRequest.of(0, limit);
@@ -33,11 +32,6 @@ public class GameSrchController {
     }
 
 
-    @GetMapping("/view")
-    public CommonResponse<GameResponse> view(@RequestParam Long gameId) {
-        GameResponse response = gameService.findById(gameId);
 
-        return new CommonResponse<>(response);
-    }
 
 }

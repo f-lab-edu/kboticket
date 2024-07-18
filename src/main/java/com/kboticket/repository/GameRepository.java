@@ -14,5 +14,4 @@ public interface GameRepository extends JpaRepository<Game, Long>, GameCustomRep
 
     List<Game> findAll();
 
-
 }
