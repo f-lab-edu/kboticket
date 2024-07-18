@@ -10,10 +10,7 @@ import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
@@ -25,6 +22,22 @@ public class GameService {
     public Slice<GameResponse> getGameList(Pageable pageable, GameSearchDto gameSearchDto, String cursor) {
 
         return gameRepository.getByCursor(pageable, gameSearchDto, cursor);
+
+    }
+
+    public GameResponse findById(Long gameId) {
+        Optional<Game> optionalGame = gameRepository.findById(gameId);
+        Game game = optionalGame.get();
+
+        GameResponse gameResponse =  GameResponse.builder()
+                .id(game.getId())
+                .homeTeam(game.getHomeTeam().getName())
+                .awayTeam(game.getAwayTeam().getName())
+                .gameDate(game.getGameDate())
+                .startTime(game.getStartTime())
+                .stadium(game.getStadium().getName()).build();
+
+        return gameResponse;
 
     }
 }
