@@ -31,4 +31,13 @@ public class GameSrchController {
 
         return new CommonResponse(gameList);
     }
+
+
+    @GetMapping("/view")
+    public CommonResponse<GameResponse> view(@RequestParam Long gameId) {
+        GameResponse response = gameService.findById(gameId);
+
+        return new CommonResponse<>(response);
+    }
+
 }

@@ -24,7 +24,4 @@ public class OrderController {
                         @RequestParam("seatIds") Long[] seatIds) {
         orderService.order(userId, gameId, seatIds);
     }
-
-
-
 }
