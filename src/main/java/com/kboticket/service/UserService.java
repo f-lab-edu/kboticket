@@ -6,6 +6,7 @@ import com.kboticket.domain.Terms;
 import com.kboticket.domain.TermsPk;
 import com.kboticket.domain.User;
 import com.kboticket.dto.TokenDto;
+import com.kboticket.dto.UserDto;
 import com.kboticket.dto.UserSignupRequest;
 import com.kboticket.enums.ErrorCode;
 import com.kboticket.exception.*;
@@ -101,5 +102,14 @@ public class UserService {
     }
 
 
+    public UserDto getUser(String name) {
+        User user = userRepository.findByEmail(name)
+                .orElseThrow(() -> new KboTicketException(ErrorCode.NOT_FOUND_USER));
 
+        return UserDto.builder()
+                .email(user.getEmail())
+                .phone(user.getPhone())
+                .build();
+
+    }
 }

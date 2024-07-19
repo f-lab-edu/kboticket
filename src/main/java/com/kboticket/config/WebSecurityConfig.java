@@ -40,9 +40,11 @@ public class WebSecurityConfig{
         return http
                 .authorizeHttpRequests(auth -> auth
                     .requestMatchers( "/login",
-                            "/users/**",
+                            "/api/user/**",
                             "/api/sms/**",
-                            "/terms/**"
+                            "/terms/**",
+                            "/games/**",
+                            "/game/**"
                     ).permitAll()
                     .anyRequest().authenticated())
                 .logout(logout -> logout
