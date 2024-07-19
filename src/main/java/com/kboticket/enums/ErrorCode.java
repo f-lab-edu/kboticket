@@ -64,7 +64,10 @@ public enum ErrorCode {
 
     PAYMENT_FAILURE(30021, "Payment failed", HttpStatus.BAD_REQUEST),
     NOT_FOUND_SEAT_BLOCK(30022, "Seat block could not be found", HttpStatus.NOT_FOUND),
-    INVALID_SEAT_LEVEL(30023, "Seat block could not be found", HttpStatus.BAD_REQUEST)
+    INVALID_SEAT_LEVEL(30023, "Seat block could not be found", HttpStatus.BAD_REQUEST),
+    EMPTY_SEATS_EXCEPTION(30024, "No seats were selected.Please select at least one seat.", HttpStatus.BAD_REQUEST),
+    EXCEED_SEATS_LIMIT(30025, "The maximum number of seats : 4", HttpStatus.BAD_REQUEST),
+    FAILED_RESERVATION(30026, "reservation be failed", HttpStatus.BAD_REQUEST)
     ;
 
     public final int code;
