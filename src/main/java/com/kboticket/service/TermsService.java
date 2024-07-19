@@ -39,7 +39,7 @@ public class TermsService {
     }
 
     public boolean checkAllMandatoryTermsAgreed(List<TermsDto> termsList) {
-        List<Terms> mandatoryTerms = termsRepository.findByMandatoryTrue();
+        List<Terms> mandatoryTerms = termsRepository.findByMandatoryTrueAndType(TermsType.SIGNIN);
 
         if (mandatoryTerms.size() != termsList.size()) {
             return false;
