@@ -5,7 +5,7 @@ import com.kboticket.dto.SeatCountDto;
 import com.kboticket.dto.SeatDto;
 import com.kboticket.dto.response.GameResponse;
 import com.kboticket.service.GameService;
-import com.kboticket.service.ReserveService;
+import com.kboticket.service.ReservationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,7 +17,7 @@ import java.util.List;
 public class GameController {
 
     private final GameService gameService;
-    private final ReserveService reserveService;
+    private final ReservationService reservationService;
 
 
     @GetMapping("/{gameId}")

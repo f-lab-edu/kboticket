@@ -44,7 +44,8 @@ public class WebSecurityConfig{
                             "/api/sms/**",
                             "/terms/**",
                             "/games/**",
-                            "/game/**"
+                            "/game/**",
+                            "/seat/**"
                     ).permitAll()
                     .anyRequest().authenticated())
                 .logout(logout -> logout

@@ -18,4 +18,8 @@ public class SeatDto {
     private int seatZ;
     private String number;
     private int price;
+
+    public SeatDto(Long id) {
+        this.id = id;
+    }
 }
