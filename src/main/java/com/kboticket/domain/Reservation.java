@@ -25,6 +25,7 @@ public class Reservation {
     @JoinColumn(name = "seat_id")
     private Seat seat;
 
+    @Enumerated(EnumType.STRING)
     private ReservationStatus status;
 
 }
