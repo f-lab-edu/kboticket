@@ -1,9 +1,9 @@
 package com.kboticket.controller;
 
 import com.kboticket.common.CommonResponse;
-import com.kboticket.common.constants.ResponseCode;
 import com.kboticket.domain.Terms;
 import com.kboticket.dto.TermsDto;
+import com.kboticket.enums.TermsType;
 import com.kboticket.service.TermsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -32,8 +32,8 @@ public class TermsController {
      * 약관 리스트
      */
     @PostMapping("/latest")
-    public CommonResponse<List<Terms>> termsList() {
-        List<Terms> response = termsService.findLatestTermsByTitle();
+    public CommonResponse<List<Terms>> termsList(@RequestParam TermsType type) {
+        List<Terms> response = termsService.findLatestTermsByTitle(type);
         return new CommonResponse<>(response);
     }
 }

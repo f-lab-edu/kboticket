@@ -2,6 +2,7 @@ package com.kboticket.repository;
 
 import com.kboticket.domain.QTerms;
 import com.kboticket.domain.Terms;
+import com.kboticket.enums.TermsType;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
@@ -19,7 +20,7 @@ public class TermsCustomRepositoryImpl implements TermsCustomRepository {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<Terms> findFirstByTitleOrderByVersionDesc() {
+    public List<Terms> findFirstByTitleOrderByVersionDesc(TermsType type) {
         QTerms terms = QTerms.terms;
         QTerms termsSub = new QTerms("termsSub");
 
@@ -31,7 +32,8 @@ public class TermsCustomRepositoryImpl implements TermsCustomRepository {
                                 .select(termsSub.termsPk.version.max())
                                 .from(termsSub)
                                 .where(termsSub.termsPk.title.eq(terms.termsPk.title))
-                ))
+                )
+                .and(terms.type.eq(type)))
                 .fetch();
     }
 }

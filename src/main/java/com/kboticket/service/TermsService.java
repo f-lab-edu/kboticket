@@ -2,8 +2,9 @@ package com.kboticket.service;
 
 import com.kboticket.domain.Terms;
 import com.kboticket.dto.TermsDto;
-import com.kboticket.repository.TermsRepository;
+import com.kboticket.enums.TermsType;
 import com.kboticket.repository.TermsCustomRepository;
+import com.kboticket.repository.TermsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -33,8 +34,8 @@ public class TermsService {
     }
 
 
-    public List<Terms> findLatestTermsByTitle() {
-        return termsRepositoryCustom.findFirstByTitleOrderByVersionDesc();
+    public List<Terms> findLatestTermsByTitle(TermsType type) {
+        return termsRepositoryCustom.findFirstByTitleOrderByVersionDesc(type);
     }
 
     public boolean checkAllMandatoryTermsAgreed(List<TermsDto> termsList) {
