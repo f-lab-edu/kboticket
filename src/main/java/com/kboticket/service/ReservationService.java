@@ -40,23 +40,8 @@ public class ReservationService {
         isValidateSeatsCount(seatIds);
 
         // reserveSeatInRedis
-        reserveSeatsInRedis(seatIds, gameId);
-        for (Long seatId : seatIds) {
-            String key = "reserveKey:" + gameId + seatId;
-            // 선점된 좌석인 경우
-            if (isSeatReserved(key)) {
-                throw new KboTicketException(ErrorCode.SEAT_ALREADY_RESERVED);
-            }
+        reserveSeatsInRedis(seatIds, gameId, email);
 
-            redisTemplate.opsForValue()
-                    .setIfAbsent(key, "reserved", RESERVATION_TIMEOUT, TimeUnit.MILLISECONDS);
-        }
-
-        try {
-            createReservations(seatIds, gameId, email);
-        } catch (KboTicketException e) {
-            throw new KboTicketException(ErrorCode.FAILED_RESERVATION);
-        }
     }
 
     private void isValidateSeatsCount(List<Long> seatIds) {
@@ -68,7 +53,7 @@ public class ReservationService {
         }
     }
 
-    private void reserveSeatsInRedis(List<Long> seatIds, Long gameId) {
+    private void reserveSeatsInRedis(List<Long> seatIds, Long gameId, String email) {
         for (Long seatId : seatIds) {
             String key = "reserveKey:" + gameId +  + seatId;
 
@@ -76,11 +61,18 @@ public class ReservationService {
                 throw new KboTicketException(ErrorCode.SEAT_ALREADY_RESERVED);
             }
 
-            redisTemplate.opsForValue().setIfAbsent(key, "reserved", RESERVATION_TIMEOUT, TimeUnit.MILLISECONDS);
+            redisTemplate.opsForValue().setIfAbsent(key, email, RESERVATION_TIMEOUT, TimeUnit.MILLISECONDS);
+
+            try {
+                createReservations(seatIds, gameId, email);
+            } catch (KboTicketException e) {
+                throw new KboTicketException(ErrorCode.FAILED_RESERVATION);
+            }
         }
     }
 
     public boolean isSeatReserved(String key) {
+        log.info("redisTemplate.hasKey(key)=======>" + redisTemplate.hasKey(key));
         return redisTemplate.hasKey(key);
     }
 
