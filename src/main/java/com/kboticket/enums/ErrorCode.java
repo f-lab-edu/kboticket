@@ -67,7 +67,8 @@ public enum ErrorCode {
     INVALID_SEAT_LEVEL(30023, "Seat block could not be found", HttpStatus.BAD_REQUEST),
     EMPTY_SEATS_EXCEPTION(30024, "No seats were selected.Please select at least one seat.", HttpStatus.BAD_REQUEST),
     EXCEED_SEATS_LIMIT(30025, "The maximum number of seats : 4", HttpStatus.BAD_REQUEST),
-    FAILED_RESERVATION(30026, "reservation be failed", HttpStatus.BAD_REQUEST)
+    FAILED_RESERVATION(30026, "reservation be failed", HttpStatus.BAD_REQUEST),
+    INVALID_START_DATE(30027, "Start date cannot be before the current date", HttpStatus.BAD_REQUEST)
     ;
 
     public final int code;

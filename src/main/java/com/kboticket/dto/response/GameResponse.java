@@ -2,8 +2,10 @@ package com.kboticket.dto.response;
 
 import lombok.*;
 
+@Builder
 @Getter @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class GameResponse {
 
     private Long id;
@@ -13,13 +15,4 @@ public class GameResponse {
     private String startTime;
     private String stadium;
 
-    @Builder
-    public GameResponse(Long id, String homeTeam, String awayTeam, String stadium, String gameDate, String startTime) {
-        this.id = id;
-        this.homeTeam = homeTeam;
-        this.awayTeam = awayTeam;
-        this.gameDate = gameDate;
-        this.stadium = stadium;
-        this.startTime = startTime;
-    }
 }

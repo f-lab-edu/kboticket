@@ -6,7 +6,10 @@ import com.kboticket.domain.QStadium;
 import com.kboticket.domain.QTeam;
 import com.kboticket.dto.GameSearchDto;
 import com.kboticket.dto.response.GameResponse;
+import com.kboticket.enums.ErrorCode;
+import com.kboticket.exception.KboTicketException;
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.DateTimeTemplate;
 import com.querydsl.core.types.dsl.Expressions;
@@ -14,18 +17,13 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.AllArgsConstructor;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
-
-import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,17 +41,12 @@ public class GameCustomRepositoryImpl implements GameCustomRepository{
     private static final QStadium stadium = QStadium.stadium;
 
     @Override
-    public Slice<GameResponse> getByCursor(Pageable pageable, GameSearchDto gameSearchDto, String cursor) {
+    public List<GameResponse> getByCursor(GameSearchDto gameSearchDto, String cursor, int limit) {
 
         BooleanBuilder builder = createSearchBuilder(gameSearchDto);
 
         if (cursor!= null) {
-            // 수정
-            // 이렇게 사용하려면 클래스를 만들어야함
-            String cursorDate = cursor.split("_")[0];
-            Long cursorId = Long.parseLong(cursor.split("_")[1]);
-
-            builder.and(game.gameDate.eq(cursorDate).and(game.id.gt(cursorId)));
+            builder.and(game.id.gt(Long.parseLong(cursor)));
         }
 
         List<Game> gameList = queryFactory
@@ -63,75 +56,73 @@ public class GameCustomRepositoryImpl implements GameCustomRepository{
                                 .leftJoin(game.awayTeam, awayTeam)
                                 .leftJoin(game.stadium, stadium)
                                 .where(builder)
-                                .orderBy(game.gameDate.asc(), game.id.asc(), homeTeam.name.asc(),awayTeam.name.asc())
-                                .limit(pageable.getPageSize() + 1)
+                                .orderBy(game.gameDate.asc(), game.id.asc(), homeTeam.name.asc())
+                                .limit(limit + 1)
                                 .fetch();
 
-        return createResponse(pageable, gameList);
+        return createResponse(gameList);
     }
 
-    private SliceImpl<GameResponse> createResponse(Pageable pageable, List<Game> gameList) {
+    private List<GameResponse> createResponse(List<Game> gameList) {
         List<GameResponse> responseList = gameList.stream()
                 .map(data -> GameResponse.builder()
                     .id(data.getId())
-                    .homeTeam(data.getHomeTeam().getName())
-                    .awayTeam(data.getAwayTeam().getName())
-                    .stadium(data.getStadium().getName())
+                    .homeTeam(data.getHomeTeam().getId())
+                    .awayTeam(data.getAwayTeam().getId())
+                    .stadium(data.getStadium().getId())
                     .gameDate(data.getGameDate())
                     .build())
                 .collect(Collectors.toList());
 
-        boolean hasNext = ishasNext(pageable, responseList);
-
-        return new SliceImpl<>(responseList, pageable, hasNext);
-    }
-
-    private boolean ishasNext(Pageable pageable, List<GameResponse> responseList) {
-        boolean hasNext = false;
-
-        if (responseList.size() > pageable.getPageSize()) {
-            responseList.remove(pageable.getPageSize());
-            hasNext = true;
-        }
-        return hasNext;
+        return responseList;
     }
 
     private BooleanBuilder createSearchBuilder(GameSearchDto gameSearchDto) {
         BooleanBuilder builder = new BooleanBuilder();
-        builder.and(homeTeamLike(gameSearchDto.getHomeTeam()))
-                .and(awayTeamLike(gameSearchDto.getAwayTeam()))
+
+        builder.and(teamsIn(gameSearchDto.getTeams()))
                 .and(stadiumEq(gameSearchDto.getStadium()))
-                .and(gameDateBetween(gameSearchDto.getStartDate(), gameSearchDto.getEndDate()));
+                .and(gameDateBetween(gameSearchDto.getStartDate(), gameSearchDto.getEndDate())
+                .and(gameDateInFuture()));
         return builder;
     }
 
-    private BooleanExpression homeTeamLike(String homeTeamStr) {
-        // 팀 검색 dropbox 로 명확하게 검색
-        // like 되게 느림
-        // 유저쪽에서 쓰는 건 문제가 됨, 관리자쪽은 괜춘
-        // full scan, team -> enum으로
-        // 팀 여러개 -> or
-        return StringUtils.hasText(homeTeamStr) ? homeTeam.name.like("%" + homeTeamStr + "%") : null;
+    private Predicate gameDateInFuture() {
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeTemplate<LocalDateTime> gameDateAsLocalDateTime = Expressions.dateTimeTemplate(LocalDateTime.class,
+                "STR_TO_DATE({0}, '%Y.%m.%d')", game.gameDate);
+        return gameDateAsLocalDateTime.goe(now);
     }
 
-    private BooleanExpression awayTeamLike(String awayTeamStr) {
-        return StringUtils.hasText(awayTeamStr) ? awayTeam.name.like("%" +awayTeamStr + "%") : null;
+    private BooleanExpression teamsIn(String[] teams) {
+        if (teams == null) {
+            return null;
+        }
+        return homeTeam.id.in(teams).or(awayTeam.id.in(teams));
     }
+
 
     private BooleanExpression stadiumEq(String stadiumStr) {
-        return StringUtils.hasText(stadiumStr) ? stadium.name.eq(stadiumStr) : null;
+        return StringUtils.hasText(stadiumStr) ? stadium.id.eq(stadiumStr) : null;
     }
 
-    private BooleanExpression gameDateBetween(String startDt, String endDt) {
-
+    private BooleanExpression gameDateBetween(String srchStartDt, String srchEndDt) {
         LocalDateTime startDate = null;
         LocalDateTime endDate = null;
+        LocalDateTime now = LocalDateTime.now();
 
-        if (startDt != null) {
-            startDate = parseToLocalDateTime(startDt);
+        if (srchStartDt == null) {
+            // startDate가 null인 경우, 현재 날짜를 시작 날짜로 설정
+            startDate = now;
+        } else {
+            startDate = parseToLocalDateTime(srchStartDt);
+            if (startDate.isBefore(now)) {
+                throw new KboTicketException(ErrorCode.INVALID_START_DATE);
+            }
         }
-        if (endDt != null) {
-            endDate = parseToLocalDateTime(endDt);
+
+        if (srchEndDt != null) {
+            endDate = parseToLocalDateTime(srchEndDt);
         }
 
         DateTimeTemplate<LocalDateTime> gameDateAsLocalDateTime = Expressions.dateTimeTemplate(LocalDateTime.class,
@@ -150,7 +141,6 @@ public class GameCustomRepositoryImpl implements GameCustomRepository{
 
     public static LocalDateTime parseToLocalDateTime(String gameDateString) {
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
-
         String DateString = gameDateString.split("\\(")[0];
 
         try {
@@ -161,5 +151,4 @@ public class GameCustomRepositoryImpl implements GameCustomRepository{
             return null;
         }
     }
-
 }

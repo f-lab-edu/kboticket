@@ -9,6 +9,8 @@ import lombok.Setter;
 @Getter @Setter
 @AllArgsConstructor
 public class GameSearchDto {
+
+    private String[] teams;
     private String homeTeam;
     private String awayTeam;
     private String startDate;
