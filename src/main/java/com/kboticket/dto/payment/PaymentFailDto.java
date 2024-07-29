@@ -1,16 +1,16 @@
-package com.kboticket.dto;
+package com.kboticket.dto.payment;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Set;
-
-@Builder
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ReservationDto {
-    private Set<Long> seatIds;
+public class PaymentFailDto {
+    String errorCode;
+    String message;
+    String orderId;
 }

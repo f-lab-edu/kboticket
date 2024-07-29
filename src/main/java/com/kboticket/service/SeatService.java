@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -55,13 +56,14 @@ public class SeatService {
     }
     
 
-    // 좌석 선택
+    // 좌석 선택 seatIds, set으로
     public List<SeatDto> selectSeats(Long[] seatIds, Long userId, Long gameId){
+        // 선점된 자리인지 vali -> 선점되었다면 exception
         if (!isHoldSeats(seatIds, gameId)) {    // 선점된 자리인지
            throw new KboTicketException(ErrorCode.SEAT_ALREADY_RESERVED);
         }
 
-        ticketService.createTicket(userId, seatIds, gameId);
+    //    ticketService.createTicket(userId, seatIds, gameId);
 
         List<SeatDto> seatDtoList = new ArrayList<>();
         for (Long id : seatIds) {
@@ -136,5 +138,23 @@ public class SeatService {
                         .seatZ(seat.getSeatZ())
                         .level(seat.getLevel()).build())
                 .collect(Collectors.toList());
+    }
+
+    public List<Seat> getSeatsById(String seatsStr) {
+        String[] seatsStrArr = seatsStr.split(",");
+
+        Long[] seatIds = Arrays.stream(seatsStrArr)
+                .map(id -> Long.parseLong(id))
+                .toArray(Long[]::new);
+
+        List<Seat> seats = Arrays.stream(seatIds)
+                .map(id -> {
+                    return seatRepository.findById(id).orElseThrow(() -> {
+                        throw new KboTicketException(ErrorCode.NOT_FOUND_SEAT_INFO);
+                    });
+                })
+                .collect(Collectors.toList());
+
+        return seats;
     }
 }

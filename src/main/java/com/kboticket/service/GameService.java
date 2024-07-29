@@ -1,18 +1,20 @@
 package com.kboticket.service;
 
 import com.kboticket.domain.Game;
+import com.kboticket.dto.GameDto;
 import com.kboticket.dto.GameSearchDto;
 import com.kboticket.dto.SeatCountDto;
 import com.kboticket.dto.SeatDto;
 import com.kboticket.dto.response.GameResponse;
+import com.kboticket.enums.ErrorCode;
+import com.kboticket.exception.KboTicketException;
 import com.kboticket.repository.GameRepository;
 import com.kboticket.repository.SeatRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,10 +26,23 @@ public class GameService {
     private final GameRepository gameRepository;
     private final SeatRepository seatRepository;
 
-    public Slice<GameResponse> getGameList(Pageable pageable, GameSearchDto gameSearchDto, String cursor) {
+    public GameDto getGameList(GameSearchDto gameSearchDto, String cursor, int limit) {
 
-        return gameRepository.getByCursor(pageable, gameSearchDto, cursor);
+        List<GameResponse> games = gameRepository.getByCursor(gameSearchDto, cursor, limit);
 
+        // hasnext 필요없음
+        boolean hasNext = false;
+
+        if (games.size() > limit) {
+            hasNext = true;
+        }
+
+        GameDto result = GameDto.builder()
+                .games(games)
+                .hasNext(hasNext)
+                .build();
+
+        return result;
     }
 
     public GameResponse findById(Long gameId) {
@@ -50,7 +65,6 @@ public class GameService {
        // 등급별 예약 가능한 좌석 수
         List<SeatCountDto> seatCounts = seatRepository.findSeatLevelsAndCounts(gameId);
 
-
         return seatCounts;
 
     }
@@ -68,5 +82,11 @@ public class GameService {
 
         return seatInfos;
 
+    }
+
+    public Game getGame(Long gameId) {
+        return gameRepository.findById(gameId).orElseThrow(() -> {
+           throw new KboTicketException(ErrorCode.NOT_FOUND_GAME);
+        });
     }
 }

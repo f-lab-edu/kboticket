@@ -45,7 +45,8 @@ public class WebSecurityConfig{
                             "/terms/**",
                             "/games/**",
                             "/game/**",
-                            "/seat/**"
+                            "/seat/**","/payment-page",
+                            "/payment/**"
                     ).permitAll()
                     .anyRequest().authenticated())
                 .logout(logout -> logout

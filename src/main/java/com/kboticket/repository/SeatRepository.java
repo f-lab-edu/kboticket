@@ -43,7 +43,7 @@ public interface SeatRepository extends JpaRepository<Seat, Long> {
             "GROUP BY s.level")
     List<SeatCountDto> findSeatLevelsAndCounts(@Param("gameId") Long gameId);
 
-
+    // 쿼리dsl 로 하나로 합치기, 너무 다르면 나누기
     @Query(" SELECT new com.kboticket.dto.SeatCountDto(s.block AS block, COUNT(s.level) AS count)" +
             "  FROM Game g" +
             "  LEFT JOIN Seat s" +
