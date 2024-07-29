@@ -22,7 +22,7 @@ public class Seat {
     @JoinColumn(name = "stadium_id")
     private Stadium stadium;
 
-    // 위치 정보
+    /* 위치 정보 (x, y, z) */
     @Column(name = "seat_x")
     private int seatX;
 
@@ -32,15 +32,15 @@ public class Seat {
     @Column(name = "seat_z")
     private int seatZ;
 
-    // 좌석 level (VIP, TABLE ...)
+    /* 좌석 level (VIP, TABLE ...) */
     @Column(name = "seat_level")
     private String level;
 
-    // 좌석 블록 (A~Z)
+    /* 좌석 블록 (A~Z) */
     @Column(name = "seat_block")
     private String block;
 
-    // 좌석 번호 (R01, R02 ...)
+    /* 좌석 번호 (R01, R02 ...) */
     @Column(name = "seat_number")
     private String number;
 
@@ -50,7 +50,4 @@ public class Seat {
     @OneToMany(mappedBy = "seat")
     private List<Reservation> reservations;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "payment_id")
-    private Payment payment;
 }

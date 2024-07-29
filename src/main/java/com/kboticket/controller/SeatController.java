@@ -42,16 +42,16 @@ public class SeatController {
         return new CommonResponse(seatDto);
     }
 
-    /**
-     * 좌석 예약
-     */
-    @PostMapping("/seat/reserve")
-    public void reserveSeat(@RequestParam Long[] seatIds,
-                            @RequestParam Long userId,
-                            @RequestParam Long gameId) {
-        seatService.selectSeats(seatIds, userId, gameId);
-
-    }
+//    /**
+//     * 좌석 예약
+//     */
+//    @PostMapping("/seat/reserve")
+//    public void reserveSeat(@RequestParam Long[] seatIds,
+//                            @RequestParam Long userId,
+//                            @RequestParam Long gameId) {
+//        seatService.selectSeats(seatIds, userId, gameId);
+//
+//    }
 
     /**
      * 경기장 좌석 세팅
