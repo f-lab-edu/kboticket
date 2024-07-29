@@ -31,7 +31,6 @@ public class UserApiController {
     private final SmsSenderService smsSenderService;
     private final JwtTokenProvider jwtTokenProvider;
 
-
     /**
      * 인증 번호 발송
      */

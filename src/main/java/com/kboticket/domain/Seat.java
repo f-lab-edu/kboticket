@@ -49,4 +49,8 @@ public class Seat {
     @JsonIgnore
     @OneToMany(mappedBy = "seat")
     private List<Reservation> reservations;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "payment_id")
+    private Payment payment;
 }

@@ -45,6 +45,7 @@ public class GameCustomRepositoryImpl implements GameCustomRepository{
 
         BooleanBuilder builder = createSearchBuilder(gameSearchDto);
 
+        // gameId 를 넘겨준다
         if (cursor!= null) {
             builder.and(game.id.gt(Long.parseLong(cursor)));
         }

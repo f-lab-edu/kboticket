@@ -1,85 +1,145 @@
 package com.kboticket.service;
 
 import com.kboticket.config.PaymentConfig;
-import com.kboticket.config.payment.PaymentClient;
-import com.kboticket.config.payment.PaymentProperties;
+import com.kboticket.domain.Game;
 import com.kboticket.domain.Payment;
+import com.kboticket.domain.Seat;
 import com.kboticket.domain.User;
-import com.kboticket.dto.payment.PaymentDto;
-import com.kboticket.dto.payment.PaymentRequesteDto;
-import com.kboticket.dto.payment.PaymentSuccessDto;
+import com.kboticket.dto.payment.*;
 import com.kboticket.enums.ErrorCode;
 import com.kboticket.exception.KboTicketException;
 import com.kboticket.repository.PaymentRepository;
-import com.kboticket.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
+import org.redisson.api.RBucket;
+import org.redisson.api.RedissonClient;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestTemplate;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-import java.util.Collections;
+import java.util.*;
 
 @Slf4j
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class PaymentService {
 
-    private final UserRepository userRepository;
-    private final PaymentRepository paymentRepository;
+    private final UserService userService;
+    private final GameService gameService;
+    private final SeatService seatService;
+    private final TicketService ticketService;
+    private final PaymentService paymentService;
+
     private final PaymentConfig paymentConfig;
-    private final PaymentProperties paymentProperties;
+    private final PaymentRepository paymentRepository;
+    private final RedissonClient redissonClient;
+    private static final String SEAT_LOCK = "seatLock:";
 
+    // 결제 요청
     public Payment requestPayment(PaymentRequesteDto paymentRequesteDto, String email) {
-        User user = userRepository.findByEmail(email).orElseThrow(() -> {
-            throw new KboTicketException(ErrorCode.NOT_FOUND_USER);
-        });
+        idReservedSeats(paymentRequesteDto.getSeatIds(), paymentRequesteDto.getGameId());
 
+        User user = userService.getUser(email);
+        Game game = gameService.getGame(paymentRequesteDto.getGameId());
+
+        String orderId = createOrderId();
+
+        List<Seat> seats = seatService.getSeatsById(paymentRequesteDto.getSeatIds() );
+        // user
+        // payment -> order -> user 하나에 너무 많이 걸리지 않게
+        // 락 걸기
+        //
         Payment payment = Payment.builder()
-                .id(paymentRequesteDto.getOrderId())
+                .orderId(orderId)
+                .game(game)
                 .user(user)
+                .seatIds(paymentRequesteDto.getSeatIds())
+                .seats(seats)
+                .amount(paymentRequesteDto.getAmount())
                 .build();
 
         return paymentRepository.save(payment);
     }
 
+    private void idReservedSeats(String seatIdsStr, Long gameId) {
+        String[] seatsArr = seatIdsStr.split(",");
+
+        Long[] seatIds = Arrays.stream(seatsArr)
+                .map(id -> Long.parseLong(id))
+                .toArray(Long[]::new);
+
+        for (Long id : seatIds) {
+            String key = SEAT_LOCK + gameId + id;
+            RBucket<Object> bucket = redissonClient.getBucket(key);
+
+            if (!bucket.isExists()) {
+                throw new KboTicketException(ErrorCode.NOT_FOUND_RESERVATION);
+            }
+        }
+    }
+
+    // 결제 성공
     public  PaymentSuccessDto paymentSuccess(String paymentKey, String orderId, Long amount) {
-        PaymentDto paymentDto = verifyPayment(orderId, amount);
-        PaymentSuccessDto result = requestPaymentAccept(paymentKey, orderId, amount);
+        Payment payment = paymentService.getPayment(orderId);
+        // 결제 요청된 금액과 실제 결제된 금액이 같은지 확인
+        isVerifyPayment(payment, amount);
 
-        paymentDto.setPaymentKey(paymentKey);
-        paymentDto.setPaySuccessYn(true);
-        paymentDto.getUser();
+        payment.setPaymentKey(paymentKey);
 
-        return result;
+        paymentRepository.save(payment);
+
+        ticketService.createTicket(payment.getGame(), payment.getUser(), payment.getSeatIds());
+
+        return requestPaymentAccept(paymentKey, orderId, amount);
+    }
+
+    // 결제 실패
+    public PaymentFailDto paymentFail(String orderId) {
+        Payment payment = getPayment(orderId);
+
+        PaymentFailDto paymentFailDto = new PaymentFailDto();
+        return paymentFailDto;
+    }
+
+    // 결제 취소
+    public PaymentCancelDto paymentCancel(String paymentKey, String reason) {
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = getHeaders();
+        JSONObject params = new JSONObject();
+        params.put("reason", reason);
+
+        return restTemplate.postForObject(paymentConfig.getBaseUrl() + paymentKey + "/cancel",
+                new HttpEntity<>(params, headers),
+                PaymentCancelDto.class);
+    }
+
+    // 결제 내역
+    public List<PaymentHistoryDto> getPaymentHistory(String email) {
+        User user = userService.getUser(email);
+
+        return paymentRepository.findAllByUser(user);
+    }
+
+    // 결제 상세
+    public PaymentDto getPaymentDetail(String email, String orderId) {
+        return null;
     }
 
     // 결제 요청된 금액과 실제 결제된 금액이 같은지 확인
-    public PaymentDto verifyPayment(String orderId, Long amount) {
-        Payment payment = paymentRepository.findById(orderId).orElseThrow(() -> {
-            throw new KboTicketException(ErrorCode.PAYMENT_NOT_FOUND);
-        });
-
+    public void isVerifyPayment(Payment payment, Long amount) {
         if (!payment.getAmount().equals(amount)) {
             log.info("!payment.getAmount().equals(amount)" + !payment.getAmount().equals(amount));
             throw new KboTicketException(ErrorCode.PAYMENT_AMOUNT_EXP);
         }
-
-        return PaymentDto.builder()
-                .amount(payment.getAmount())
-                .paymentKey(payment.getPaymentKey())
-                .orderId(payment.getId())
-                .build();
     }
 
-    // 최종 결제 승인 요청을 보내기 위해 필요한 정보를 담아 post로 보내는 부분
+    // 최종 결제 승인 요청을 보내기 위해 필요한 정보를 담아 post로 보냄
     @Transactional
     public PaymentSuccessDto requestPaymentAccept(String paymentKey, String orderId, Long amount) {
         RestTemplate restTemplate = new RestTemplate();
@@ -90,11 +150,10 @@ public class PaymentService {
         params.put("amount", amount);
 
         PaymentSuccessDto result = null;
-
         try {
             log.info("paymentConfig.getBaseUrl() + paymentKey ==> " + paymentConfig.getBaseUrl() + paymentKey);
 
-            result = restTemplate.postForObject(paymentProperties.getBaseUrl() + paymentKey,
+            result = restTemplate.postForObject(paymentConfig.getBaseUrl() + paymentKey,
                     new HttpEntity<>(params, headers),
                     PaymentSuccessDto.class);
 
@@ -117,7 +176,15 @@ public class PaymentService {
         return headers;
     }
 
-    public PaymentDto getOrderDetail(String orderId) {
-        return null;
+    private String createOrderId() {
+        return UUID.randomUUID().toString().replaceAll("-", "").substring(0, 9);
     }
+
+    private Payment getPayment(String orderId) {
+        return paymentRepository.findByOrderId(orderId).orElseThrow(() -> {
+            throw new KboTicketException(ErrorCode.PAYMENT_NOT_FOUND);
+        });
+    }
+
+
 }

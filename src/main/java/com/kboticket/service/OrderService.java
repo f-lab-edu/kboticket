@@ -1,10 +1,10 @@
 package com.kboticket.service;
 
-import com.kboticket.domain.*;
-import com.kboticket.repository.GameRepository;
+import com.kboticket.domain.Order;
+import com.kboticket.domain.Reservation;
+import com.kboticket.domain.Ticket;
 import com.kboticket.repository.OrderRepository;
-import com.kboticket.repository.SeatRepository;
-import com.kboticket.repository.UserRepository;
+import com.kboticket.repository.ReservationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,44 +14,38 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@Transactional(readOnly = true)
+@Transactional
 @RequiredArgsConstructor
 public class OrderService {
     private final OrderRepository orderRepository;
-    private final UserRepository userRepository;
-    private final GameRepository gameRepository;
-    private final SeatRepository seatRepository;
+    private final ReservationRepository reserveRepository;
 
-    @Transactional
-    public Long order(Long userId, Long gameId, Long[] seatIds) {
-        Optional<User> optionalUser = userRepository.findById(userId);
-        User user = optionalUser.get();
+    public Long order(Long userId, String reservationId) {
 
-        Optional<Game> optionalGame = gameRepository.findById(gameId);
-        Game game = optionalGame.get();
+        List<Reservation> reservations = reserveRepository.findById(reservationId);
 
-        Ticket ticket = null;
         List<Ticket> ticketList = new ArrayList<>();
-        for (Long seatId : seatIds) {
-            Optional<Seat> optionalSeat = seatRepository.findById(seatId);
-            Seat seat = optionalSeat.get();
-            // 티켓 생성 추가
-            ticket = Ticket.builder().build();
+        for (Reservation reservation : reservations) {
+            // 티켓 생성
+            Ticket ticket = Ticket.builder()
+                    .seat(reservation.getSeat())
+                    .game(reservation.getGame())
+                    .user(reservation.getUser())
+                    .build();
             ticketList.add(ticket);
         }
-        // 얘매 생성
-        Order order = Order.createOrder(user, ticketList);
+
+        Order order = Order.createOrder(ticketList.get(0).getUser(), ticketList);
+
         // 예매 저장
         orderRepository.save(order);
 
         return order.getId();
-
     }
 
     /**
      * 예매 취소
      */
-    @Transactional
     public void cancelOrder(Long orderId) {
         // 주문 엔티티 조회
         Optional<Order> optionalOrder = orderRepository.findById(orderId);
@@ -62,7 +56,8 @@ public class OrderService {
             // ticket -> cancel
             //ticket.cancel();
         }
+
         // 주문 취소
-        order.cancel();
+
     }
 }

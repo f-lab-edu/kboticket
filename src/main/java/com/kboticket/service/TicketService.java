@@ -4,7 +4,10 @@ import com.kboticket.domain.*;
 import com.kboticket.dto.TicketDto;
 import com.kboticket.enums.ErrorCode;
 import com.kboticket.exception.KboTicketException;
-import com.kboticket.repository.*;
+import com.kboticket.repository.GameRepository;
+import com.kboticket.repository.SeatRepository;
+import com.kboticket.repository.TicketRepository;
+import com.kboticket.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -50,18 +52,18 @@ public class TicketService {
     }
 
     // 좌석 지정 -> 티켓 생성
-    public void createTicket(Long userId, Long[] seatIds, Long gameId) {
-        User user = userRepository.getReferenceById(userId);
-        Game game = gameRepository.getReferenceById(gameId);
+    public void createTicket(Game game, User user, String seatIds) {
+        String[] seatIdsArr = seatIds.split(",");
 
-        List<Ticket> tickets = Arrays.stream(seatIds)
-                .map(seatId -> {
+        List<Ticket> tickets = Arrays.stream(seatIdsArr)
+                .map(id -> {
+                    Long seatId = Long.valueOf(id);
                     Seat seat = seatRepository.getReferenceById(seatId);
                     return Ticket.builder()
                             .game(game)
                             .seat(seat)
                             .user(user)
-                            .reserved(TicketStatus.HOLD)
+                            .reserved(TicketStatus.RESERVED)
                             .build();
                 })
                 .collect(Collectors.toList());
@@ -86,4 +88,5 @@ public class TicketService {
 
     public void cancelTicket(Long ticketId, Long userId) {
     }
+
 }

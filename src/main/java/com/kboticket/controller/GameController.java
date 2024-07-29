@@ -17,7 +17,6 @@ import java.util.List;
 public class GameController {
 
     private final GameService gameService;
-    private final ReservationService reservationService;
 
 
     @GetMapping("/{gameId}")
@@ -33,7 +32,7 @@ public class GameController {
 
         return new CommonResponse<>(seatCounts);
     }
-
+// enum, 파라미
     @GetMapping("/{gameId}/seats-block")
     public CommonResponse<List<SeatCountDto>> getSeatsByBlock(@PathVariable Long gameId,
                                                               @RequestParam String level) {
@@ -45,8 +44,7 @@ public class GameController {
     @GetMapping("/{gameId}/seats-available")
     public CommonResponse<List<SeatDto>> getSeatsAvailable(@PathVariable Long gameId,
                                                              @RequestParam String level,
-                                                             @RequestParam String block
-                                                             ) {
+                                                             @RequestParam String block) {
         List<SeatDto> seatInfos = gameService.getAvailavleSeat(gameId, level, block);
 
         return new CommonResponse<>(seatInfos);

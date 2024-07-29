@@ -25,7 +25,4 @@ public class ReservationController {
 
         reservationService.reserve(reservationDto.getSeatIds(), gameId, email);
     }
-
-
-
 }

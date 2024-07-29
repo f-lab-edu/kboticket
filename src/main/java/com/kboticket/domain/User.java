@@ -32,13 +32,10 @@ public class User implements UserDetails {
     @Embedded
     private Address address;
 
+    // 단방향
     @JsonIgnore
     @OneToMany(mappedBy = "user")
     private List<Order> orders = new ArrayList<>();
-
-//    @JsonIgnore
-//    @OneToMany(mappedBy = "user")
-//    private List<Reservation> reservations = new ArrayList<>();
 
     @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)

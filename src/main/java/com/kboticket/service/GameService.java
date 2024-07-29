@@ -6,6 +6,8 @@ import com.kboticket.dto.GameSearchDto;
 import com.kboticket.dto.SeatCountDto;
 import com.kboticket.dto.SeatDto;
 import com.kboticket.dto.response.GameResponse;
+import com.kboticket.enums.ErrorCode;
+import com.kboticket.exception.KboTicketException;
 import com.kboticket.repository.GameRepository;
 import com.kboticket.repository.SeatRepository;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +30,7 @@ public class GameService {
 
         List<GameResponse> games = gameRepository.getByCursor(gameSearchDto, cursor, limit);
 
+        // hasnext 필요없음
         boolean hasNext = false;
 
         if (games.size() > limit) {
@@ -79,5 +82,11 @@ public class GameService {
 
         return seatInfos;
 
+    }
+
+    public Game getGame(Long gameId) {
+        return gameRepository.findById(gameId).orElseThrow(() -> {
+           throw new KboTicketException(ErrorCode.NOT_FOUND_GAME);
+        });
     }
 }

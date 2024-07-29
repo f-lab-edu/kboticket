@@ -93,7 +93,6 @@ public class UserService {
         String newAccessToken = jwtTokenProvider.reissueAccessToken(refreshToken);
 
         return new TokenDto(newAccessToken, refreshToken);
-
     }
 
     public User findById(Long userId) {
@@ -101,15 +100,18 @@ public class UserService {
                 .orElseThrow(() -> new KboTicketException(ErrorCode.NOT_FOUND_USER));
     }
 
-
-    public UserDto getUser(String name) {
-        User user = userRepository.findByEmail(name)
-                .orElseThrow(() -> new KboTicketException(ErrorCode.NOT_FOUND_USER));
+    public UserDto getUserDto(String email) {
+        User user = getUser(email);
 
         return UserDto.builder()
                 .email(user.getEmail())
                 .phone(user.getPhone())
                 .build();
 
+    }
+
+    public User getUser(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new KboTicketException(ErrorCode.NOT_FOUND_USER));
     }
 }

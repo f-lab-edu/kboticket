@@ -20,6 +20,6 @@ public class GameSrchController {
                                         @RequestParam(value = "limit", defaultValue = "10") int limit) {
         GameDto gameList = gameService.getGameList(gameSearchDto, cursor, limit);
 
-        return new CommonResponse(gameList);
+        return new CommonResponse<>(gameList);
     }
 }

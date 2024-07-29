@@ -14,4 +14,6 @@ public class GameDto {
     private boolean hasNext;
     private List<GameResponse> games;
 
+    // 공지, 붉은 박스 몇번째인지 index,
+
 }

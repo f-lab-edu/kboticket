@@ -9,7 +9,9 @@ import lombok.*;
 public class PaymentRequesteDto {
 
     private String orderId;
-    private String paymentKey;
+    // private String paymentKey;
+    private Long gameId;
+    private String seatIds;
     private Long amount;
-    private Long totalAmount;
-};
+
+}

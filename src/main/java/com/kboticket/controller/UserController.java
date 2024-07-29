@@ -23,7 +23,7 @@ public class UserController {
     public CommonResponse<UserDto> getUserInfo(Authentication authentication) {
         log.info("authentication.getName()=======>" + authentication.getName());
 
-        UserDto userDto = userService.getUser(authentication.getName());
+        UserDto userDto = userService.getUserDto(authentication.getName());
 
         return new CommonResponse<>(userDto);
     }

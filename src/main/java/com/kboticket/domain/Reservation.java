@@ -2,22 +2,17 @@ package com.kboticket.domain;
 
 import com.kboticket.enums.ReservationStatus;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
-@Table(name="reservation")
-
+@Table(name="reservation", uniqueConstraints = {@UniqueConstraint(columnNames = {"reservation_id", "seat_id"})})
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Reservation {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "reservation_id")
-    private Long id;
+    private String id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "game_id")
@@ -35,7 +30,8 @@ public class Reservation {
     private ReservationStatus status;
 
     @Builder
-    public Reservation(Game game, Seat seat, User user, ReservationStatus status) {
+    public Reservation(String id, Game game, Seat seat, User user, ReservationStatus status) {
+        this.id = id;
         this.game = game;
         this.seat = seat;
         this.user = user;
