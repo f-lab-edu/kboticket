@@ -71,7 +71,7 @@ public enum ErrorCode {
     INVALID_START_DATE(30027, "Start date cannot be before the current date", HttpStatus.BAD_REQUEST),
     USER_ALREADY_OCCUPIED_SEAT(30028, "The user has already claimed another seat", HttpStatus.BAD_REQUEST),
     NOT_FOUND_RESERVATION(30029, "Reservation could not be found", HttpStatus.NOT_FOUND),
-    FAILED_TRY_ROCK(30030, "lock be failed", HttpStatus.CONFLICT),
+    FAILED_TRY_ROCK(30030, "Failed to acquire lock", HttpStatus.CONFLICT),
 
 
     PAYMENT_TIMEOUT_EXCEPTION(30031, "An tiemout error occurred during payment. ", HttpStatus.CONFLICT),

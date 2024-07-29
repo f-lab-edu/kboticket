@@ -28,21 +28,21 @@ public class Payment {
     @Column(name = "order_nm")
     private String orderNm;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    @JsonIgnore
-    private User user;
-
-    @ManyToOne (fetch = FetchType.LAZY)
-    @JoinColumn(name = "game_id")
-    @JsonIgnore
-    private Game game;
-
     private String seatIds;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "payment")
-    private List<Seat> seats;
-
     private Long amount;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @OneToOne (fetch = FetchType.LAZY)
+    @JoinColumn(name = "game_id")
+    private Game game;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "seat_id")
+    private Seat seat;
+
+
 }

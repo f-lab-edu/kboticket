@@ -33,8 +33,6 @@ public class PaymentService {
     private final UserService userService;
     private final GameService gameService;
     private final SeatService seatService;
-    private final TicketService ticketService;
-    private final PaymentService paymentService;
 
     private final PaymentConfig paymentConfig;
     private final PaymentRepository paymentRepository;
@@ -54,13 +52,11 @@ public class PaymentService {
         // user
         // payment -> order -> user 하나에 너무 많이 걸리지 않게
         // 락 걸기
-        //
+        // seat 추
         Payment payment = Payment.builder()
                 .orderId(orderId)
                 .game(game)
                 .user(user)
-                .seatIds(paymentRequesteDto.getSeatIds())
-                .seats(seats)
                 .amount(paymentRequesteDto.getAmount())
                 .build();
 
@@ -86,7 +82,7 @@ public class PaymentService {
 
     // 결제 성공
     public  PaymentSuccessDto paymentSuccess(String paymentKey, String orderId, Long amount) {
-        Payment payment = paymentService.getPayment(orderId);
+        Payment payment = getPayment(orderId);
         // 결제 요청된 금액과 실제 결제된 금액이 같은지 확인
         isVerifyPayment(payment, amount);
 
@@ -94,7 +90,7 @@ public class PaymentService {
 
         paymentRepository.save(payment);
 
-        ticketService.createTicket(payment.getGame(), payment.getUser(), payment.getSeatIds());
+        // ticketService.createTicket(payment.getGame(), payment.getUser(), payment.getSeatIds());
 
         return requestPaymentAccept(paymentKey, orderId, amount);
     }
