@@ -3,6 +3,7 @@ package com.kboticket.service;
 import com.kboticket.domain.*;
 import com.kboticket.dto.TicketDto;
 import com.kboticket.enums.ErrorCode;
+import com.kboticket.enums.TicketStatus;
 import com.kboticket.exception.KboTicketException;
 import com.kboticket.repository.GameRepository;
 import com.kboticket.repository.SeatRepository;
@@ -24,8 +25,6 @@ public class TicketService {
 
     private final TicketRepository ticketRepository;
     private final SeatRepository seatRepository;
-    private final GameRepository gameRepository;
-    private final UserRepository userRepository;
 
     public Ticket findOne(Long itemId, User user) {
         return ticketRepository.findByIdAndUser(itemId, user)
@@ -52,23 +51,27 @@ public class TicketService {
     }
 
     // 좌석 지정 -> 티켓 생성
-    public void createTicket(Game game, User user, String seatIds) {
-        String[] seatIdsArr = seatIds.split(",");
-
-        List<Ticket> tickets = Arrays.stream(seatIdsArr)
-                .map(id -> {
-                    Long seatId = Long.valueOf(id);
-                    Seat seat = seatRepository.getReferenceById(seatId);
-                    return Ticket.builder()
-                            .game(game)
-                            .seat(seat)
-                            .user(user)
-                            .reserved(TicketStatus.RESERVED)
-                            .build();
-                })
-                .collect(Collectors.toList());
-
-        ticketRepository.saveAll(tickets);
+    public void createTicket(Order order) {
+//        String orderId = order.getId();
+//
+//        // seatlist 가져오기
+//
+//       // String[] seatIdsArr = seatIds.split(",");
+//
+//        List<Ticket> tickets = Arrays.stream(seatIdsArr)
+//                .map(id -> {
+//                    Long seatId = Long.valueOf(id);
+//                    Seat seat = seatRepository.getReferenceById(seatId);
+//                    return Ticket.builder()
+//                            .game(order.getGame())
+//                            .seat(seat)
+//                            .user(order.getUser())
+//                            .reserved(TicketStatus.RESERVED)
+//                            .build();
+//                })
+//                .collect(Collectors.toList());
+//
+//        ticketRepository.saveAll(tickets);
 
     }
 

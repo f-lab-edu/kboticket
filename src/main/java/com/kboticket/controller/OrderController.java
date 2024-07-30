@@ -23,6 +23,6 @@ public class OrderController {
         // msa , 서비스 확장이 안됨, ex 넷ㅅ플릭스, -> 기능별로 쪼갬, 스프링끼리 서로 필요할 때 api 호출, 스프링 실시간으로 늘음,
         // 주문과 결제가 나눠져있을 수 있음.
         // 재결제, 만료시간, 결제하다가 실패하면 좌석 select 부터, 결제하는 쪽에 아ㅏㅁ호화해서 order, 키 -> 유효한 기간동안 결제가능하도록, 실패하면 키를 넘겨주고 다시 요청
-        orderService.order(userId, reservationId);
+        // orderService.order(userId, reservationId);
     }
 }

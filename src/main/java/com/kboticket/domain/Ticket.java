@@ -1,5 +1,6 @@
 package com.kboticket.domain;
 
+import com.kboticket.enums.TicketStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -33,6 +34,4 @@ public class Ticket {
     private User user;
 
     private TicketStatus reserved;
-
-
 }

@@ -1,6 +1,7 @@
 package com.kboticket.dto;
 
 import com.kboticket.domain.*;
+import com.kboticket.enums.TicketStatus;
 import lombok.Builder;
 import lombok.Data;
 

@@ -1,7 +1,6 @@
 package com.kboticket.controller;
 
 import com.kboticket.common.CommonResponse;
-import com.kboticket.domain.Payment;
 import com.kboticket.dto.payment.*;
 import com.kboticket.service.PaymentService;
 import jakarta.validation.Valid;
@@ -25,13 +24,12 @@ public class PaymentController {
      * 결제 요청
      */
     @PostMapping
-    public CommonResponse<Payment> requestPayment(@RequestBody @Valid PaymentRequesteDto paymentRequesteDto,
-                                                    Authentication authentication) {
-        String email = authentication.getName();
+    @ResponseStatus(HttpStatus.OK)
+    public void requestPayment(@RequestBody @Valid PaymentRequestDto paymentRequestDto,
+                               Authentication authentication) {
+        String loginId = authentication.getName();
 
-        Payment payment = paymentService.requestPayment(paymentRequesteDto, email);
-
-        return new CommonResponse<>(payment);
+        paymentService.requestPayment(paymentRequestDto, loginId);
     }
 
     /**
@@ -42,8 +40,8 @@ public class PaymentController {
     public CommonResponse<PaymentSuccessDto> success(@RequestParam String paymentKey,
                                                      @RequestParam String orderId,
                                                      @RequestParam Long amount) {
-        // success 를 받았을때 payment 저장
         PaymentSuccessDto paymentSuccessDto = paymentService.paymentSuccess(paymentKey, orderId, amount);
+
         return new CommonResponse<>(paymentSuccessDto);
     }
 
@@ -57,7 +55,6 @@ public class PaymentController {
         PaymentFailDto paymentFailDto = paymentService.paymentFail(orderId);
 
         return new CommonResponse<>(paymentFailDto);
-
     }
 
     /**
@@ -80,8 +77,8 @@ public class PaymentController {
 
         String email = authentication.getName();
 
-        List<PaymentHistoryDto> paymentHistorys = paymentService.getPaymentHistory(email);
+        List<PaymentHistoryDto> paymentHistory = paymentService.getPaymentHistory(email);
 
-        return new CommonResponse<>(paymentHistorys);
+        return new CommonResponse<>(paymentHistory);
     }
 }

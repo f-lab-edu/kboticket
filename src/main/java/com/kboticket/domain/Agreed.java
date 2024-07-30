@@ -36,5 +36,4 @@ public class Agreed {
         this.user = user;
         this.agreedDate = agreedDate;
     }
-
 }

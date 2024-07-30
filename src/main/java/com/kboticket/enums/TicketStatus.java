@@ -1,5 +1,8 @@
-package com.kboticket.domain;
+package com.kboticket.enums;
 
+import lombok.Getter;
+
+@Getter
 public enum TicketStatus {
     HOLD("Hold"),
     RESERVED("Reserved"),
@@ -7,13 +10,9 @@ public enum TicketStatus {
     EXPIRED("Expired"),
     USED("Used");
 
-    private String value;
+    public final String value;
 
     TicketStatus(String value) {
         this.value = value;
-    }
-
-    public String getValue() {
-        return value;
     }
 }

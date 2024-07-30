@@ -1,10 +1,8 @@
 package com.kboticket.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.kboticket.enums.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.util.List;
 
 @Entity
 @Table(name = "payment")
@@ -43,6 +41,8 @@ public class Payment {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "seat_id")
     private Seat seat;
+
+    private PaymentStatus status;
 
 
 }
