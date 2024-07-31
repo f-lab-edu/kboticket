@@ -4,11 +4,9 @@ import lombok.Getter;
 
 @Getter
 public enum TicketStatus {
-    HOLD("Hold"),
-    RESERVED("Reserved"),
-    ISSUED("Issued"),
-    EXPIRED("Expired"),
-    USED("Used");
+    ISSUED("발급"),
+    USED("사용"),
+    CANCELED("취소");
 
     public final String value;
 

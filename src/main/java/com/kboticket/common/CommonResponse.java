@@ -1,6 +1,6 @@
 package com.kboticket.common;
 
-import com.kboticket.common.constants.ResponseCode;
+import com.kboticket.common.constants.ResponseConstant;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -12,7 +12,7 @@ public class CommonResponse<T> {
     private T body;
 
     public CommonResponse(T body) {
-        this.code = ResponseCode.SUCCESS;
+        this.code = ResponseConstant.SUCCESS;
         this.body = body;
     }
 

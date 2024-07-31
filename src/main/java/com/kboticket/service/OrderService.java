@@ -1,8 +1,8 @@
 package com.kboticket.service;
 
 import com.kboticket.domain.*;
+import com.kboticket.dto.OrderResponse;
 import com.kboticket.enums.ErrorCode;
-import com.kboticket.enums.ReservationStatus;
 import com.kboticket.exception.KboTicketException;
 import com.kboticket.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
@@ -54,21 +54,36 @@ public class OrderService {
         orderRepository.save(order);
     }
 
-    // 주문 취소
-    public void cancelOrder(Long orderId) {
-
-
-    }
-
     // 주문 상태 update
-    public void updateOrderStatus(ReservationStatus status) {
+    public void updateOrderStatus(String orderId, OrderStatus status) {
+        Order order = getOrder(orderId);
+        order.setStatus(status);
 
+        orderRepository.save(order);
     }
 
     public Order getOrder(String orderId) {
         return orderRepository.findById(orderId).orElseThrow(() -> {
             throw new KboTicketException(ErrorCode.NOT_FOUND_ORDER);
         });
+    }
+
+    public List<OrderSeat> getOrderSeats(String orderId) {
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> {
+            throw new KboTicketException(ErrorCode.NOT_FOUND_ORDER);
+        });
+
+        return order.getOrderSeats();
+    }
+
+    public OrderResponse getOrderList(String email) {
+        User user = userService.getUser(email);
+        // 주문 목록
+       List<Order> orders = orderRepository.findAllByUser(user);
+
+
+        return OrderResponse.builder()
+                .build();
     }
 }
 

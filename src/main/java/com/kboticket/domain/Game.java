@@ -37,6 +37,8 @@ public class Game {
     @OneToMany(mappedBy = "game")
     private List<Reservation> reservations;
 
+    private String title;
+
     private String gameDate;
 
     private String startTime;

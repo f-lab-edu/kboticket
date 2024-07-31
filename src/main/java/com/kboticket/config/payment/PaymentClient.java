@@ -1,8 +1,11 @@
 package com.kboticket.config.payment;
 
+import com.kboticket.common.constants.KboConstant;
 import com.kboticket.config.PaymentConfig;
 import com.kboticket.dto.PaymentRequestInput;
-import com.kboticket.dto.payment.PaymentSuccessDto;
+import com.kboticket.dto.payment.PaymentCancelInput;
+import com.kboticket.dto.payment.PaymentCancelResponse;
+import com.kboticket.dto.payment.PaymentSuccessResponse;
 import com.kboticket.enums.ErrorCode;
 import com.kboticket.exception.KboTicketException;
 import org.springframework.boot.web.client.ClientHttpRequestFactories;
@@ -23,10 +26,8 @@ import java.util.Base64;
 @Component
 public class PaymentClient {
     
-    private static final String BASIC_DLIIMITER = ":";
-    private static final String AUTH_HEADER_PREFIX = "Basic ";
-    private static final long CONNECT_TIMEOUT = 1 * 1000;
-    private static final long READ_TIMEOUT = 60 * 1000;
+
+
     
     private final PaymentConfig paymentConfig;
     private RestClient restClient;
@@ -42,20 +43,21 @@ public class PaymentClient {
 
     private ClientHttpRequestFactory createPaymenetRequestFactory() {
         ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.DEFAULTS
-                .withConnectTimeout(Duration.ofMillis(CONNECT_TIMEOUT))
-                .withReadTimeout(Duration.ofMillis(READ_TIMEOUT));
+                .withConnectTimeout(Duration.ofMillis(KboConstant.CONNECT_TIMEOUT))
+                .withReadTimeout(Duration.ofMillis(KboConstant.READ_TIMEOUT));
 
         return ClientHttpRequestFactories.get(SimpleClientHttpRequestFactory.class, settings);
     }
 
     private String createPaymentAuthHeader(PaymentConfig paymentConfig) {
         byte[] encodedBytes = Base64.getEncoder()
-                .encode((paymentConfig.getSecretKey() + BASIC_DLIIMITER).getBytes(StandardCharsets.UTF_8));
+                .encode((paymentConfig.getSecretKey() + KboConstant.BASIC_DLIIMITER).getBytes(StandardCharsets.UTF_8));
 
-        return AUTH_HEADER_PREFIX + new String(encodedBytes);
+        return KboConstant.AUTH_HEADER_PREFIX + new String(encodedBytes);
     }
 
-    public PaymentSuccessDto requestPayment(PaymentRequestInput paymentRequestInput) {
+    public PaymentSuccessResponse requestPayment(PaymentRequestInput paymentRequestInput) {
+
         return restClient.method(HttpMethod.POST)
                 .uri(paymentConfig.getBaseUrl() + paymentRequestInput.getPaymentKey())
                 .contentType(MediaType.APPLICATION_JSON)
@@ -64,7 +66,21 @@ public class PaymentClient {
                 .onStatus(HttpStatusCode::isError, ((request, response) -> {
                     throw new KboTicketException(ErrorCode.PAYMENT_CONFIRM_EXCEPTION);
                 }))
-                .body(PaymentSuccessDto.class);
+                .body(PaymentSuccessResponse.class);
     }
 
+
+    public PaymentCancelResponse cancelPayment(PaymentCancelInput input) {
+        String paymentKey = input.getPaymentKey();
+
+        return restClient.method(HttpMethod.POST)
+                .uri(paymentConfig.getBaseUrl() + String.format(paymentConfig.getCancelEndpoint(), paymentKey))
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(input)
+                .retrieve()
+                .onStatus(HttpStatusCode::isError, ((request, response) -> {
+                    throw new KboTicketException(ErrorCode.PAYMENT_CANCEL_EXCEPTION);
+                }))
+                .body(PaymentCancelResponse.class);
+    }
 }

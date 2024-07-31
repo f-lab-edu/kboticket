@@ -36,48 +36,45 @@ public class PaymentController {
      * 결제 성공
      */
     @GetMapping("/success")
-    @ResponseStatus(HttpStatus.OK)
-    public CommonResponse<PaymentSuccessDto> success(@RequestParam String paymentKey,
-                                                     @RequestParam String orderId,
-                                                     @RequestParam Long amount) {
-        PaymentSuccessDto paymentSuccessDto = paymentService.paymentSuccess(paymentKey, orderId, amount);
+    public CommonResponse<PaymentSuccessResponse> success(@RequestParam String paymentKey,
+                                                          @RequestParam String orderId,
+                                                          @RequestParam Long amount) {
+        PaymentSuccessResponse paymentSuccessResponse = paymentService.paymentSuccess(paymentKey, orderId, amount);
 
-        return new CommonResponse<>(paymentSuccessDto);
+        return new CommonResponse<>(paymentSuccessResponse);
     }
 
     /**
      * 결제 실패
      */
     @GetMapping("/fail")
-    public CommonResponse<PaymentFailDto> fail(@RequestParam String paymentKey,
-                                               @RequestParam String orderId) {
+    public CommonResponse<PaymentFailResponse> fail(@RequestParam String code,
+                                                    @RequestParam String orderId,
+                                                    @RequestParam String message) {
+        PaymentFailResponse paymentFailResponse = paymentService.paymentFail(code, orderId, message);
 
-        PaymentFailDto paymentFailDto = paymentService.paymentFail(orderId);
-
-        return new CommonResponse<>(paymentFailDto);
+        return new CommonResponse<>(paymentFailResponse);
     }
 
     /**
      * 결제 취소
      */
     @GetMapping("/cancel")
-    public CommonResponse<PaymentCancelDto> cancel(Authentication authentication,
-                                                   @RequestParam String paymentKey,
-                                                   @RequestParam String reason) {
-        PaymentCancelDto paymentCancelDto = paymentService.paymentCancel(paymentKey, reason);
+    public CommonResponse<PaymentCancelResponse> cancel(@RequestParam String paymentKey,
+                                                        @RequestParam String cancelReason) {
+        PaymentCancelResponse paymentCancelResponse = paymentService.paymentCancel(paymentKey, cancelReason);
 
-        return new CommonResponse<>(paymentCancelDto);
+        return new CommonResponse<>(paymentCancelResponse);
     }
 
     /**
      * 결제 내역
      */
     @GetMapping("/history")
-    public CommonResponse<List<PaymentHistoryDto>> paymentOrderDetail(Authentication authentication) {
-
+    public CommonResponse<List<PaymentHistoryResponse>> paymentOrderDetail(Authentication authentication) {
         String email = authentication.getName();
 
-        List<PaymentHistoryDto> paymentHistory = paymentService.getPaymentHistory(email);
+        List<PaymentHistoryResponse> paymentHistory = paymentService.getPaymentHistory(email);
 
         return new CommonResponse<>(paymentHistory);
     }

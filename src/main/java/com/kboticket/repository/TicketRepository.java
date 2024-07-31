@@ -1,5 +1,6 @@
 package com.kboticket.repository;
 
+import com.kboticket.domain.OrderSeat;
 import com.kboticket.domain.Ticket;
 import com.kboticket.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,4 +18,5 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
 
     Optional<Ticket> findByIdAndUser(Long itemId, User user);
 
+    Ticket findByOrderSeat(OrderSeat orderSeat);
 }

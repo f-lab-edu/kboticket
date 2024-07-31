@@ -29,8 +29,12 @@ public class Order {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderSeat> orderSeats;
 
-    @Enumerated(EnumType.STRING)        // 주문 상태
+    /* 티켓 매수 */
+    private int cnt;
+    /* 주문 상태 */
+    @Enumerated(EnumType.STRING)
     private OrderStatus status;
-
-    private LocalDateTime orderDate;    // 주문완료시간
+    /* 주문 일자 */
+    @Column(name = "order_date")
+    private LocalDateTime orderDate;
 }

@@ -3,7 +3,7 @@ package com.kboticket.dto.payment;
 import lombok.Data;
 
 @Data
-public class PaymentSuccessDto {
+public class PaymentSuccessResponse {
     String mid;
     String version;
     String paymentKey;

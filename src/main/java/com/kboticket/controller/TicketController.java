@@ -1,15 +1,10 @@
 package com.kboticket.controller;
 
 import com.kboticket.common.CommonResponse;
-import com.kboticket.common.constants.ResponseCode;
-import com.kboticket.domain.Ticket;
-import com.kboticket.domain.User;
 import com.kboticket.dto.TicketDto;
-import com.kboticket.service.SeatService;
 import com.kboticket.service.TicketService;
-import com.kboticket.service.UserService;
-import io.netty.handler.ssl.OpenSslSessionTicketKey;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,46 +14,23 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TicketController {
 
-    private TicketService ticketService;
-    private SeatService seatService;
-    private UserService userService;
+    private final TicketService ticketService;
 
     /**
-     *  티켓 목록
+     * 티켓 목록
      */
-    @GetMapping("/list")
-    public CommonResponse<List<TicketDto>> getTickets() {
+    @GetMapping("/{orderId}")
+    public CommonResponse<List<TicketDto>> list(@PathVariable String orderId) {
+        List<TicketDto> tickets = ticketService.getTickets(orderId);
 
-        List<TicketDto> ticketDto = ticketService.findAll();
-
-        return new CommonResponse<>(ticketDto);
+        return new CommonResponse<>(tickets);
     }
 
     /**
-     * 티켓 정보 조회
+     * 티켓 취소
      */
-    @GetMapping("/{ticketId}")
-    public CommonResponse<Ticket> getTicketInfo(@RequestParam Long tickketId,
-                                                @RequestParam Long userId) {
-        User user = userService.findById(userId);
-        Ticket ticket = ticketService.findOne(tickketId, user);
-
-        return new CommonResponse<>(ticket);
-    }
-
-    /**
-     * 티켓 예약
-     */
-   @PostMapping("/reserve")
-    public void reserveTicket(@RequestParam Long[] seatIds) {
-
-        ticketService.reserveTicket(seatIds);
-    }
-
-    /**
-     * 티켓 예약 취소
-     */
-    @PostMapping("/cancel")
+    @PostMapping("/{ticketId}/cancel")
+    @ResponseStatus(HttpStatus.OK)
     public void reserveTicket(@RequestParam Long tickettId,
                               @RequestParam Long userId) {
         ticketService.cancelTicket(tickettId, userId);

@@ -26,23 +26,14 @@ public class Payment {
     @Column(name = "order_nm")
     private String orderNm;
 
-    private String seatIds;
-
     private Long amount;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @Column(name = "cancel_reason")
+    private String cancelReason;
 
-    @OneToOne (fetch = FetchType.LAZY)
-    @JoinColumn(name = "game_id")
-    private Game game;
-
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "seat_id")
-    private Seat seat;
+    @Column(name = "fail_reason")
+    private String failReason;
 
     private PaymentStatus status;
-
 
 }

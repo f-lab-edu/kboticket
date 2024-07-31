@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class PaymentFailDto {
-    String errorCode;
-    String message;
+public class PaymentFailResponse {
+    String code;
     String orderId;
+    String message;
 }
