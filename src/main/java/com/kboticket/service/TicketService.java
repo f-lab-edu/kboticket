@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,39 +24,42 @@ import java.util.stream.Collectors;
 public class TicketService {
 
     private final TicketRepository ticketRepository;
-    private final OrderService orderService;
 
-    public Ticket findOne(Long itemId, User user) {
-        return ticketRepository.findByIdAndUser(itemId, user)
-                .orElseThrow(() -> new KboTicketException(ErrorCode.NOT_FOUND_TICKET));
-    }
-
-    // 티켓 생성
     public void createTicket(Order order) {
-        String orderId = order.getId();
-
-        List<OrderSeat> orderSeats = orderService.getOrderSeats(orderId);
-
+        List<OrderSeat> orderSeats = order.getOrderSeats();
         List<Ticket> tickets = orderSeats.stream()
-                .map(orderSeat -> {
-                    return Ticket.builder()
+                .map(orderSeat -> Ticket.builder()
                             .orderSeat(orderSeat)
                             .status(TicketStatus.ISSUED)
                             .issuedAt(LocalDateTime.now())
-                            .build();
-                })
+                            .build())
                 .collect(Collectors.toList());
 
         ticketRepository.saveAll(tickets);
     }
 
-    public void cancelTicket(Long ticketId, Long userId) {
+    public void cancelTickets(Order order, Long[] ticketIds) {
+        // 티켓 상태 변경 (ISSUED -> CANCELLED)
+        List<Ticket> ticketsToCancel = Arrays.stream(ticketIds)
+                .map(id ->  {
+                    return ticketRepository.findById(id).orElseThrow(() -> {
+                        throw new KboTicketException(ErrorCode.NOT_FOUND_TICKET);
+                    });
+                }).collect(Collectors.toList());
 
+        for (Ticket ticket : ticketsToCancel) {
+            if (ticket.getStatus() == TicketStatus.CANCELLED) {
+                throw new KboTicketException(ErrorCode.TICKET_ALREADY_CANCELLED);
+            }
+            ticket.setStatus(TicketStatus.CANCELLED);
+        }
+
+        ticketRepository.saveAll(ticketsToCancel);
     }
 
     // 티켓 록록
-    public List<TicketDto> getTickets(String orderId) {
-        List<OrderSeat> orderSeats = orderService.getOrderSeats(orderId);
+    public List<TicketDto> getTickets(Order order) {
+        List<OrderSeat> orderSeats = order.getOrderSeats();
 
         List<TicketDto> tickets = orderSeats.stream()
                 .map(orderSeat -> {

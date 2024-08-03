@@ -29,12 +29,18 @@ public class Order {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderSeat> orderSeats;
 
-    /* 티켓 매수 */
     private int cnt;
-    /* 주문 상태 */
+
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
-    /* 주문 일자 */
+
     @Column(name = "order_date")
     private LocalDateTime orderDate;
+
+    /* 주문 전체 금액 */
+    public long getTotalAmount() {
+        return orderSeats.stream()
+                .mapToLong(OrderSeat::getPrice)
+                .sum();
+    }
 }

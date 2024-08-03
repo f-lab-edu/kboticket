@@ -2,7 +2,7 @@ package com.kboticket.controller;
 
 import com.kboticket.common.CommonResponse;
 import com.kboticket.dto.TicketDto;
-import com.kboticket.service.TicketService;
+import com.kboticket.service.OrderFacade;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -14,14 +14,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TicketController {
 
-    private final TicketService ticketService;
+    private final OrderFacade orderFacade;
 
     /**
      * 티켓 목록
      */
     @GetMapping("/{orderId}")
     public CommonResponse<List<TicketDto>> list(@PathVariable String orderId) {
-        List<TicketDto> tickets = ticketService.getTickets(orderId);
+        List<TicketDto> tickets = orderFacade.getTickets(orderId);
 
         return new CommonResponse<>(tickets);
     }
@@ -31,8 +31,8 @@ public class TicketController {
      */
     @PostMapping("/{ticketId}/cancel")
     @ResponseStatus(HttpStatus.OK)
-    public void reserveTicket(@RequestParam Long tickettId,
-                              @RequestParam Long userId) {
-        ticketService.cancelTicket(tickettId, userId);
+    public void cancelTicket(@RequestParam String orderId,
+                             @RequestParam Long[] ticketId) {
+        orderFacade.cancelTickets(orderId, ticketId);
     }
 }

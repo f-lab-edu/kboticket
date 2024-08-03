@@ -4,22 +4,22 @@ import lombok.Data;
 
 @Data
 public class PaymentSuccessResponse {
-    String mid;
-    String version;
-    String paymentKey;
-    String orderId;
-    String amount;
-    String orderName;
-    String currency;
-    String method;
-    String totalAmount;
-    String balanceAmount;
-    String suppliedAmount;
-    String vat;
-    String status;
-    String requestedAt;
-    String approvedAt;
-    String useEscrow;
-    String cultureExpense;
-    String type;
+    private String mid;
+    private String version;
+    private String paymentKey;
+    private String orderId;
+    private String amount;
+    private String orderName;
+    private String currency;
+    private String method;
+    private String totalAmount;
+    private String balanceAmount;
+    private String suppliedAmount;
+    private String vat;
+    private String status;
+    private String requestedAt;
+    private String approvedAt;
+    private String useEscrow;
+    private String cultureExpense;
+    private String type;
 }

@@ -11,31 +11,16 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class OrderService {
 
-    private final GameService gameService;
-    private final UserService userService;
-    private final SeatService seatService;
-
     private final OrderRepository orderRepository;
 
     // 주문 생성
-    public void createOrder(String orderId, Long gameId, Set<Long> seatIds, String loginId) {
-        Game game = gameService.getGame(gameId);
-        User user = userService.getUser(loginId);
-
-        List<Seat> seats = seatIds.stream()
-                .map(id -> {
-                    return seatService.getSeat(id);
-                })
-                .collect(Collectors.toList());
-
+    public void createOrder(String orderId, Game game, List<Seat> seats, User user) {
         Order order = Order.builder()
                 .id(orderId)
                 .game(game)
@@ -48,7 +33,6 @@ public class OrderService {
             OrderSeat orderSeat = OrderSeat.createOrderSeat(seat, order);
             orderSeats.add(orderSeat);
         }
-
         order.setOrderSeats(orderSeats);
 
         orderRepository.save(order);
@@ -69,21 +53,21 @@ public class OrderService {
     }
 
     public List<OrderSeat> getOrderSeats(String orderId) {
-        Order order = orderRepository.findById(orderId).orElseThrow(() -> {
-            throw new KboTicketException(ErrorCode.NOT_FOUND_ORDER);
-        });
+        Order order = getOrder(orderId);
 
         return order.getOrderSeats();
     }
 
-    public OrderResponse getOrderList(String email) {
-        User user = userService.getUser(email);
-        // 주문 목록
+    public OrderResponse getOrderList(User user) {
        List<Order> orders = orderRepository.findAllByUser(user);
-
-
         return OrderResponse.builder()
+                .orders(orders)
                 .build();
+    }
+
+    public void completeOrder(Order order) {
+        order.setStatus(OrderStatus.COMPLETE);
+        orderRepository.save(order);
     }
 }
 

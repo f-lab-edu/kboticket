@@ -6,7 +6,7 @@ import lombok.Getter;
 public enum TicketStatus {
     ISSUED("발급"),
     USED("사용"),
-    CANCELED("취소");
+    CANCELLED("취소");
 
     public final String value;
 
