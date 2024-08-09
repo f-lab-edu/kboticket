@@ -26,8 +26,6 @@ public class OrderSeat {
     @JoinColumn(name = "order_id")
     private Order order;
 
-    private int price;
-
     public static OrderSeat createOrderSeat(Seat seat, Order order) {
         return OrderSeat.builder()
                 .seat(seat)

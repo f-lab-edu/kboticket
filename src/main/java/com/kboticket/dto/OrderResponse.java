@@ -1,16 +1,14 @@
 package com.kboticket.dto;
 
-import com.kboticket.domain.Order;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
+
 @Builder
+@Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderResponse {
-    private List<Order> orders;
-
+    private List<OrdersDto> orders;
 }

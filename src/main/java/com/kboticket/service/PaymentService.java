@@ -38,7 +38,7 @@ public class PaymentService {
     /**
      *  결제 요청
      */
-    public void requestPayment(Game game, List<Seat> seats, User user, Long amount) {
+    public void requestPayment(Game game, List<Seat> seats, User user, Long amount, String orderId) {
         Long gameId = game.getId();
         Set<Long> seatIds = seats.stream()
                 .map(seat -> seat.getId())
@@ -49,7 +49,6 @@ public class PaymentService {
         //결제를 진행하는 유저가 해당 좌석을 선점한 유저인지
         isUserAuthorizedForPayment(gameId, seatIds, user.getEmail());
 
-        String orderId = generateOrderId();
         String orderNm = "";
 
         // 결제 생성
@@ -100,7 +99,7 @@ public class PaymentService {
     /**
      * 결제 취소 - 부분
      */
-    public PaymentCancelResponse paymentCancelPart(Payment payment, String cancelReason, Long cancelAmount) {
+    public PaymentCancelResponse paymentCancelPart(Payment payment, String cancelReason, int cancelAmount) {
         String paymentKey = payment.getPaymentKey();
         PaymentCancelInput input = PaymentCancelInput.builder()
                 .paymentKey(paymentKey)
@@ -199,10 +198,7 @@ public class PaymentService {
         return result;
     }
 
-    // generate orderId
-    private String generateOrderId() {
-        return UUID.randomUUID().toString().replaceAll("-", "").substring(0, 10);
-    }
+
 
     public Payment getPayment(String orderId) {
         return paymentRepository.findByOrderId(orderId).orElseThrow(() -> {
@@ -210,7 +206,7 @@ public class PaymentService {
         });
     }
 
-    public PaymentCancelResponse cancel(Order order, Payment payment, boolean isAllTicketCancelled) {
+    public PaymentCancelResponse cancel(Order order, Payment payment, boolean isAllTicketCancelled, int cancelPrice) {
         String cancelReason = "USER_REQUEST";
 
         PaymentCancelResponse response = null;
@@ -219,9 +215,6 @@ public class PaymentService {
             response = paymentCancelAll(payment, cancelReason);
 
         } else {
-            Long cancelPrice = order.getOrderSeats().stream()
-                    .mapToLong(seat -> seat.getPrice())
-                    .sum();
 
             order.setStatus(OrderStatus.CANCELLED_PART);    // 부분 취소인 경우
             response = paymentCancelPart(payment, cancelReason, cancelPrice);

@@ -23,8 +23,7 @@ public class StadiumController {
 
 
     @GetMapping("/view")
-    public CommonResponse<StadiumDto> view(@RequestParam String stadiumId,
-                                           @RequestParam String gameId) {
+    public CommonResponse<StadiumDto> view(@RequestParam String stadiumId) {
         StadiumDto stadium = stadiumService.view(stadiumId);
         List<SeatDto> seat = seatService.getSeatsByStadium(stadiumId);
         stadium.setSeatList(seat);

@@ -2,9 +2,10 @@ package com.kboticket.controller;
 
 import com.kboticket.common.CommonResponse;
 import com.kboticket.dto.TicketDto;
+import com.kboticket.dto.payment.PaymentCancelInput;
+import com.kboticket.dto.payment.PaymentCancelResponse;
 import com.kboticket.service.OrderFacade;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,10 +30,10 @@ public class TicketController {
     /**
      * 티켓 취소
      */
-    @PostMapping("/{ticketId}/cancel")
-    @ResponseStatus(HttpStatus.OK)
-    public void cancelTicket(@RequestParam String orderId,
-                             @RequestParam Long[] ticketId) {
-        orderFacade.cancelTickets(orderId, ticketId);
+    @PostMapping("/cancel")
+    public CommonResponse<PaymentCancelResponse> cancelTicket(@RequestBody PaymentCancelInput paymentCancelInput) {
+        PaymentCancelResponse response = orderFacade.cancelTickets(paymentCancelInput);
+
+        return new CommonResponse<>(response);
     }
 }

@@ -1,7 +1,7 @@
 package com.kboticket.repository;
 
 import com.kboticket.domain.Order;
-import com.kboticket.domain.User;
+import com.kboticket.service.OrderService;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -13,5 +13,6 @@ public interface OrderRepository extends JpaRepository<Order, String> {
 
     Optional<Order> findById(String id);
 
-    List<Order> findAllByUser(User user);
+    List<Order> findAllByUserId(Long id);
+
 }

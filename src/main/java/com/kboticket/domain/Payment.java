@@ -4,6 +4,8 @@ import com.kboticket.enums.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "payment")
 @Builder
@@ -35,5 +37,8 @@ public class Payment {
     private String failReason;
 
     private PaymentStatus status;
+
+    private LocalDateTime requestedAt;
+    private LocalDateTime approvedAt;
 
 }

@@ -25,7 +25,10 @@ public class Ticket {
 
     private String ticketNumber;
 
-    private String title;
+    @JoinColumn(name = "ticket_nm")
+    private String name;
+
+    private int price;
 
     private LocalDateTime issuedAt;
 

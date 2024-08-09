@@ -7,6 +7,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.util.Map;
+import java.util.function.Consumer;
+
 @RestControllerAdvice
 public class GlobalException {
 
@@ -16,8 +19,15 @@ public class GlobalException {
         Integer code = kboTicketException.getCode();
         String message = kboTicketException.getMessage();
         HttpStatus httpCode = kboTicketException.getHttpcode();
+        Map<String, Object> parameters = kboTicketException.getParameters();
+        Consumer<String> logger = kboTicketException.getLogger();
 
-        CommonResponse<?> response = new CommonResponse<>(code, message);
+        if (kboTicketException.getLogger() != null) {
+            kboTicketException.getLogger().accept(kboTicketException.getMessage());
+        }
+
+        //CommonResponse<?> response = new CommonResponse<>(code, message);
+        CommonResponse<?> response = new CommonResponse<>(code, message, parameters, logger);
 
         return ResponseEntity.status(httpCode).body(response);
     }

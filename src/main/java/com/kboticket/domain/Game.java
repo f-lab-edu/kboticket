@@ -37,14 +37,12 @@ public class Game {
     @OneToMany(mappedBy = "game")
     private List<Reservation> reservations;
 
-    private String title;
-
     private String gameDate;
 
     private String startTime;
 
     private String gameInfo;
 
-    @ColumnDefault("0")
-    private int attendance;     // 관중수
+
+
 }

@@ -26,6 +26,9 @@ public class Order {
     @JoinColumn(name = "game_id")
     private Game game;
 
+    @JoinColumn(name = "order_nm")
+    private String name;
+
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderSeat> orderSeats;
 
@@ -37,10 +40,4 @@ public class Order {
     @Column(name = "order_date")
     private LocalDateTime orderDate;
 
-    /* 주문 전체 금액 */
-    public long getTotalAmount() {
-        return orderSeats.stream()
-                .mapToLong(OrderSeat::getPrice)
-                .sum();
-    }
 }

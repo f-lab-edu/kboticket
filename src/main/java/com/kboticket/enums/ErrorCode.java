@@ -69,7 +69,7 @@ public enum ErrorCode {
     EXCEED_SEATS_LIMIT(30025, "The maximum number of seats : 4", HttpStatus.BAD_REQUEST),
     FAILED_RESERVATION(30026, "reservation be failed", HttpStatus.BAD_REQUEST),
     INVALID_START_DATE(30027, "Start date cannot be before the current date", HttpStatus.BAD_REQUEST),
-    USER_ALREADY_OCCUPIED_SEAT(30028, "The user has already claimed another seat", HttpStatus.BAD_REQUEST),
+    EXIST_SELECTED_SEATS(30028, "The selected seat(s) already exist(s)", HttpStatus.BAD_REQUEST),
     NOT_FOUND_RESERVATION(30029, "Reservation could not be found", HttpStatus.NOT_FOUND),
     FAILED_TRY_ROCK(30030, "Failed to acquire lock", HttpStatus.CONFLICT),
 

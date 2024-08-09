@@ -3,7 +3,6 @@ package com.kboticket.service;
 import com.kboticket.domain.Order;
 import com.kboticket.domain.OrderSeat;
 import com.kboticket.domain.Ticket;
-import com.kboticket.domain.User;
 import com.kboticket.dto.TicketDto;
 import com.kboticket.enums.ErrorCode;
 import com.kboticket.enums.TicketStatus;
@@ -31,7 +30,9 @@ public class TicketService {
                 .map(orderSeat -> Ticket.builder()
                             .orderSeat(orderSeat)
                             .status(TicketStatus.ISSUED)
+                            .name(orderSeat.getSeat().getLevel() + " " +  orderSeat.getSeat().getBlock() + " " +  orderSeat.getSeat().getNumber())
                             .issuedAt(LocalDateTime.now())
+                            .price(orderSeat.getSeat().getPrice())
                             .build())
                 .collect(Collectors.toList());
 
@@ -68,7 +69,7 @@ public class TicketService {
                     return TicketDto.builder()
                             .orderSeat(ticket.getOrderSeat())
                             .ticketNumber(ticket.getTicketNumber())
-                            .title(ticket.getTitle())
+                            .title(ticket.getName())
                             .status(ticket.getStatus())
                             .issuedAt(ticket.getIssuedAt())
                             .build();

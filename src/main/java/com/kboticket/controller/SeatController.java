@@ -27,8 +27,8 @@ public class SeatController {
      */
     @GetMapping("/list")
     public CommonResponse<List<Seat>> list() {
-        List<Seat> Seats = seatService.findAll();
-        return new CommonResponse<>(Seats);
+        List<Seat> seats = seatService.findAll();
+        return new CommonResponse<>(seats);
     }
 
     /**
