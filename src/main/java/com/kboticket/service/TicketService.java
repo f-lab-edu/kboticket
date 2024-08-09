@@ -1,18 +1,18 @@
 package com.kboticket.service;
 
-import com.kboticket.domain.*;
+import com.kboticket.domain.Order;
+import com.kboticket.domain.OrderSeat;
+import com.kboticket.domain.Ticket;
 import com.kboticket.dto.TicketDto;
 import com.kboticket.enums.ErrorCode;
+import com.kboticket.enums.TicketStatus;
 import com.kboticket.exception.KboTicketException;
-import com.kboticket.repository.GameRepository;
-import com.kboticket.repository.SeatRepository;
 import com.kboticket.repository.TicketRepository;
-import com.kboticket.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,70 +23,59 @@ import java.util.stream.Collectors;
 public class TicketService {
 
     private final TicketRepository ticketRepository;
-    private final SeatRepository seatRepository;
-    private final GameRepository gameRepository;
-    private final UserRepository userRepository;
 
-    public Ticket findOne(Long itemId, User user) {
-        return ticketRepository.findByIdAndUser(itemId, user)
-                .orElseThrow(() -> new KboTicketException(ErrorCode.NOT_FOUND_TICKET));
+    public void createTicket(Order order) {
+        List<OrderSeat> orderSeats = order.getOrderSeats();
+        List<Ticket> tickets = orderSeats.stream()
+                .map(orderSeat -> Ticket.builder()
+                            .orderSeat(orderSeat)
+                            .status(TicketStatus.ISSUED)
+                            .name(orderSeat.getSeat().getLevel() + " " +  orderSeat.getSeat().getBlock() + " " +  orderSeat.getSeat().getNumber())
+                            .issuedAt(LocalDateTime.now())
+                            .price(orderSeat.getSeat().getPrice())
+                            .build())
+                .collect(Collectors.toList());
+
+        ticketRepository.saveAll(tickets);
     }
 
-    public List<TicketDto> findAll() {
-        List<Ticket> ticketList = ticketRepository.findAll();
+    public void cancelTickets(Order order, Long[] ticketIds) {
+        // 티켓 상태 변경 (ISSUED -> CANCELLED)
+        List<Ticket> ticketsToCancel = Arrays.stream(ticketIds)
+                .map(id ->  {
+                    return ticketRepository.findById(id).orElseThrow(() -> {
+                        throw new KboTicketException(ErrorCode.NOT_FOUND_TICKET);
+                    });
+                }).collect(Collectors.toList());
 
-        List<TicketDto> ticketDtoList = new ArrayList<>();
-        for (Ticket ticket : ticketList) {
-            TicketDto ticketDto = TicketDto.builder()
-                    .id(ticket.getId())
-                    .game(ticket.getGame())
-                    .seat(ticket.getSeat())
-                    .order(ticket.getOrder())
-                    .user(ticket.getUser())
-                    .reserved(TicketStatus.RESERVED)
-                    .build();
-
-            ticketDtoList.add(ticketDto);
+        for (Ticket ticket : ticketsToCancel) {
+            if (ticket.getStatus() == TicketStatus.CANCELLED) {
+                throw new KboTicketException(ErrorCode.TICKET_ALREADY_CANCELLED);
+            }
+            ticket.setStatus(TicketStatus.CANCELLED);
         }
-        return ticketDtoList;
+
+        ticketRepository.saveAll(ticketsToCancel);
     }
 
-    // 좌석 지정 -> 티켓 생성
-    public void createTicket(Game game, User user, String seatIds) {
-        String[] seatIdsArr = seatIds.split(",");
+    // 티켓 록록
+    public List<TicketDto> getTickets(Order order) {
+        List<OrderSeat> orderSeats = order.getOrderSeats();
 
-        List<Ticket> tickets = Arrays.stream(seatIdsArr)
-                .map(id -> {
-                    Long seatId = Long.valueOf(id);
-                    Seat seat = seatRepository.getReferenceById(seatId);
-                    return Ticket.builder()
-                            .game(game)
-                            .seat(seat)
-                            .user(user)
-                            .reserved(TicketStatus.RESERVED)
+        List<TicketDto> tickets = orderSeats.stream()
+                .map(orderSeat -> {
+                    Ticket ticket = ticketRepository.findByOrderSeat(orderSeat);
+
+                    return TicketDto.builder()
+                            .orderSeat(ticket.getOrderSeat())
+                            .ticketNumber(ticket.getTicketNumber())
+                            .title(ticket.getName())
+                            .status(ticket.getStatus())
+                            .issuedAt(ticket.getIssuedAt())
                             .build();
                 })
                 .collect(Collectors.toList());
 
-        ticketRepository.saveAll(tickets);
-
+        return tickets;
     }
-
-    public void reserveTicket(Long[] seatIds) {
-        List<Ticket> tickets = Arrays.stream(seatIds)
-                .map(seatId -> {
-                    Ticket ticket = ticketRepository.getReferenceById(seatId);
-                    ticket.setReserved(TicketStatus.RESERVED);
-
-                    return ticket;
-                })
-                .collect(Collectors.toList());
-
-        ticketRepository.saveAll(tickets);
-
-    }
-
-    public void cancelTicket(Long ticketId, Long userId) {
-    }
-
 }

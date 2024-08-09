@@ -11,9 +11,8 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PaymentHistoryDto {
-
-    private Long historyId;
+public class PaymentHistoryResponse {
+    private Long id;
     private Long amount;
     private Long orderName;
     private LocalDateTime createdAt;

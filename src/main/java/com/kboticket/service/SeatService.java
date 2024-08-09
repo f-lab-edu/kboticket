@@ -1,20 +1,15 @@
 package com.kboticket.service;
 
-import com.kboticket.domain.Game;
 import com.kboticket.domain.Seat;
-import com.kboticket.domain.Ticket;
 import com.kboticket.dto.SeatDto;
 import com.kboticket.enums.ErrorCode;
 import com.kboticket.exception.KboTicketException;
-import com.kboticket.repository.GameRepository;
 import com.kboticket.repository.SeatRepository;
-import com.kboticket.repository.TicketRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -25,11 +20,6 @@ import java.util.stream.Collectors;
 public class SeatService {
 
     private final SeatRepository seatRepository;
-    private final GameRepository gameRepository;
-    private final TicketRepository ticketRepository;
-
-    private static final String PREFIX = "seat:";
-    private static final long LOCK_EXPIRE_TIME = 3 * 60 * 1000; // 3분
 
     public List<Seat> findAll() {
         return seatRepository.findAll();
@@ -53,45 +43,15 @@ public class SeatService {
 
         return seatDtoList;
     }
-    
 
-    // 좌석 선택 seatIds, set으로
-//    public List<SeatDto> selectSeats(Long[] seatIds, Long userId, Long gameId){
-//        // 선점된 자리인지 vali -> 선점되었다면 exception
-//        if (!isHoldSeats(seatIds, gameId)) {    // 선점된 자리인지
-//           throw new KboTicketException(ErrorCode.SEAT_ALREADY_RESERVED);
-//        }
-//
-//        List<SeatDto> seatDtoList = new ArrayList<>();
-//        for (Long id : seatIds) {
-//            Optional<Seat> optionalSeat = seatRepository.findById(id);
-//            Seat seat = optionalSeat.get();
-//
-//            SeatDto seatDto = SeatDto.builder()
-//                    .id(seat.getId())
-//                    .build();
-//            seatDtoList.add(seatDto);
-//        }
-//
-//        return seatDtoList;
-//    }
-
-//    private boolean isHoldSeats(Long[] seatIds, Long gameId) {
-//        // 자리 선점이 가능한지 확인
-//        Game game = gameRepository.findById(gameId).orElseThrow(() -> new KboTicketException(ErrorCode.NOT_FOUND_GAME));
-//        List<Ticket> tickets = ticketRepository.findByGame(game);
-//
-//        for (Long seatId : seatIds) {
-//            if (ticketRepository.existsBySeatIdAndGameId(seatId, gameId)) {
-//                throw new KboTicketException(ErrorCode.SEAT_ALREADY_RESERVED);
-//            }
-//        }
-//        return true;
-//    }
-
-    // 좌석 생성 임시
+    // 좌석 생성
     public void saveSeats(List<Seat> seatList) {
         seatRepository.saveAll(seatList);
+    }
+
+    public Seat getSeat(Long seatId) {
+        return seatRepository.findById(seatId)
+                .orElseThrow(() -> new KboTicketException(ErrorCode.NOT_FOUND_SEAT_INFO));
     }
 
     // 좌석 정보
@@ -135,23 +95,5 @@ public class SeatService {
                         .seatZ(seat.getSeatZ())
                         .level(seat.getLevel()).build())
                 .collect(Collectors.toList());
-    }
-
-    public List<Seat> getSeatsById(String seatsStr) {
-        String[] seatsStrArr = seatsStr.split(",");
-
-        Long[] seatIds = Arrays.stream(seatsStrArr)
-                .map(id -> Long.parseLong(id))
-                .toArray(Long[]::new);
-
-        List<Seat> seats = Arrays.stream(seatIds)
-                .map(id -> {
-                    return seatRepository.findById(id).orElseThrow(() -> {
-                        throw new KboTicketException(ErrorCode.NOT_FOUND_SEAT_INFO);
-                    });
-                })
-                .collect(Collectors.toList());
-
-        return seats;
     }
 }

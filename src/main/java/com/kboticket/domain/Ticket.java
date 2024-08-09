@@ -1,7 +1,10 @@
 package com.kboticket.domain;
 
+import com.kboticket.enums.TicketStatus;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "ticket")
@@ -17,22 +20,18 @@ public class Ticket {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "game_id")
-    private Game game;
+    @JoinColumn(name = "order_seat_id")
+    private OrderSeat orderSeat;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id")
-    private Order order;
+    private String ticketNumber;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "seat_id")
-    private Seat seat;
+    @JoinColumn(name = "ticket_nm")
+    private String name;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+    private int price;
 
-    private TicketStatus reserved;
+    private LocalDateTime issuedAt;
 
+    private TicketStatus status;
 
 }

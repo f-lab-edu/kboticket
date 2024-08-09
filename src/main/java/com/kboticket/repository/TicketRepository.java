@@ -1,9 +1,7 @@
 package com.kboticket.repository;
 
-import com.kboticket.domain.Game;
+import com.kboticket.domain.OrderSeat;
 import com.kboticket.domain.Ticket;
-import com.kboticket.domain.TicketStatus;
-import com.kboticket.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -17,9 +15,6 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
 
     List<Ticket> findAll();
 
-    List<Ticket> findByGame(Game game);
+    Ticket findByOrderSeat(OrderSeat orderSeat);
 
-    Optional<Ticket> findByIdAndUser(Long itemId, User user);
-
-    boolean existsBySeatIdAndGameId(Long seatId, Long gameId);
 }

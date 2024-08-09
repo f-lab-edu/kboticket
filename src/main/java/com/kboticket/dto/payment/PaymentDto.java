@@ -8,7 +8,6 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PaymentDto {
-
     private String paymentKey;
     private String orderId;
     private Long amount;

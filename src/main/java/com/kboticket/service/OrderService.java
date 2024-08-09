@@ -1,63 +1,91 @@
 package com.kboticket.service;
 
-import com.kboticket.domain.Order;
-import com.kboticket.domain.Reservation;
-import com.kboticket.domain.Ticket;
+import com.kboticket.domain.*;
+import com.kboticket.dto.OrderResponse;
+import com.kboticket.dto.OrdersDto;
+import com.kboticket.enums.ErrorCode;
+import com.kboticket.exception.KboTicketException;
 import com.kboticket.repository.OrderRepository;
-import com.kboticket.repository.ReservationRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.jaxb.SpringDataJaxb;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class OrderService {
+
     private final OrderRepository orderRepository;
-    private final ReservationRepository reserveRepository;
 
-    public Long order(Long userId, String reservationId) {
+    // 주문 생성
+    public void createOrder(String orderId, Game game, List<Seat> seats, User user) {
+        Order order = Order.builder()
+                .id(orderId)
+                .game(game)
+                .user(user)
+                .status(OrderStatus.ORDER)
+                .build();
 
-        List<Reservation> reservations = reserveRepository.findById(reservationId);
-
-        List<Ticket> ticketList = new ArrayList<>();
-        for (Reservation reservation : reservations) {
-            // 티켓 생성
-            Ticket ticket = Ticket.builder()
-                    .seat(reservation.getSeat())
-                    .game(reservation.getGame())
-                    .user(reservation.getUser())
-                    .build();
-            ticketList.add(ticket);
+        List<OrderSeat> orderSeats = new ArrayList<>();
+        for (Seat seat : seats) {
+            OrderSeat orderSeat = OrderSeat.createOrderSeat(seat, order);
+            orderSeats.add(orderSeat);
         }
+        order.setOrderSeats(orderSeats);
 
-        Order order = Order.createOrder(ticketList.get(0).getUser(), ticketList);
-
-        // 예매 저장
         orderRepository.save(order);
-
-        return order.getId();
     }
 
-    /**
-     * 예매 취소
-     */
-    public void cancelOrder(Long orderId) {
-        // 주문 엔티티 조회
-        Optional<Order> optionalOrder = orderRepository.findById(orderId);
-        Order order = optionalOrder.get();
+    public Order getOrder(String orderId) {
+        return orderRepository.findById(orderId).orElseThrow(() -> {
+            throw new KboTicketException(ErrorCode.NOT_FOUND_ORDER);
+        });
+    }
 
-        List<Ticket> tickets = order.getTickets();
-        for (Ticket ticket : tickets) {
-            // ticket -> cancel
-            //ticket.cancel();
-        }
+    public List<OrderSeat> getOrderSeats(String orderId) {
+        Order order = getOrder(orderId);
 
-        // 주문 취소
+        return order.getOrderSeats();
+    }
 
+    public OrderResponse getOrderList(User user) {
+        log.info("userId === > " + user.getId());
+        List<Order> orders = orderRepository.findAllByUserId(user.getId());
+
+        List<OrdersDto> ordersDtos = orders.stream()
+                .map(order -> {
+                    return OrdersDto.builder()
+                            .orderId(order.getId())
+                            .title(order.getName())
+                            .gameDate(order.getGame().getGameDate())
+                            .orderDate(order.getOrderDate())
+                            .status(order.getStatus())
+                            .build();
+                })
+                .collect(Collectors.toList());
+
+        return OrderResponse.builder()
+                .orders(ordersDtos)
+                .build();
+    }
+
+    public void completeOrder(Order order) {
+        String title = order.getGame().getHomeTeam().getName() +
+                        " VS " +  order.getGame().getAwayTeam().getName();
+        order.setStatus(OrderStatus.COMPLETE);
+        order.setOrderDate(LocalDateTime.now());
+        order.setName(title);
+        orderRepository.save(order);
     }
 }
+
+

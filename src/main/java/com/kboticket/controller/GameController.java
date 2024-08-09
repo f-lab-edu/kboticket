@@ -5,7 +5,6 @@ import com.kboticket.dto.SeatCountDto;
 import com.kboticket.dto.SeatDto;
 import com.kboticket.dto.response.GameResponse;
 import com.kboticket.service.GameService;
-import com.kboticket.service.ReservationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,7 +31,7 @@ public class GameController {
 
         return new CommonResponse<>(seatCounts);
     }
-// enum, 파라미
+
     @GetMapping("/{gameId}/seats-block")
     public CommonResponse<List<SeatCountDto>> getSeatsByBlock(@PathVariable Long gameId,
                                                               @RequestParam String level) {

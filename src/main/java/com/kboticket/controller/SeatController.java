@@ -27,8 +27,8 @@ public class SeatController {
      */
     @GetMapping("/list")
     public CommonResponse<List<Seat>> list() {
-        List<Seat> Seats = seatService.findAll();
-        return new CommonResponse<>(Seats);
+        List<Seat> seats = seatService.findAll();
+        return new CommonResponse<>(seats);
     }
 
     /**
@@ -41,17 +41,6 @@ public class SeatController {
 
         return new CommonResponse(seatDto);
     }
-
-//    /**
-//     * 좌석 예약
-//     */
-//    @PostMapping("/seat/reserve")
-//    public void reserveSeat(@RequestParam Long[] seatIds,
-//                            @RequestParam Long userId,
-//                            @RequestParam Long gameId) {
-//        seatService.selectSeats(seatIds, userId, gameId);
-//
-//    }
 
     /**
      * 경기장 좌석 세팅

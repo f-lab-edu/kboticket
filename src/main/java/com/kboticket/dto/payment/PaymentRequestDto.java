@@ -2,16 +2,17 @@ package com.kboticket.dto.payment;
 
 import lombok.*;
 
+import java.util.Set;
+
 @Builder
 @Getter @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class PaymentRequesteDto {
+public class PaymentRequestDto {
 
     private String orderId;
-    // private String paymentKey;
     private Long gameId;
-    private String seatIds;
+    private Set<Long> seatIds;
     private Long amount;
 
 }

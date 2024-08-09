@@ -43,6 +43,6 @@ public class Game {
 
     private String gameInfo;
 
-    @ColumnDefault("0")
-    private int attendance;     // 관중수
+
+
 }

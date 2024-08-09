@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/games")
 @RequiredArgsConstructor
-public class GameSrchController {
+public class GameSearchController {
 
     private final GameService gameService;
 
