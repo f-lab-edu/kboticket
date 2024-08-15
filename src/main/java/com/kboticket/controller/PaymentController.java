@@ -21,7 +21,7 @@ public class PaymentController {
     private final OrderFacade orderFacade;
 
     /**
-     * 결제 요청
+     * 결제  요청
      */
     @PostMapping
     @ResponseStatus(HttpStatus.OK)
