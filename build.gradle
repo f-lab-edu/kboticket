@@ -72,7 +72,7 @@ tasks.withType(JavaCompile) {
 	options.encoding = 'UTF-8'
 }
 
-compileQuerydsl{
+tasks.named('compileQuerydsl') {
 	options.annotationProcessorPath = configurations.querydsl
 }
 
