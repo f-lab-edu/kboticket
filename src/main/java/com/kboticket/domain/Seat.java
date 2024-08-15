@@ -2,6 +2,7 @@ package com.kboticket.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Builder
@@ -42,6 +43,7 @@ public class Seat {
     @Column(name = "seat_number")
     private String number;
 
-    private int price = 0;
+    @ColumnDefault("0")
+    private int price;
 
 }
