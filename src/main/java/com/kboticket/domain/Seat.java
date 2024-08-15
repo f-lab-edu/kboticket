@@ -42,6 +42,6 @@ public class Seat {
     @Column(name = "seat_number")
     private String number;
 
-    private int price;
+    private int price = 0;
 
 }
