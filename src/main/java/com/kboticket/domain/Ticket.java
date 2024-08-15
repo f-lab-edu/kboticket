@@ -28,7 +28,7 @@ public class Ticket {
     @JoinColumn(name = "ticket_nm")
     private String name;
 
-    private int price;
+    private int price = 0;
 
     private LocalDateTime issuedAt;
 
