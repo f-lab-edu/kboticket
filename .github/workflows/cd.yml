@@ -1,4 +1,4 @@
-name: Java CD with Gradle
+name: CD
 
 on:
   push:
@@ -47,3 +47,6 @@ jobs:
           sudo docker pull ${{ secrets.DOCKER_USERNAME }}/ticketing-repository
           sudo docker run -d -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/ticketing-repository
 
+
+    - name: Build with Gradle Wrapper
+      run: ./gradlew build  --version
