@@ -1,7 +1,7 @@
 name: Java CD with Gradle
 
 on:
-  push_request:
+  push:
     branches: [ "develop" ]
 
 jobs:
@@ -31,8 +31,8 @@ jobs:
     - name: Docker build & Push
       run: |
         docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWD }}
-        docker build -f Dockerfile -t ${{ secrets.DOCKER_USERNAME }}/readnshare .
-        docker push ${{ secrets.DOCKER_USERNAME }}/readnshare
+        docker build -f Dockerfile -t ${{ secrets.DOCKER_USERNAME }}/ticketing-repository .
+        docker push ${{ secrets.DOCKER_USERNAME }}/ticketing-repository
           
     - name: Deploy Images with Docker compose
         uses: appleboy/ssh-action@master
