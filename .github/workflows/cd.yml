@@ -33,17 +33,11 @@ jobs:
       with:
         gradle-version: '8.7'
 
-    - name: Grant Execute Permission For Gradlew
-        run: chmod +x gradlew
-
-      - name: Build With Gradle
-        run: ./gradlew build -x test
-
-      - name: Docker build & Push
-        run: |
-          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWD }}
-          docker build -f Dockerfile -t ${{ secrets.DOCKER_USERNAME }}/readnshare .
-          docker push ${{ secrets.DOCKER_USERNAME }}/readnshare
+    - name: Docker build & Push
+      run: |
+        docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWD }}
+        docker build -f Dockerfile -t ${{ secrets.DOCKER_USERNAME }}/readnshare .
+        docker push ${{ secrets.DOCKER_USERNAME }}/readnshare
           
     - name: Build with Gradle Wrapper
       run: ./gradlew build
@@ -57,5 +51,6 @@ jobs:
           script: |
             sudo docker stop $(docker ps -a -q)
             sudo docker rm $(docker ps -a -q)
-            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/readnshare
-            sudo docker run -d -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/readnshare
+            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/ticketing-repository
+            sudo docker run -d -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/ticketing-repository
+
