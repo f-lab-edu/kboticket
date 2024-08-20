@@ -28,6 +28,16 @@ jobs:
       with:
         gradle-version: '8.7'
 
+    - name: Grant Execute Permission For Gradlew
+      run: chmod +x gradlew
+
+    - name: Build With Gradle
+      run: ./gradlew build -x test
+
+    - name: Check Docker Username
+      run: echo ${{ secrets.DOCKER_USERNAME }}
+
+
     - name: Docker build & Push
       run: |
         docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWD }}
@@ -42,11 +52,7 @@ jobs:
         password: ${{ secrets.SERVER_PASSWORD }}
         script_stop: true
         script: |
-          sudo docker stop $(docker ps -a -q)
-          sudo docker rm $(docker ps -a -q)
+          sudo docker stop $(sudo docker ps -a -q)
+          sudo docker rm $(sudo docker ps -a -q)
           sudo docker pull ${{ secrets.DOCKER_USERNAME }}/ticketing-repository
           sudo docker run -d -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/ticketing-repository
-
-
-    - name: Build with Gradle Wrapper
-      run: ./gradlew build  --version
