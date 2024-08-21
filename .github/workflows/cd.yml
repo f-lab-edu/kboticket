@@ -49,8 +49,10 @@ jobs:
           password: ${{ secrets.SERVER_PASSWORD }}
           script_stop: true
           script: |
-            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/ticketing-repository
-            sudo docker stop $(docker ps -a -q)
-            sudo docker rm $(docker ps -a -q)
+            container_ids=$(sudo docker ps -q)
+            if [ -n "$container_ids" ]; then
+              sudo docker stop $container_ids
+              sudo docker rm $container_ids
+            fi
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/ticketing-repository
             sudo docker run -d -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/ticketing-repository
