@@ -49,6 +49,7 @@ jobs:
           password: ${{ secrets.SERVER_PASSWORD }}
           script_stop: true
           script: |
+            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/ticketing-repository
             sudo docker stop $(docker ps -a -q)
             sudo docker rm $(docker ps -a -q)
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/ticketing-repository
