@@ -1,14 +1,29 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/kbo_ticket?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    url: jdbc:mysql://localhost:3306/kbo_ticket?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
     username: root
     password: dbfla1004
+#  sql:
+    init:
+      mode: always
+
+    hikari:
+      cachePrepStmts: true
+      prepStmtCacheSize: 250
+      prepStmtCacheSqlLimit: 2048
+      useServerPrepStmts: true
+      useLocalSessionState: true
+      rewriteBatchedStatements: true
+      cacheResultSetMetadata: true
+      cacheServerConfiguration: true
+      elideSetAutoCommits: true
+      maintainTimeStats: false
 
   jpa:
     open-in-view: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
       use-new-id-generator-mappings=true: false
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
@@ -17,12 +32,51 @@ spring:
       hibernate.format_sql: true
       dialect: org.hibernate.dialect.MySQL8InnoDBDialect
     defer-datasource-initialization: true
+#    generate-ddl: true
+
+  mail:
+    host: smtp.naver.com
+    port: 465
+    username: ulim9707@naver.com
+    password: dbfla970709**
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+        auth-code-expiration-millis: 1800000
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
 
 jwt:
-  issuer: byourim@gmail.com
-  secret_key: kboticket
+  issuer: test@gmail.com
+  secret-key: kboticket
+  token-prefix: Bearer
+  header-string: Authorization
 
 
 logging.level:
   org.hibernate.SQL: debug
   org.hibernate.type: trace
+
+
+coolsms:
+  apikey: "NCSIXZBREJIIHWBH"
+  apisecret: "1LAGEKICZLRWCTGUUXTDOUECQBHKHASJ"
+  fromnumber: "01099495201"
+
+payment:
+  client-key: test_ck_4yKeq5bgrpXkgK7lG4NxrGX0lzW6
+  secret-key: test_sk_QbgMGZzorzzyAGEAgokjrl5E1em4
+  base-url: https://api.tosspayments.com/v1/payments/
+  confirm-endpoint: /confirm
+  cancel-endpoint: /%s/cancel
