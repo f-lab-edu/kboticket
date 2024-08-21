@@ -2,7 +2,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.2.5'
 	id 'io.spring.dependency-management' version '1.1.4'
-	id 'com.ewerk.gradle.plugins.querydsl' version '1.0.10'
+	// id 'com.ewerk.gradle.plugins.querydsl' version '1.0.10'
 }
 
 group = 'com'
@@ -16,16 +16,10 @@ configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
 	}
-	querydsl.extendsFrom compileClasspath
 }
 
 repositories {
 	mavenCentral()
-}
-
-querydsl {
-	jpa = true
-	querydslSourcesDir = "src/main/generated"
 }
 
 dependencies {
@@ -59,6 +53,8 @@ dependencies {
 	annotationProcessor 'jakarta.persistence:jakarta.persistence-api'
 	annotationProcessor 'jakarta.annotation:jakarta.annotation-api'
 	annotationProcessor 'com.querydsl:querydsl-apt:5.0.0:jakarta'
+	annotationProcessor 'com.querydsl:querydsl-apt:5.0.0:jpa' // JPA 사용 시
+
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
@@ -68,11 +64,22 @@ tasks.named('test') {
 	useJUnitPlatform()
 }
 
+/**
+ * Querydls 설정 부분
+ */
+
+def generated = "src/main/generated"
+
 tasks.withType(JavaCompile) {
 	options.encoding = 'UTF-8'
+	options.annotationProcessorGeneratedSourcesDirectory(file(generated))
 }
 
-tasks.named('compileQuerydsl') {
-	options.annotationProcessorPath = configurations.querydsl
+
+sourceSets {
+	main.java.srcDir generated
 }
 
+clean {
+	delete file(generated)
+}
