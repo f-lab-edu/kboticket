@@ -19,7 +19,7 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
 
-#    - name: Make application-prod.yml  
+#    - name: Make application-prod.yml
 #      run: |
 #        cd ./src/main/resources
 #        touch ./application-prod.yml
