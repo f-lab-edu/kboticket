@@ -56,3 +56,4 @@ jobs:
             fi
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/ticketing-repository
             sudo docker run -d -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/ticketing-repository
+            sudo docker system prune
