@@ -1,17 +1,5 @@
-#spring:
-#  datasource:
-#    driver-class-name: com.mysql.cj.jdbc.Driver
-#    url: jdbc:mysql://localhost:3306/kbo_ticket?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
-#    username: root
-#    password: dbfla1004
-
-
 spring:
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://db-ou80o.pub-cdb.ntruss.com:3306/kboticket?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
-    username: kboadmin
-    password: dbfla1004**
 #  sql:
     init:
       mode: always
@@ -31,7 +19,7 @@ spring:
   jpa:
     open-in-view: true
     hibernate:
-      ddl-auto: none
+      ddl-auto: update
       use-new-id-generator-mappings=true: false
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
@@ -42,27 +30,10 @@ spring:
     defer-datasource-initialization: true
 #    generate-ddl: true
 
-  mail:
-    host: smtp.naver.com
-    port: 465
-    username: ulim9707@naver.com
-    password: dbfla970709**
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
-            required: true
-          connectiontimeout: 5000
-          timeout: 5000
-          writetimeout: 5000
-        auth-code-expiration-millis: 1800000
 
-  data:
-    redis:
-      host: localhost
-      port: 6379
+  profiles:
+    active: local
+    include: secret
 
 
 jwt:
@@ -70,21 +41,3 @@ jwt:
   secret-key: kboticket
   token-prefix: Bearer
   header-string: Authorization
-
-
-logging.level:
-  org.hibernate.SQL: debug
-  org.hibernate.type: trace
-
-
-coolsms:
-  apikey: "NCSIXZBREJIIHWBH"
-  apisecret: "1LAGEKICZLRWCTGUUXTDOUECQBHKHASJ"
-  fromnumber: "01099495201"
-
-payment:
-  client-key: test_ck_4yKeq5bgrpXkgK7lG4NxrGX0lzW6
-  secret-key: test_sk_QbgMGZzorzzyAGEAgokjrl5E1em4
-  base-url: https://api.tosspayments.com/v1/payments/
-  confirm-endpoint: /confirm
-  cancel-endpoint: /%s/cancel
