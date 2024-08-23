@@ -19,17 +19,12 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
 
-#    - name: Make application-prod.yml  
-#      run: |
-#        cd ./src/main/resources
-#        touch ./application-prod.yml
-#        echo "${{ secrets.APPLICATION_PROD_YML }}" > ./application-prod.yml
-#      shell: bash
-
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
       with:
         gradle-version: '7.6'
 
     - name: Build with Gradle Wrapper
-      run: ./gradlew build  --version
+      run: |
+        ./gradlew build --version
+      shell: bash
