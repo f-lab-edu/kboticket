@@ -1,20 +1,19 @@
 package com.kboticket.service;
 
 import com.kboticket.domain.Game;
-import com.kboticket.dto.GameDto;
-import com.kboticket.dto.GameSearchDto;
-import com.kboticket.dto.SeatCountDto;
-import com.kboticket.dto.SeatDto;
+import com.kboticket.dto.game.GameDto;
+import com.kboticket.dto.game.GameSearchDto;
+import com.kboticket.dto.seat.SeatCountDto;
+import com.kboticket.dto.seat.SeatDto;
 import com.kboticket.dto.response.GameResponse;
 import com.kboticket.enums.ErrorCode;
 import com.kboticket.exception.KboTicketException;
-import com.kboticket.repository.GameRepository;
+import com.kboticket.repository.game.GameRepository;
 import com.kboticket.repository.SeatRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 

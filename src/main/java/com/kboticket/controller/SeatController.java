@@ -1,35 +1,25 @@
 package com.kboticket.controller;
 
 import com.kboticket.common.CommonResponse;
-import com.kboticket.domain.Seat;
 import com.kboticket.domain.Stadium;
-import com.kboticket.dto.SeatDto;
+import com.kboticket.dto.seat.SeatDto;
 import com.kboticket.enums.StadiumInfo;
 import com.kboticket.service.SeatService;
-import com.kboticket.service.StadiumService;
 import com.kboticket.util.SeatArrangement;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Arrays;
-import java.util.List;
 
 @RestController
 @RequestMapping("/seat")
 @RequiredArgsConstructor
 public class SeatController {
 
-    private final StadiumService stadiumService;
     private final SeatService seatService;
-
-    /**
-     * 특정 경기장의 좌석 목록
-     */
-    @GetMapping("/list")
-    public CommonResponse<List<Seat>> list() {
-        List<Seat> seats = seatService.findAll();
-        return new CommonResponse<>(seats);
-    }
 
     /**
      * 좌석 정보 조회

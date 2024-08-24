@@ -1,7 +1,7 @@
 package com.kboticket.controller;
 
 import com.kboticket.common.CommonResponse;
-import com.kboticket.dto.SeatDto;
+import com.kboticket.dto.seat.SeatDto;
 import com.kboticket.dto.StadiumDto;
 import com.kboticket.dto.response.SeatsResponse;
 import com.kboticket.enums.ErrorCode;

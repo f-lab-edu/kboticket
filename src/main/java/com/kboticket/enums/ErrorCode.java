@@ -23,6 +23,8 @@ public enum ErrorCode {
     PASSWORD_NOT_FOUND(10011, "Password not found", HttpStatus.NOT_FOUND),
     PASSWORD_MISMATCH(10012, "Password and confirmpassword mismatch", HttpStatus.BAD_REQUEST),
     GENERATE_TEMP_PW_ERR(10013, "Generate temp Password Failed", HttpStatus.CONFLICT),
+    INCORRECT_PASSWORD(10014, "The password is incorrect", HttpStatus.NOT_FOUND),
+    INVALID_AUTHORIZATION(10015, "Invalid or missing Authorization", HttpStatus.BAD_REQUEST),
 
 
 

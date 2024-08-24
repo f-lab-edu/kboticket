@@ -1,6 +1,6 @@
 package com.kboticket.dto.response;
 
-import com.kboticket.dto.SeatDto;
+import com.kboticket.dto.seat.SeatDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
