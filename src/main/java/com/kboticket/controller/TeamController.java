@@ -20,7 +20,7 @@ import java.util.stream.Stream;
 public class TeamController {
 
     /**
-     * 팀 리스트 조회
+     * 팀 목록 조회
      */
     @GetMapping
     public CommonResponse<TeamsResponse> list() {

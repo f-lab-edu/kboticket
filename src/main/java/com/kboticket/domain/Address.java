@@ -1,8 +1,10 @@
 package com.kboticket.domain;
 
 import jakarta.persistence.Embeddable;
+import lombok.Builder;
 import lombok.Getter;
 
+@Builder
 @Embeddable
 @Getter
 public class Address {
@@ -18,5 +20,4 @@ public class Address {
         this.street = street;
         this.zipcode = zipcode;
     }
-
 }

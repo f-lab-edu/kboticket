@@ -9,7 +9,18 @@ spring:
     hibernate:
       ddl-auto: none
 
-  data:
-    redis:
-      host: localhost
-      port: 6379
+
+
+    # Redis 인스턴스 설정
+redis:
+  ticketing:
+    host: 118.67.132.142
+    port: 6379
+    password: kboticketredis
+    database: 1
+
+  user:
+    host: 101.101.210.13
+    port: 6380
+    password: kboticketredis
+    database: 2

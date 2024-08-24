@@ -1,10 +1,10 @@
 package com.kboticket.service;
 
 import com.kboticket.domain.*;
-import com.kboticket.dto.OrderResponse;
 import com.kboticket.dto.ReservedSeatInfo;
 import com.kboticket.dto.TicketDto;
 import com.kboticket.dto.payment.*;
+import com.kboticket.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.redisson.api.RBucket;
 import org.redisson.api.RKeys;
@@ -38,7 +38,7 @@ public class OrderFacade {
         Set<Long> seatIds = checkUserSelectedSeats(loginId, gameId);
 
         Game game = gameService.getGame(gameId);
-        User user = userService.getUser(loginId);
+        User user = userService.getUserByEmail(loginId);
 
         List<Seat> seats = seatIds.stream()
                 .map(seatService::getSeat)
@@ -125,12 +125,9 @@ public class OrderFacade {
                 .allMatch(existingTicketIds::contains);
     }
 
-    // 주문 내역
-    public OrderResponse getOrderList(String email) {
-        User user = userService.getUser(email);
-        return orderService.getOrderList(user);
-    }
+    // 주문 상세
 
+    // 주문 > 티켓 내역
     public List<TicketDto> getTickets(String orderId) {
         Order order = orderService.getOrder(orderId);
 

@@ -1,7 +1,7 @@
 package com.kboticket.config;
 
 import com.kboticket.config.jwt.JwtTokenProvider;
-import com.kboticket.service.LogoutService;
+import com.kboticket.service.login.LogoutService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

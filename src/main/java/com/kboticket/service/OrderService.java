@@ -1,22 +1,21 @@
 package com.kboticket.service;
 
+import com.kboticket.controller.order.dto.OrderListResponse;
 import com.kboticket.domain.*;
-import com.kboticket.dto.OrderResponse;
-import com.kboticket.dto.OrdersDto;
+import com.kboticket.dto.order.OrderDto;
+import com.kboticket.dto.order.OrderSearchDto;
 import com.kboticket.enums.ErrorCode;
 import com.kboticket.exception.KboTicketException;
-import com.kboticket.repository.OrderRepository;
+import com.kboticket.repository.order.OrderRepository;
+import com.kboticket.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.jaxb.SpringDataJaxb;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -51,30 +50,12 @@ public class OrderService {
         });
     }
 
-    public List<OrderSeat> getOrderSeats(String orderId) {
-        Order order = getOrder(orderId);
+    public OrderListResponse getOrderList(OrderSearchDto orderSearchDto, String cursor, int limit) {
 
-        return order.getOrderSeats();
-    }
+        List<OrderDto> orders = orderRepository.getByCursor(orderSearchDto, cursor, limit);
 
-    public OrderResponse getOrderList(User user) {
-        log.info("userId === > " + user.getId());
-        List<Order> orders = orderRepository.findAllByUserId(user.getId());
-
-        List<OrdersDto> ordersDtos = orders.stream()
-                .map(order -> {
-                    return OrdersDto.builder()
-                            .orderId(order.getId())
-                            .title(order.getName())
-                            .gameDate(order.getGame().getGameDate())
-                            .orderDate(order.getOrderDate())
-                            .status(order.getStatus())
-                            .build();
-                })
-                .collect(Collectors.toList());
-
-        return OrderResponse.builder()
-                .orders(ordersDtos)
+        return OrderListResponse.builder()
+                .orders(orders)
                 .build();
     }
 
@@ -86,6 +67,7 @@ public class OrderService {
         order.setName(title);
         orderRepository.save(order);
     }
+
 }
 
 

@@ -2,7 +2,7 @@ package com.kboticket.config.payment;
 
 import com.kboticket.common.constants.KboConstant;
 import com.kboticket.config.PaymentConfig;
-import com.kboticket.dto.PaymentRequestInput;
+import com.kboticket.dto.payment.PaymentRequestInput;
 import com.kboticket.dto.payment.PaymentCancelInput;
 import com.kboticket.dto.payment.PaymentCancelResponse;
 import com.kboticket.dto.payment.PaymentSuccessResponse;

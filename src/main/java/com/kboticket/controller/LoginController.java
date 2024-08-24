@@ -1,7 +1,7 @@
 package com.kboticket.controller;
 
-import com.kboticket.dto.LoginRequestDto;
-import com.kboticket.service.LoginService;
+import com.kboticket.dto.login.LoginRequestDto;
+import com.kboticket.service.login.LoginService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;

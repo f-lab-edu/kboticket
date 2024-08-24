@@ -1,7 +1,7 @@
 package com.kboticket.service;
 
 import com.kboticket.domain.Seat;
-import com.kboticket.dto.SeatDto;
+import com.kboticket.dto.seat.SeatDto;
 import com.kboticket.enums.ErrorCode;
 import com.kboticket.exception.KboTicketException;
 import com.kboticket.repository.SeatRepository;

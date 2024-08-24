@@ -32,7 +32,7 @@ public class Order {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderSeat> orderSeats;
 
-    private int cnt;
+    private Long cnt;
 
     @Enumerated(EnumType.STRING)
     private OrderStatus status;

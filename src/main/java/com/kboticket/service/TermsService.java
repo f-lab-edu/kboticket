@@ -3,8 +3,8 @@ package com.kboticket.service;
 import com.kboticket.domain.Terms;
 import com.kboticket.dto.TermsDto;
 import com.kboticket.enums.TermsType;
-import com.kboticket.repository.TermsCustomRepository;
-import com.kboticket.repository.TermsRepository;
+import com.kboticket.repository.terms.TermsCustomRepository;
+import com.kboticket.repository.terms.TermsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
