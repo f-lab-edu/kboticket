@@ -1,6 +1,7 @@
 package com.kboticket.controller.order;
 
 import com.kboticket.common.CommonResponse;
+import com.kboticket.controller.order.dto.OrderDetailResponse;
 import com.kboticket.controller.order.dto.OrderListRequest;
 import com.kboticket.controller.order.dto.OrderListResponse;
 import com.kboticket.dto.order.OrderSearchDto;
@@ -36,8 +37,8 @@ public class OrderController {
      * 주문 상세 정보
      */
     @GetMapping("/{orderId}")
-    public void orderView(@PathVariable Long orderId) {
+    public CommonResponse<OrderDetailResponse> orderView(@PathVariable Long orderId) {
         // 예매정보
-
+        return orderService.getOrderDetails(orderId);
     }
 }
