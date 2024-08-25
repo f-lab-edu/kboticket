@@ -1,5 +1,7 @@
 package com.kboticket.service;
 
+import com.kboticket.common.CommonResponse;
+import com.kboticket.controller.order.dto.OrderDetailResponse;
 import com.kboticket.controller.order.dto.OrderListResponse;
 import com.kboticket.domain.*;
 import com.kboticket.dto.order.OrderDto;
@@ -7,7 +9,6 @@ import com.kboticket.dto.order.OrderSearchDto;
 import com.kboticket.enums.ErrorCode;
 import com.kboticket.exception.KboTicketException;
 import com.kboticket.repository.order.OrderRepository;
-import com.kboticket.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -50,8 +51,18 @@ public class OrderService {
         });
     }
 
-    public OrderListResponse getOrderList(OrderSearchDto orderSearchDto, String cursor, int limit) {
+    // 주문 완료
+    public void completeOrder(Order order) {
+        String title = order.getGame().getHomeTeam().getName() +
+                " VS " +  order.getGame().getAwayTeam().getName();
+        order.setStatus(OrderStatus.COMPLETE);
+        order.setOrderDate(LocalDateTime.now());
+        order.setName(title);
+        orderRepository.save(order);
+    }
 
+    // 주문 목록
+    public OrderListResponse getOrderList(OrderSearchDto orderSearchDto, String cursor, int limit) {
         List<OrderDto> orders = orderRepository.getByCursor(orderSearchDto, cursor, limit);
 
         return OrderListResponse.builder()
@@ -59,15 +70,12 @@ public class OrderService {
                 .build();
     }
 
-    public void completeOrder(Order order) {
-        String title = order.getGame().getHomeTeam().getName() +
-                        " VS " +  order.getGame().getAwayTeam().getName();
-        order.setStatus(OrderStatus.COMPLETE);
-        order.setOrderDate(LocalDateTime.now());
-        order.setName(title);
-        orderRepository.save(order);
-    }
 
+    // 주문 상세
+    public CommonResponse<OrderDetailResponse> getOrderDetails(Long orderId) {
+
+        return null;
+    }
 }
 
 
