@@ -29,9 +29,6 @@ public class Order {
     @JoinColumn(name = "order_nm")
     private String name;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
-    private List<OrderSeat> orderSeats;
-
     private Long cnt;
 
     @Enumerated(EnumType.STRING)
@@ -39,5 +36,8 @@ public class Order {
 
     @Column(name = "order_date")
     private LocalDateTime orderDate;
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    private List<OrderSeat> orderSeats;
 
 }

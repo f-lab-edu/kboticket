@@ -34,6 +34,12 @@ public class Ticket {
 
     private LocalDateTime issuedAt;
 
+    private LocalDateTime cancelAvailableAt;
+
+    private LocalDateTime canceledAt;
+
+    private Boolean isCanceled;
+
     private TicketStatus status;
 
 }

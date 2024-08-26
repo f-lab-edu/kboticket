@@ -37,8 +37,9 @@ public class OrderController {
      * 주문 상세 정보
      */
     @GetMapping("/{orderId}")
-    public CommonResponse<OrderDetailResponse> orderView(@PathVariable Long orderId) {
-        // 예매정보
-        return orderService.getOrderDetails(orderId);
+    public CommonResponse<OrderDetailResponse> orderView(@PathVariable String orderId) {
+        OrderDetailResponse orderDetailResponse = orderService.getOrderDetails(orderId);
+
+        return new CommonResponse<>(orderDetailResponse);
     }
 }
