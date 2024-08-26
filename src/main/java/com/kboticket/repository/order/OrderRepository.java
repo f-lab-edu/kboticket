@@ -1,11 +1,12 @@
 package com.kboticket.repository.order;
 
+import com.kboticket.controller.order.dto.OrderDetailResponse;
 import com.kboticket.domain.Order;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -13,11 +14,11 @@ public interface OrderRepository extends JpaRepository<Order, String>, OrderCust
 
     Optional<Order> findById(String id);
 
-    @Query("SELECT new com.kboticket.dto.order.OrderSearchDto(o.id, o.name, o.game.gameDate, o.orderDate, o.status, COUNT(os.id) AS cnt) " +
-            " FROM Order o " +
-            " LEFT JOIN OrderSeat os ON o.id = os.order.id " +
-            " WHERE o.id = :id " +
-            " GROUP BY o.id")
-    List<Order> findAllByUserId(Long id);
-
+    @Query("SELECT o, p, t " +
+            "FROM Order o " +
+            "LEFT JOIN Payment p ON o.id = p.orderId " +
+            "LEFT JOIN OrderSeat os ON o.id = os.order.id " +
+            "LEFT JOIN Ticket t ON os.id = t.orderSeat.id " +
+           "WHERE o.id = :orderId")
+    Optional<Object[]> findOrderDetailById(@Param("orderId") String orderId);
 }
