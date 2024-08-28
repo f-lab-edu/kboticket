@@ -11,7 +11,7 @@ spring:
 
 
 
-    # Redis 인스턴스 설정
+# Redis 인스턴스 설정
 redis:
   ticketing:
     host: 118.67.132.142
