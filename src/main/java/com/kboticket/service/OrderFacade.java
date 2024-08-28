@@ -4,6 +4,7 @@ import com.kboticket.domain.*;
 import com.kboticket.dto.ReservedSeatInfo;
 import com.kboticket.dto.TicketDto;
 import com.kboticket.dto.payment.*;
+import com.kboticket.service.order.OrderService;
 import com.kboticket.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.redisson.api.RBucket;

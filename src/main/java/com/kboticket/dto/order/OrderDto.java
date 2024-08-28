@@ -1,15 +1,12 @@
 package com.kboticket.dto.order;
 
-import com.kboticket.domain.Order;
 import com.kboticket.domain.OrderStatus;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Builder
+@Getter
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -18,25 +15,40 @@ public class OrderDto {
     private String orderId;
     /* 주문_명 */
     private String name;
+    /* 주문자_이메일 */
+    private String email;
+    /* 경기_시작_시간 */
+    private String startTime;
+    /* 경기장 */
+    private String stadiumName;
     /* 관람일시 */
     private String gameDate;
     /* 예매일시 */
     private LocalDateTime orderDate;
-    /* 결제 수단 */
-    private String method;
     /* 주문_상태 */
     private OrderStatus status;
-    /* 매수 */
+    /* 주문_매수 */
     private Long cnt;
 
-    public static OrderDto from(Order order) {
-        return OrderDto.builder()
-                .orderId(order.getId())
-                .name(order.getName())
-                .gameDate(order.getGame().getGameDate())
-                .orderDate(order.getOrderDate())
-                .status(order.getStatus())
-                .cnt(order.getCnt())
-                .build();
-    }
+
+    /************************
+     *  티켓 정보
+     ************************/
+    private String seatLevel;
+    private String seatBlock;
+    private String seatNumber;
+    private Integer price;
+    private String ticketNumber;
+    private LocalDateTime cancelAvailableAt;
+    private Boolean isCanceled;
+
+
+    /************************
+     *  결제 정보
+     ************************/
+    /* 주문_긍맥 */
+    private Long amout;
+    /* 주문_일시 */
+    private LocalDateTime approvedAt;
+
 }

@@ -1,31 +1,56 @@
 package com.kboticket.controller.order.dto;
 
-import com.kboticket.dto.TicketDto;
+import com.kboticket.domain.OrderStatus;
 import com.kboticket.dto.order.OrderDto;
-import com.kboticket.dto.payment.PaymentDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.util.List;
+import java.time.LocalDateTime;
 
 @Builder
 @Getter
 @AllArgsConstructor
 public class OrderDetailResponse {
 
-    private OrderDto order;
-    private List<TicketDto> tickets;
-    private PaymentDto paymentDetails;
+    // 주문 정보
+    private String name;
+    private String gameDate;
+    private String stadium;
+    private LocalDateTime orderDate;
+    private OrderStatus status;
+    private String email;
+    private String startTime;
 
-    public static OrderDetailResponse of(OrderDto order,
-                                         PaymentDto payment,
-                                         List<TicketDto> tickets) {
+    // 티켓 정보
+    private String seatLevel;
+    private String seatBlock;
+    private String seatNumber;
+    private int price;
+    private String ticketNumber;
+    private LocalDateTime cancelAvailableAt;
+    private Boolean isCanceled;
+
+    // 결제 정보
+    private int amout;
+    private LocalDateTime approvedAt;
+
+    public static OrderDetailResponse from(OrderDto orderDto) {
         return builder()
-                .order(order)
-                .tickets(tickets)
-                .paymentDetails(payment)
+                .name(orderDto.getName())
+                .gameDate(orderDto.getGameDate())
+                .stadium(orderDto.getStadiumName())
+                .orderDate(orderDto.getOrderDate())
+                .status(orderDto.getStatus())
+                .email(orderDto.getEmail())
+                .startTime(orderDto.getStartTime())
+                .seatLevel(orderDto.getSeatLevel())
+                .seatBlock(orderDto.getSeatBlock())
+                .seatNumber(orderDto.getSeatNumber())
+                .price(orderDto.getPrice())
+                .ticketNumber(orderDto.getTicketNumber())
+                .cancelAvailableAt(orderDto.getCancelAvailableAt())
+                .isCanceled(orderDto.getIsCanceled())
                 .build();
     }
-
 }
