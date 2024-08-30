@@ -30,16 +30,39 @@ public class Payment {
 
     private Long amount;
 
+    private String currency;
+
+    private String method;
+
+    @Column(name = "total_amount")
+    private Long totalAmount;
+
+    @Column(name = "balance_amount")
+    private Long balanceAmount;
+
+    @Column(name = "supplied_amount")
+    private Long suppliedAmount;
+
+    private Long vat;
+
+    private PaymentStatus status;
+
+    @Column(name = "requested_date")
+    private LocalDateTime requestedAt;
+
+    @Column(name = "approved_date")
+    private LocalDateTime approvedAt;
+
+    private String type;
+
     @Column(name = "cancel_reason")
     private String cancelReason;
 
     @Column(name = "fail_reason")
     private String failReason;
 
-    private PaymentStatus status;
 
-    private LocalDateTime requestedAt;
 
-    private LocalDateTime approvedAt;
+
 
 }
