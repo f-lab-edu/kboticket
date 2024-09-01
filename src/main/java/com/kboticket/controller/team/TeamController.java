@@ -1,4 +1,4 @@
-package com.kboticket.controller;
+package com.kboticket.controller.team;
 
 import com.kboticket.common.CommonResponse;
 import com.kboticket.dto.TeamDto;

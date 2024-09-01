@@ -1,8 +1,8 @@
-package com.kboticket.controller;
+package com.kboticket.controller.reservation;
 
 import com.kboticket.dto.ReservationDto;
 import com.kboticket.service.ReservationService;
-import com.kboticket.service.SeatService;
+import com.kboticket.service.seat.SeatService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;

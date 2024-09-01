@@ -1,4 +1,4 @@
-package com.kboticket.service;
+package com.kboticket.service.stadium;
 
 import com.kboticket.domain.Stadium;
 import com.kboticket.dto.StadiumDto;

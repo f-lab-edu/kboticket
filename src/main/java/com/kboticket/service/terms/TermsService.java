@@ -1,4 +1,4 @@
-package com.kboticket.service;
+package com.kboticket.service.terms;
 
 import com.kboticket.domain.Terms;
 import com.kboticket.dto.TermsDto;

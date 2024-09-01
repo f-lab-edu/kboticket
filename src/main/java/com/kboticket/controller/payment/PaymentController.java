@@ -1,4 +1,4 @@
-package com.kboticket.controller;
+package com.kboticket.controller.payment;
 
 import com.kboticket.common.CommonResponse;
 import com.kboticket.dto.payment.PaymentFailResponse;

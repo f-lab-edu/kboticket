@@ -1,4 +1,4 @@
-package com.kboticket.service;
+package com.kboticket.service.ticket;
 
 import com.kboticket.domain.Order;
 import com.kboticket.domain.OrderSeat;
