@@ -1,4 +1,4 @@
-package com.kboticket.controller;
+package com.kboticket.controller.payment;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

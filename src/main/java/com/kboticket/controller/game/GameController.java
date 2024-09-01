@@ -1,4 +1,4 @@
-package com.kboticket.controller;
+package com.kboticket.controller.game;
 
 import com.kboticket.common.CommonResponse;
 import com.kboticket.dto.game.GameDto;
@@ -6,7 +6,7 @@ import com.kboticket.dto.game.GameSearchDto;
 import com.kboticket.dto.seat.SeatCountDto;
 import com.kboticket.dto.seat.SeatDto;
 import com.kboticket.dto.response.GameResponse;
-import com.kboticket.service.GameService;
+import com.kboticket.service.game.GameService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 

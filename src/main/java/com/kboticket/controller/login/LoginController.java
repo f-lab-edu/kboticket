@@ -1,4 +1,4 @@
-package com.kboticket.controller;
+package com.kboticket.controller.login;
 
 import com.kboticket.dto.login.LoginRequestDto;
 import com.kboticket.service.login.LoginService;

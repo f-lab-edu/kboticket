@@ -1,4 +1,4 @@
-package com.kboticket.service;
+package com.kboticket.service.seat;
 
 import com.kboticket.domain.Seat;
 import com.kboticket.dto.seat.SeatDto;
@@ -20,10 +20,6 @@ import java.util.stream.Collectors;
 public class SeatService {
 
     private final SeatRepository seatRepository;
-
-    public List<Seat> findAll() {
-        return seatRepository.findAll();
-    }
 
     public Seat findOne(Long itemId) {
         Optional<Seat> optionalSeat = seatRepository.findById(itemId);

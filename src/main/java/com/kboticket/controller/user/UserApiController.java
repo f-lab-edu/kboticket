@@ -12,7 +12,7 @@ import com.kboticket.enums.ErrorCode;
 import com.kboticket.enums.TokenType;
 import com.kboticket.exception.KboTicketException;
 import com.kboticket.service.SmsSenderService;
-import com.kboticket.service.TermsService;
+import com.kboticket.service.terms.TermsService;
 import com.kboticket.service.user.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;

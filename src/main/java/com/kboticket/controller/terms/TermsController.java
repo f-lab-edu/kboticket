@@ -1,10 +1,10 @@
-package com.kboticket.controller;
+package com.kboticket.controller.terms;
 
 import com.kboticket.common.CommonResponse;
 import com.kboticket.domain.Terms;
 import com.kboticket.dto.TermsDto;
 import com.kboticket.enums.TermsType;
-import com.kboticket.service.TermsService;
+import com.kboticket.service.terms.TermsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;

@@ -1,4 +1,4 @@
-package com.kboticket.controller;
+package com.kboticket.controller.stadium;
 
 import com.kboticket.common.CommonResponse;
 import com.kboticket.dto.seat.SeatDto;
@@ -6,8 +6,8 @@ import com.kboticket.dto.StadiumDto;
 import com.kboticket.dto.response.SeatsResponse;
 import com.kboticket.enums.ErrorCode;
 import com.kboticket.exception.KboTicketException;
-import com.kboticket.service.SeatService;
-import com.kboticket.service.StadiumService;
+import com.kboticket.service.seat.SeatService;
+import com.kboticket.service.stadium.StadiumService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 

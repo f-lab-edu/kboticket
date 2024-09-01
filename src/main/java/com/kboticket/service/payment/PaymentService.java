@@ -1,4 +1,4 @@
-package com.kboticket.service;
+package com.kboticket.service.payment;
 
 import com.kboticket.common.constants.KboConstant;
 import com.kboticket.config.PaymentConfig;
