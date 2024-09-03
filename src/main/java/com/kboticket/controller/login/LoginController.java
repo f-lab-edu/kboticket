@@ -1,6 +1,7 @@
 package com.kboticket.controller.login;
 
-import com.kboticket.dto.login.LoginRequestDto;
+import com.kboticket.controller.login.dto.LoginRequest;
+import com.kboticket.dto.login.LoginDto;
 import com.kboticket.service.login.LoginService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -8,6 +9,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+
+/**
+ * @author winnie
+ */
 
 @RestController
 @RequiredArgsConstructor
@@ -17,8 +22,8 @@ public class LoginController {
 
     @PostMapping("/login")
     @ResponseStatus(HttpStatus.OK)
-    public void login(@RequestBody LoginRequestDto loginRequestDto) {
-        loginService.login(loginRequestDto);
+    public void login(@RequestBody LoginRequest request) {
+        LoginDto loginDto = LoginDto.from(request);
+        loginService.login(loginDto);
     }
-
 }

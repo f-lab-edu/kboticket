@@ -8,5 +8,4 @@ public class TermsDto {
     private String version;
     private String content;
     private boolean mandatory;
-
 }

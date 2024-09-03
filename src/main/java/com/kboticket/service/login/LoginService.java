@@ -1,7 +1,7 @@
 package com.kboticket.service.login;
 
 import com.kboticket.config.jwt.JwtTokenProvider;
-import com.kboticket.dto.login.LoginRequestDto;
+import com.kboticket.dto.login.LoginDto;
 import com.kboticket.enums.ErrorCode;
 import com.kboticket.enums.TokenType;
 import com.kboticket.exception.KboTicketException;
@@ -25,9 +25,9 @@ public class LoginService {
     private final RedisTemplate<String, Object> redisTemplate;
 
     @Transactional
-    public void login(LoginRequestDto loginRequestDto) {
-        String email = loginRequestDto.getUsername();
-        String password = loginRequestDto.getPassword();
+    public void login(LoginDto loginDto) {
+        String email = loginDto.getUsername();
+        String password = loginDto.getPassword();
 
         // 이메일로 존재하는 유저인지 확인
         userService.isExistEmail(email);

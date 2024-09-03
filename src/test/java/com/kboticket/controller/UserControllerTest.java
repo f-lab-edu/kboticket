@@ -1,29 +1,27 @@
 package com.kboticket.controller;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kboticket.controller.user.UserController;
-import com.kboticket.enums.ErrorCode;
-import com.kboticket.exception.KboTicketException;
+import com.kboticket.controller.user.dto.ChangePasswordRequest;
+import com.kboticket.controller.user.dto.UpdateUserRequest;
 import com.kboticket.service.user.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(UserController.class)
@@ -51,11 +49,11 @@ public class UserControllerTest {
         String email = "test@naver.com";
         String password = "1111";
 
-        when(authentication.getName()).thenReturn(email);
-        when(userService.checkPassword(email, password)).thenReturn(true);
+        given(authentication.getName()).willReturn(email);
+        given(userService.checkPassword(anyString(), anyString())).willReturn(false);
 
         // when & then
-        mockMvc.perform(MockMvcRequestBuilders.post("/users/verify-password")
+        mockMvc.perform(post("/users/verify-password")
                 .principal(authentication)
                 .content(password)
                 .contentType(MediaType.APPLICATION_JSON))
@@ -72,11 +70,11 @@ public class UserControllerTest {
         String email = "test@naver.com";
         String password = "failtest";
 
-        when(authentication.getName()).thenReturn(email);
-        when(userService.checkPassword(email, password)).thenReturn(false);
+        given(authentication.getName()).willReturn(email);
+        doNothing().when(userService).updateUserInfo(anyString(), any());
 
         // when & then
-        mockMvc.perform(MockMvcRequestBuilders.post("/users/verify-password")
+        mockMvc.perform(post("/users/verify-password")
                 .principal(authentication)
                 .content(password)
                 .contentType(MediaType.APPLICATION_JSON))
@@ -86,9 +84,49 @@ public class UserControllerTest {
         verify(userService).checkPassword(email, password);
     }
 
+    @Test
+    @DisplayName("[SUCCESS 유저 정보 변경")
+    void updateInfoTest() throws Exception{
+        // given
+        String email = "test@naver.com";
+        UpdateUserRequest request = UpdateUserRequest.builder()
+                .city("Seoul")
+                .build();
 
+        String json = new ObjectMapper().writeValueAsString(request);
 
+        given(authentication.getName()).willReturn(email);
+        doNothing().when(userService).updateUserInfo(anyString(), any());
 
+        // when & then
+        mockMvc.perform(post("/users/update-info")
+                .principal(authentication)
+                .content(json)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
 
+    @Test
+    @DisplayName("[Success] 유저 password 변경")
+    void updatePasswordTest() throws Exception{
+        // given
+        String email = "test@naver.com";
+        ChangePasswordRequest request = ChangePasswordRequest.builder()
+                .currentPassword("1111")
+                .newPassword("0000")
+                .confirmPassword("1234")
+                .build();
 
+        String json = new ObjectMapper().writeValueAsString(request);
+
+        given(authentication.getName()).willReturn(email);
+        doNothing().when(userService).updatePassword(any());
+
+        // when/ then
+        mockMvc.perform(post("/users/update-password")
+                .principal(authentication)
+                .content(json)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
 }
