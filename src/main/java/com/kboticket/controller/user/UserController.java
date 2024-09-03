@@ -15,6 +15,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * @author winnie
+ */
 
 @Slf4j
 @RestController
@@ -29,8 +32,6 @@ public class UserController {
      */
     @GetMapping("/view")
     public CommonResponse<UserDto> getUserInfo(Authentication authentication) {
-        log.info("authentication.getName()=======>" + authentication.getName());
-
         String email = authentication.getName();
         UserDto userDto = userService.getUserDto(email);
 
@@ -59,7 +60,6 @@ public class UserController {
     @ResponseStatus(HttpStatus.OK)
     public void updateInfo(Authentication authentication,
                            @RequestBody UpdateUserRequest request) {
-
         String email = authentication.getName();
         UserInfoDto userInfoDto = UserInfoDto.from(request);
 

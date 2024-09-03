@@ -1,4 +1,4 @@
-package com.kboticket.dto.user;
+package com.kboticket.controller.user.dto;
 
 import com.kboticket.dto.TermsDto;
 import jakarta.validation.constraints.*;
@@ -10,7 +10,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
 @AllArgsConstructor
-public class UserSignupRequest {
+public class SignupRequest {
 
     @NotBlank(message = "이메일은 필수 입력 항목입니다.")
     @Email(message = "유효하지 않은 이메일 주소입니다.")
@@ -24,7 +24,7 @@ public class UserSignupRequest {
 
     private String verificationKey;
 
-    private List<TermsDto> terms; // TermsRequest
+    private List<TermsDto> terms;
 
 
 }

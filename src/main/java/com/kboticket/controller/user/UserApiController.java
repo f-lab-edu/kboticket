@@ -2,9 +2,10 @@ package com.kboticket.controller.user;
 
 import com.kboticket.common.CommonResponse;
 import com.kboticket.config.jwt.JwtTokenProvider;
+import com.kboticket.controller.user.dto.SmsRequest;
 import com.kboticket.dto.SmsRequestDto;
 import com.kboticket.dto.TokenDto;
-import com.kboticket.dto.user.UserSignupRequest;
+import com.kboticket.controller.user.dto.SignupRequest;
 import com.kboticket.dto.response.EmailResponse;
 import com.kboticket.dto.response.PasswordResponse;
 import com.kboticket.dto.response.VerificationResponse;
@@ -19,6 +20,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+/**
+ * @author winnie
+ */
 
 @Slf4j
 @RestController
@@ -36,24 +41,24 @@ public class UserApiController {
      */
     @PostMapping("/sms-send")
     @ResponseStatus(HttpStatus.OK)
-    public void sendSms(@RequestBody SmsRequestDto smsRequestDto) {
-        smsSenderService.sendVeritificationKey(smsRequestDto.getPhone());
+    public void sendSms(@RequestBody SmsRequest request) {
+        String phone = request.getPhone();
+        smsSenderService.sendVeritificationKey(phone);
     }
-
 
     /**
      * 인증 번호 확인 후 토큰 발급
      */
     @PostMapping("/verify")
-    public CommonResponse<Void> smsVerification(@RequestBody SmsRequestDto smsRequestDto) {
-        boolean isValid = smsSenderService.verifySms(smsRequestDto);
+    public CommonResponse<VerificationResponse> smsVerification(@RequestBody SmsRequest request) {
+        SmsRequestDto requestDto = SmsRequestDto.from(request);
+        boolean isValid = smsSenderService.verifySms(requestDto);
 
         if (!isValid) {
             throw new KboTicketException(ErrorCode.INVALID_VERIFICATION_CODE);
         }
 
-        String verificationToken = jwtTokenProvider.generateToken(smsRequestDto.getPhone(), TokenType.ACCESS);
-        log.info(verificationToken);
+        String verificationToken = jwtTokenProvider.generateToken(requestDto.getPhone(), TokenType.ACCESS);
 
         return new CommonResponse(new VerificationResponse(verificationToken));
     }
@@ -63,7 +68,7 @@ public class UserApiController {
      */
     @PostMapping("/signup")
     @ResponseStatus(HttpStatus.CREATED)
-    public void signup(@RequestBody UserSignupRequest request) {
+    public void signup(@RequestBody SignupRequest request) {
         boolean isAgreeAllMandaotryTerms = termsService.checkAllMandatoryTermsAgreed(request.getTerms());
 
         if (!isAgreeAllMandaotryTerms) {

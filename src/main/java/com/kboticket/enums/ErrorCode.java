@@ -25,7 +25,7 @@ public enum ErrorCode {
     GENERATE_TEMP_PW_ERR(10013, "Generate temp Password Failed", HttpStatus.CONFLICT),
     INCORRECT_PASSWORD(10014, "The password is incorrect", HttpStatus.NOT_FOUND),
     INVALID_AUTHORIZATION(10015, "Invalid or missing Authorization", HttpStatus.BAD_REQUEST),
-
+    FAILED_GENERATE_TOKEN(10016, "Failed during token creation", HttpStatus.BAD_REQUEST),
 
 
     /**
@@ -83,7 +83,6 @@ public enum ErrorCode {
     PAYMENT_AMOUNT_EXP(30035, "invalid payment amount", HttpStatus.CONFLICT),
     ALREADY_APPROVED(30036, "already approved", HttpStatus.CONFLICT)
     ;
-
     public final int code;
     public final String message;
     public final HttpStatus httpcode;

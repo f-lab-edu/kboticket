@@ -6,7 +6,7 @@ import com.kboticket.dto.TokenDto;
 import com.kboticket.dto.user.UserDto;
 import com.kboticket.dto.user.UserInfoDto;
 import com.kboticket.dto.user.UserPasswordDto;
-import com.kboticket.dto.user.UserSignupRequest;
+import com.kboticket.controller.user.dto.SignupRequest;
 import com.kboticket.enums.ErrorCode;
 import com.kboticket.exception.*;
 import com.kboticket.repository.terms.TermsRepository;
@@ -35,7 +35,7 @@ public class UserService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Transactional
-    public void signup(UserSignupRequest request) {
+    public void signup(SignupRequest request) {
         String email = request.getEmail();
         String password = request.getPassword();
         String confirmPassword = request.getConfirmpassword();
@@ -158,9 +158,12 @@ public class UserService {
 
     // 기존 비밀 번호 확인
     public boolean checkPassword(String email, String inputPassword) {
+        log.info("storedpassword : " + inputPassword);
+
         Optional<User> optionalUser = userRepository.findByEmail(email);
         String storedPassword = optionalUser.get().getPassword();
 
+        log.info("storedpassword : " + storedPassword);
         return bCryptPasswordEncoder.matches(inputPassword, storedPassword);
     }
 }

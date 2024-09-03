@@ -1,4 +1,4 @@
-package com.kboticket.dto.user;
+package com.kboticket.controller.user.dto;
 
 import com.kboticket.domain.User;
 import lombok.*;
@@ -6,12 +6,12 @@ import lombok.*;
 @Getter
 @Builder
 @AllArgsConstructor
-public class UserSignupResponse {
+public class SignupResponse {
 
     private String email;
 
-    public static UserSignupResponse from(User user) {
-        return UserSignupResponse.builder()
+    public static SignupResponse from(User user) {
+        return SignupResponse.builder()
                 .email(user.getEmail())
                 .build();
     }
