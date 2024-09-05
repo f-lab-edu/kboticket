@@ -139,12 +139,12 @@ public class UserService {
         userRepository.save(user);
     }
 
-    // email 이 존재하는지
+    // email 존재 여부
     public boolean isExistEmail(String email) {
         return userRepository.existsByEmail(email);
     }
 
-    // phone 이 존재하는지
+    // phone 존재 여부
     public boolean isExistPhone(String phone) {
         return userRepository.existsByPhone(phone);
     }
@@ -158,12 +158,9 @@ public class UserService {
 
     // 기존 비밀 번호 확인
     public boolean checkPassword(String email, String inputPassword) {
-        log.info("storedpassword : " + inputPassword);
-
         Optional<User> optionalUser = userRepository.findByEmail(email);
         String storedPassword = optionalUser.get().getPassword();
 
-        log.info("storedpassword : " + storedPassword);
         return bCryptPasswordEncoder.matches(inputPassword, storedPassword);
     }
 }
