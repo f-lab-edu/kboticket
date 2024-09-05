@@ -1,13 +1,12 @@
 package com.kboticket.dto.user;
 
 import com.kboticket.controller.user.dto.ChangePasswordRequest;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
 @Builder
-@Getter
+@Getter @Setter
 @AllArgsConstructor
+@NoArgsConstructor
 public class UserPasswordDto {
     
     private String email;
