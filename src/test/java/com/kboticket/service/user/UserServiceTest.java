@@ -1,4 +1,4 @@
-package com.kboticket.service;
+package com.kboticket.service.user;
 
 import com.kboticket.config.jwt.JwtTokenProvider;
 import com.kboticket.controller.user.dto.SignupRequest;
