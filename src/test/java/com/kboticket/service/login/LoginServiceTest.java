@@ -48,7 +48,6 @@ public class LoginServiceTest {
 
         // when
         given(userService.isExistEmail(email)).willReturn(true);
-        given(userService.checkPassword(email, password)).willReturn(true);
         given(jwtTokenProvider.generateToken(email, TokenType.ACCESS)).willReturn(accessToken);
         given(jwtTokenProvider.generateToken(email, TokenType.REFRESH)).willReturn(refreshToken);
 
@@ -57,7 +56,6 @@ public class LoginServiceTest {
 
         // then
         verify(userService).isExistEmail(email);
-        verify(userService).checkPassword(email, password);
         verify(jwtTokenProvider).generateToken(email, TokenType.ACCESS);
         verify(jwtTokenProvider).generateToken(email, TokenType.REFRESH);
 
@@ -89,15 +87,9 @@ public class LoginServiceTest {
     @Test
     void login_IncorrectPassword() {
         // given
-        String email = "test@example.com";
-        String password = "password";
-
         LoginDto loginDto = LoginDto.builder()
                 .username("test@naver.com")
                 .password("1111").build();
-
-        // 비밀번호가 틀린 경우 Mock
-        given(userService.checkPassword(email, password)).willReturn(false);
 
         // when
         KboTicketException kboTicketException = assertThrows(KboTicketException.class,
@@ -122,7 +114,6 @@ public class LoginServiceTest {
 
         // 토큰 생성 및 비밀번호 확인 Mock
         given(userService.isExistEmail(email)).willReturn(true);
-        given(userService.checkPassword(email, password)).willReturn(true);
         given(jwtTokenProvider.generateToken(email, TokenType.ACCESS)).willReturn(accessToken);
         given(jwtTokenProvider.generateToken(email, TokenType.REFRESH)).willReturn(refreshToken);
 

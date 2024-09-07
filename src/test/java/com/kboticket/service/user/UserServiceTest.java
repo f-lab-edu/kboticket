@@ -1,5 +1,6 @@
 package com.kboticket.service.user;
 
+import com.kboticket.common.util.PasswordUtils;
 import com.kboticket.config.jwt.JwtTokenProvider;
 import com.kboticket.controller.user.dto.SignupRequest;
 import com.kboticket.domain.User;
@@ -7,7 +8,6 @@ import com.kboticket.dto.user.UserPasswordDto;
 import com.kboticket.enums.ErrorCode;
 import com.kboticket.exception.KboTicketException;
 import com.kboticket.repository.UserRepository;
-import com.kboticket.service.user.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -34,9 +34,17 @@ public class UserServiceTest {
     @InjectMocks
     private UserService userService;
 
+    private User testUser;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+
+        testUser = User.builder()
+                .email("test@example.com")
+                .password(new BCryptPasswordEncoder().encode("password"))
+                .phone("010-1234-5678")
+                .build();
     }
 
 
@@ -44,7 +52,6 @@ public class UserServiceTest {
     @DisplayName("[SUCCESS] 회원가입 성공")
     void signSuccessTest() {
         // given
-
         SignupRequest signupRequest = SignupRequest.builder()
                 .email("test@test.com")
                 .password("1111")
@@ -54,51 +61,50 @@ public class UserServiceTest {
                 .build();
 
         given(userRepository.existsByEmail(signupRequest.getEmail())).willReturn(false);
-        given(jwtTokenProvider.getPhoneFromToken(signupRequest.getVerificationKey())).willReturn("01012345678");
-        given(bCryptPasswordEncoder.encode(signupRequest.getPassword())).willReturn("1111");
+        given(jwtTokenProvider.getPhoneFromToken(signupRequest.getVerificationKey())).willReturn("010-1234-5678");
 
-        // when
+        // When
         userService.signup(signupRequest);
 
-        // then
+        // Then
         verify(userRepository, times(1)).save(any(User.class));
-
     }
 
     @Test
     @DisplayName("[SUCCESS] 이메일 중복 검사")
     void signupDuplicateEmail() {
         // given
-        String email = "test@naver.com";
-        given(userRepository.existsByEmail(email)).willReturn(true);
-        // when
+        SignupRequest signupRequest = SignupRequest.builder()
+                .email("test@test.com")
+                .password("1111")
+                .confirmpassword("1111")
+                .verificationKey("11111")
+                .terms(new ArrayList<>())
+                .build();
+
+        given(userRepository.existsByEmail(signupRequest.getEmail())).willReturn(true);
+
+        // When & Then
         KboTicketException exception = assertThrows(KboTicketException.class, () -> {
-            userService.signup(new SignupRequest(email, "password", "password", "key", null));
+            userService.signup(signupRequest);
         });
 
-        // then
-        assertEquals(ErrorCode.EMAIL_DUPLICATTE.message, exception.getMessage());
+        assertEquals(ErrorCode.EMAIL_DUPLICATTE.code, exception.getCode());
     }
 
     @Test
     @DisplayName("[SUCCESS] 비밀번호 불일치")
-    void passwordMismatchTest() {
+    void verifyPassword() {
         // given
-        String email = "test@naver.com";
-        String inputPassword  = "1111";
+        String email = "test@example.com";
+        String correctPassword = "password";
 
-        User user = User.builder()
-                .email(email)
-                .password(inputPassword)
-                .build();
+        given(userRepository.findByEmail(email)).willReturn(Optional.of(testUser));
 
-        given(userRepository.findByEmail(email)).willReturn(Optional.of(user));
-        given(bCryptPasswordEncoder.matches(inputPassword, user.getPassword())).willReturn(true);
+        // When
+        boolean result = userService.verifyPassword(email, correctPassword);
 
-        // when
-        boolean result = userService.checkPassword(email, inputPassword);
-
-        // then
+        // Then
         assertTrue(result);
     }
 
@@ -107,49 +113,45 @@ public class UserServiceTest {
     @DisplayName("[SUCCESS] 비밀번호 변경")
     void passwordUpdateTest() {
         // given
-        UserPasswordDto userPasswordDto = new UserPasswordDto();
-        userPasswordDto.setEmail("test@test.com");
-        userPasswordDto.setCurrentPassword("1111");
-        userPasswordDto.setNewPassword("0000");
-        userPasswordDto.setConfirmPassword("0000");
-
-        User user = User.builder()
-                .email("test@naver.com")
-                .password("1111")
+        String email = "test@example.com";
+        UserPasswordDto userPasswordDto = UserPasswordDto.builder()
+                .email(email)
+                .currentPassword("password")
+                .confirmPassword("newPassword")
+                .newPassword("newPassword")
                 .build();
 
-        when(userRepository.findByEmail(userPasswordDto.getEmail())).thenReturn(Optional.of(user));
-        when(bCryptPasswordEncoder.matches(userPasswordDto.getCurrentPassword(), user.getPassword())).thenReturn(true);
-        when(bCryptPasswordEncoder.encode(userPasswordDto.getNewPassword())).thenReturn("encodedNewPassword");
+        given(userRepository.findByEmail(email)).willReturn(Optional.of(testUser));
+        given(userRepository.save(any(User.class))).willReturn(testUser);
 
-        // when
+        // When
         userService.updatePassword(userPasswordDto);
 
-        // then
-        verify(userRepository, times(1)).save(user);
-        assertEquals("encodedNewPassword", user.getPassword());
-
+        // Then
+        verify(userRepository, times(1)).save(any(User.class));
+        assertTrue(PasswordUtils.matches("newPassword", testUser.getPassword()));
     }
 
     @Test
-    @DisplayName("[SUCCESS] 기존 비밀번호 확인")
-    void checkPasswordTest() {
+    @DisplayName("[FAIL] 비밀번호 변경")
+    void updatePasswordWithIncorrectCurrentPasswordTest() {
         // given
-        String email = "test@test.com";
-        String inputPassword = "1111";
-
-        User user = User.builder()
-                .email("test@naver.com")
-                .password("1111")
+        String email = "test@example.com";
+        UserPasswordDto userPasswordDto = UserPasswordDto.builder()
+                .email(email)
+                .currentPassword("wrongPassword")
+                .confirmPassword("newPassword")
+                .newPassword("newPassword")
                 .build();
 
-        when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
-        when(bCryptPasswordEncoder.matches(inputPassword, user.getPassword())).thenReturn(true);
+        given(userRepository.findByEmail(email)).willReturn(Optional.of(testUser));
 
         // when
-        boolean result = userService.checkPassword(email, inputPassword);
+        KboTicketException exception = assertThrows(KboTicketException.class, () -> {
+            userService.updatePassword(userPasswordDto);
+        });
 
         // then
-        assertTrue(result);
+        assertEquals(ErrorCode.INCORRECT_PASSWORD.code, exception.getCode());
     }
 }

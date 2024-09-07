@@ -1,6 +1,9 @@
 package com.kboticket.service.login;
 
+import com.kboticket.common.constants.KboConstant;
+import com.kboticket.common.util.PasswordUtils;
 import com.kboticket.config.jwt.JwtTokenProvider;
+import com.kboticket.domain.User;
 import com.kboticket.dto.login.LoginDto;
 import com.kboticket.enums.ErrorCode;
 import com.kboticket.enums.TokenType;
@@ -29,27 +32,34 @@ public class LoginService {
         String email = loginDto.getUsername();
         String password = loginDto.getPassword();
 
-        // 이메일로 존재하는 유저인지 확인
-        userService.isExistEmail(email);
+        User user = userService.getUserByEmail(email);
 
-        // 비밀번호 일치 확인
-        if (!userService.checkPassword(email, password)) {
+        if (PasswordUtils.matches(password, user.getPassword())) {
             throw new KboTicketException(ErrorCode.INCORRECT_PASSWORD);
         }
 
-        // 토큰 생성
+        String accessKey = KboConstant.ACCESS_LOCK + KboConstant.BASIC_DLIIMITER + email;
+        String refreshKey = KboConstant.REFRESH_LOCK + KboConstant.BASIC_DLIIMITER + email;
+
+        invalidatePreviousToken(accessKey, refreshKey);
+
         String accessToken = jwtTokenProvider.generateToken(email, TokenType.ACCESS);
         String refreshToken = jwtTokenProvider.generateToken(email, TokenType.REFRESH);
 
         log.info(accessToken);
         log.info(refreshToken);
 
-        saveToken("access:" + email, accessToken, 6 * 60 * 60 * 1000L, TimeUnit.MILLISECONDS);
-        saveToken("refresh:" + email, refreshToken, 7, TimeUnit.DAYS);
+        saveToken(accessKey, accessToken, 6 * 60 * 60 * 1000L, TimeUnit.MILLISECONDS);
+        saveToken(refreshKey, refreshToken, 7, TimeUnit.DAYS);
 
     }
 
     private void saveToken(String key, String token, long timeout, TimeUnit timeUnit) {
         redisTemplate.opsForValue().set(key, token, timeout, timeUnit);
+    }
+
+    private void invalidatePreviousToken(String accessKey, String refreshKey) {
+        redisTemplate.delete(accessKey);
+        redisTemplate.delete(refreshKey);
     }
 }
