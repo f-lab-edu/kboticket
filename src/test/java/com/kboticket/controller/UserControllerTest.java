@@ -43,14 +43,14 @@ public class UserControllerTest {
     }
 
     @Test
-    @DisplayName("[SUCCESS] 비밀번호 일치여부 테스트")
+    @DisplayName("[SUCCESS] Password 일치 여부")
     void verifyPasswordSuccessTest() throws Exception {
         // given
         String email = "test@naver.com";
         String password = "1111";
 
         given(authentication.getName()).willReturn(email);
-        given(userService.checkPassword(anyString(), anyString())).willReturn(false);
+        given(userService.verifyPassword(anyString(), anyString())).willReturn(true);
 
         // when & then
         mockMvc.perform(post("/users/verify-password")
@@ -60,11 +60,11 @@ public class UserControllerTest {
                 .andDo(result -> System.out.println("Response status: " + result.getResponse().getStatus()))
                 .andExpect(status().isOk());
 
-        verify(userService).checkPassword(email, password);
+        verify(userService).verifyPassword(email, password);
     }
 
     @Test
-    @DisplayName("[FAIL] 비밀번호 일치여부 테스트")
+    @DisplayName("[FAIL] 비밀번호 일치 여부 테스트")
     void verifyPasswordFailTest() throws Exception {
         // given
         String email = "test@naver.com";
@@ -81,7 +81,7 @@ public class UserControllerTest {
                 .andDo(result -> System.out.println("Response status: " + result.getResponse().getStatus()))
                 .andExpect(status().isOk());
 
-        verify(userService).checkPassword(email, password);
+        verify(userService).verifyPassword(email, password);
     }
 
     @Test

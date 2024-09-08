@@ -1,6 +1,5 @@
 package com.kboticket.service;
 
-import com.esotericsoftware.minlog.Log;
 import com.kboticket.common.constants.KboConstant;
 import com.kboticket.dto.ReservedSeatInfo;
 import com.kboticket.enums.ErrorCode;
@@ -8,8 +7,10 @@ import com.kboticket.enums.ReservationStatus;
 import com.kboticket.exception.KboTicketException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.redisson.api.*;
-import org.slf4j.LoggerFactory;
+import org.redisson.api.RBucket;
+import org.redisson.api.RKeys;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
 
 
 @Slf4j

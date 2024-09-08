@@ -126,7 +126,7 @@ public class UserApiControllerTest {
         HttpServletRequest request = new MockHttpServletRequest();
         TokenDto tokenDto = new TokenDto("newAccessToken", "refreshToken");
 
-        given(userService.reissue(request)).willReturn(tokenDto);
+        given(userService.reissueToken(request)).willReturn(tokenDto);
 
         // when & then
         mockMvc.perform(post("/api/user/reissued")
@@ -142,7 +142,7 @@ public class UserApiControllerTest {
 
         willThrow(new KboTicketException(ErrorCode.FAILED_GENERATE_TOKEN))
                 .given(userService)
-                .reissue(any());
+                .reissueToken(any());
 
         // when & then
         mockMvc.perform(post("/api/user/reissued")

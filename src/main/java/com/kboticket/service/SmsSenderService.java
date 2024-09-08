@@ -7,7 +7,7 @@ import com.kboticket.enums.ErrorCode;
 import com.kboticket.exception.KboTicketException;
 import com.kboticket.repository.SmsCertification;
 import com.kboticket.repository.UserRepository;
-import com.kboticket.util.coolSms.SmsTemplate;
+import com.kboticket.common.util.coolSms.SmsTemplate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

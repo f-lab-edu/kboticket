@@ -82,7 +82,7 @@ public class UserApiController {
      */
     @PostMapping("/reissued")
     public CommonResponse<TokenDto> reissued(HttpServletRequest request) throws Exception {
-        TokenDto tokenDto = userService.reissue(request);
+        TokenDto tokenDto = userService.reissueToken(request);
 
         return new CommonResponse(tokenDto);
     }

@@ -1,6 +1,7 @@
 package com.kboticket.controller.user;
 
 import com.kboticket.common.CommonResponse;
+import com.kboticket.common.util.PasswordUtils;
 import com.kboticket.controller.user.dto.ChangePasswordRequest;
 import com.kboticket.controller.user.dto.UpdateUserRequest;
 import com.kboticket.dto.user.UserDto;
@@ -45,8 +46,9 @@ public class UserController {
     @ResponseStatus(HttpStatus.OK)
     public void verifyPassword(Authentication authentication,
                                @RequestBody String password) {
+
         String email = authentication.getName();
-        boolean isPasswordValid = userService.checkPassword(email, password);
+        boolean isPasswordValid = userService.verifyPassword(email, password);
 
         if (!isPasswordValid) {
             throw new KboTicketException(ErrorCode.INCORRECT_PASSWORD);

@@ -5,7 +5,7 @@ import com.kboticket.domain.Stadium;
 import com.kboticket.dto.seat.SeatDto;
 import com.kboticket.enums.StadiumInfo;
 import com.kboticket.service.seat.SeatService;
-import com.kboticket.util.SeatArrangement;
+import com.kboticket.common.util.SeatArrangement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
