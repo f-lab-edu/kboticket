@@ -43,7 +43,11 @@ public class UserService {
             throw new KboTicketException(ErrorCode.EMAIL_DUPLICATTE);
         }
 
-        // password 와 confirmpassword 비교
+        if (!PasswordUtils.validate(password)) {
+            throw new KboTicketException(ErrorCode.INVALID_PASSWORD_FORMAT);
+        }
+
+        // password, confirmPassword 비교
         if (!password.equals(confirmPassword)) {
             throw new KboTicketException(ErrorCode.PASSWORD_MISMATCH);
         }
