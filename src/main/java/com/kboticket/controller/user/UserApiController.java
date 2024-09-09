@@ -3,7 +3,7 @@ package com.kboticket.controller.user;
 import com.kboticket.common.CommonResponse;
 import com.kboticket.config.jwt.JwtTokenProvider;
 import com.kboticket.controller.user.dto.SmsRequest;
-import com.kboticket.dto.SmsRequestDto;
+import com.kboticket.controller.user.dto.SmsRequestDto;
 import com.kboticket.dto.TokenDto;
 import com.kboticket.controller.user.dto.SignupRequest;
 import com.kboticket.dto.response.EmailResponse;

@@ -18,7 +18,7 @@ public class TicketDto {
     /* 좌석 정보 */
     private OrderSeat orderSeat;
 
-    private String title;
+    private String name;
     /* 티켓 가격 */
     private int price;
     /* 발급 일시 */
@@ -32,10 +32,10 @@ public class TicketDto {
     /* 티켓 상태 */
     private TicketStatus status;
 
-    public static List<TicketDto> from(Ticket ticket) {
-        return (List<TicketDto>) TicketDto.builder()
+    public static TicketDto from(Ticket ticket) {
+        return TicketDto.builder()
                 .ticketNumber(ticket.getTicketNumber())
-                .title(ticket.getName())
+                .name(ticket.getName())
                 .price(ticket.getPrice())
                 .issuedAt(ticket.getIssuedAt())
                 .canceledAt(ticket.getCanceledAt())

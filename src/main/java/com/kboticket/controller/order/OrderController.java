@@ -33,7 +33,7 @@ public class OrderController {
     }
 
     /**
-     * 주문 상세 정보
+     * 주문 상세 정보 (주문정보/티켓정보/결제정보)
      */
     @GetMapping("/{orderId}")
     public CommonResponse<OrderDetailResponse> orderView(@PathVariable String orderId) {

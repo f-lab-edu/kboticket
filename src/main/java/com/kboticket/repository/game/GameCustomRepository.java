@@ -1,11 +1,11 @@
 package com.kboticket.repository.game;
 
-import com.kboticket.dto.game.GameSearchDto;
-import com.kboticket.dto.response.GameResponse;
+import com.kboticket.controller.game.dto.GameSearchRequest;
+import com.kboticket.controller.game.dto.GameDetailResponse;
 
 import java.util.List;
 
 public interface GameCustomRepository {
 
-    List<GameResponse> getByCursor(GameSearchDto gameSearchDto, String cursor, int limit);
+    List<GameDetailResponse> getByCursor(GameSearchRequest gameSearchRequest, String cursor, int limit);
 }

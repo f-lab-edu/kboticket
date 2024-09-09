@@ -4,7 +4,7 @@ import com.kboticket.common.util.PasswordUtils;
 import com.kboticket.config.jwt.JwtTokenProvider;
 import com.kboticket.controller.user.dto.SignupRequest;
 import com.kboticket.domain.User;
-import com.kboticket.dto.user.UserPasswordDto;
+import com.kboticket.service.user.dto.UserPasswordDto;
 import com.kboticket.enums.ErrorCode;
 import com.kboticket.exception.KboTicketException;
 import com.kboticket.repository.UserRepository;

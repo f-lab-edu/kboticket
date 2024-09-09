@@ -4,8 +4,8 @@ import com.kboticket.domain.Game;
 import com.kboticket.domain.QGame;
 import com.kboticket.domain.QStadium;
 import com.kboticket.domain.QTeam;
-import com.kboticket.dto.game.GameSearchDto;
-import com.kboticket.dto.response.GameResponse;
+import com.kboticket.controller.game.dto.GameSearchRequest;
+import com.kboticket.controller.game.dto.GameDetailResponse;
 import com.kboticket.enums.ErrorCode;
 import com.kboticket.exception.KboTicketException;
 import com.querydsl.core.BooleanBuilder;
@@ -41,11 +41,10 @@ public class GameCustomRepositoryImpl implements GameCustomRepository{
     private static final QStadium stadium = QStadium.stadium;
 
     @Override
-    public List<GameResponse> getByCursor(GameSearchDto gameSearchDto, String cursor, int limit) {
+    public List<GameDetailResponse> getByCursor(GameSearchRequest gameSearchRequest, String cursor, int limit) {
 
-        BooleanBuilder builder = createSearchBuilder(gameSearchDto);
+        BooleanBuilder builder = createSearchBuilder(gameSearchRequest);
 
-        // gameId 를 넘겨준다
         if (cursor!= null) {
             builder.and(game.id.gt(Long.parseLong(cursor)));
         }
@@ -64,9 +63,9 @@ public class GameCustomRepositoryImpl implements GameCustomRepository{
         return createResponse(gameList);
     }
 
-    private List<GameResponse> createResponse(List<Game> gameList) {
-        List<GameResponse> responseList = gameList.stream()
-                .map(data -> GameResponse.builder()
+    private List<GameDetailResponse> createResponse(List<Game> gameList) {
+        List<GameDetailResponse> responseList = gameList.stream()
+                .map(data -> GameDetailResponse.builder()
                     .id(data.getId())
                     .homeTeam(data.getHomeTeam().getId())
                     .awayTeam(data.getAwayTeam().getId())
@@ -78,12 +77,12 @@ public class GameCustomRepositoryImpl implements GameCustomRepository{
         return responseList;
     }
 
-    private BooleanBuilder createSearchBuilder(GameSearchDto gameSearchDto) {
+    private BooleanBuilder createSearchBuilder(GameSearchRequest gameSearchRequest) {
         BooleanBuilder builder = new BooleanBuilder();
 
-        builder.and(teamsIn(gameSearchDto.getTeams()))
-                .and(stadiumEq(gameSearchDto.getStadium()))
-                .and(gameDateBetween(gameSearchDto.getStartDate(), gameSearchDto.getEndDate())
+        builder.and(teamsIn(gameSearchRequest.getTeams()))
+                .and(stadiumEq(gameSearchRequest.getStadium()))
+                .and(gameDateBetween(gameSearchRequest.getStartDate(), gameSearchRequest.getEndDate())
                 .and(gameDateInFuture()));
         return builder;
     }

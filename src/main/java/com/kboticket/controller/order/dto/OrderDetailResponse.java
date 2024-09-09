@@ -1,5 +1,6 @@
 package com.kboticket.controller.order.dto;
 
+import com.kboticket.domain.OrderSeat;
 import com.kboticket.domain.OrderStatus;
 import com.kboticket.dto.order.OrderDto;
 import lombok.AllArgsConstructor;
@@ -34,6 +35,8 @@ public class OrderDetailResponse {
     // 결제 정보
     private int amout;
     private LocalDateTime approvedAt;
+
+    private OrderSeat orderSeat;
 
     public static OrderDetailResponse from(OrderDto orderDto) {
         return builder()

@@ -1,8 +1,8 @@
 package com.kboticket.repository;
 
 import com.kboticket.domain.Seat;
-import com.kboticket.dto.seat.SeatCountDto;
-import com.kboticket.dto.seat.SeatDto;
+import com.kboticket.service.seat.dto.GameSeatCountDto;
+import com.kboticket.service.seat.dto.SeatDto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -20,7 +20,7 @@ public interface SeatRepository extends JpaRepository<Seat, Long> {
 
     List<Seat> findByStadiumId(String stadiumId);
 
-    @Query("SELECT new com.kboticket.dto.seat.SeatDto(s.id, s.level, s.block, s.seatX, s.seatY, s.seatZ, s.number, s.price) " +
+    @Query("SELECT new com.kboticket.service.seat.dto.SeatDto(s.id, s.level, s.block, s.seatX, s.seatY, s.seatZ, s.number, s.price) " +
            "  FROM Game g" +
            "  LEFT JOIN Seat s " +
            "    ON g.stadium.id = s.stadium.id" +
@@ -32,16 +32,16 @@ public interface SeatRepository extends JpaRepository<Seat, Long> {
            "   AND os.seat.id IS NULL")
     List<SeatDto> findAvailableSeats(@Param("gameId") Long gameId, @Param("level") String level, @Param("block") String block);
 
-    @Query("SELECT new com.kboticket.dto.seat.SeatCountDto(s.level, COUNT(s.level)) " +
+    @Query("SELECT new com.kboticket.service.seat.dto.GameSeatCountDto(s.level, COUNT(s.level)) " +
             "FROM Game g " +
             "LEFT JOIN Seat s ON g.stadium.id = s.stadium.id " +
             "LEFT JOIN OrderSeat os ON s.id = os.seat.id " +
             "WHERE g.id = :gameId " +
             "AND os.seat.id IS NULL " +
             "GROUP BY s.level")
-    List<SeatCountDto> findSeatLevelsAndCounts(@Param("gameId") Long gameId);
+    List<GameSeatCountDto> findSeatLevelsAndCounts(@Param("gameId") Long gameId);
 
-    @Query("SELECT new com.kboticket.dto.seat.SeatCountDto(s.block, COUNT(s.level)) " +
+    @Query("SELECT new com.kboticket.service.seat.dto.GameSeatCountDto(s.block, COUNT(s.level)) " +
             "FROM Game g " +
             "LEFT JOIN Seat s ON g.stadium.id = s.stadium.id " +
             "LEFT JOIN OrderSeat os ON s.id = os.seat.id " +
@@ -49,6 +49,6 @@ public interface SeatRepository extends JpaRepository<Seat, Long> {
             "AND s.level = :level " +
             "AND os.seat.id IS NULL " +
             "GROUP BY s.block")
-    List<SeatCountDto> findSeatBlocksAndCounts(@Param("gameId") Long gameId, @Param("level") String level);
+    List<GameSeatCountDto> findSeatBlocksAndCounts(@Param("gameId") Long gameId, @Param("level") String level);
 
 }

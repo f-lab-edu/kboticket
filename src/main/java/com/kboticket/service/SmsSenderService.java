@@ -2,7 +2,7 @@ package com.kboticket.service;
 
 import com.kboticket.common.constants.SmsConstant;
 import com.kboticket.domain.User;
-import com.kboticket.dto.SmsRequestDto;
+import com.kboticket.controller.user.dto.SmsRequestDto;
 import com.kboticket.enums.ErrorCode;
 import com.kboticket.exception.KboTicketException;
 import com.kboticket.repository.SmsCertification;

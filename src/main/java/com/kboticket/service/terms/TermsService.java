@@ -2,7 +2,9 @@ package com.kboticket.service.terms;
 
 import com.kboticket.domain.Terms;
 import com.kboticket.dto.TermsDto;
+import com.kboticket.enums.ErrorCode;
 import com.kboticket.enums.TermsType;
+import com.kboticket.exception.KboTicketException;
 import com.kboticket.repository.terms.TermsCustomRepository;
 import com.kboticket.repository.terms.TermsRepository;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Base64;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -34,21 +37,26 @@ public class TermsService {
     }
 
 
-    public List<Terms> findLatestTermsByTitle(TermsType type) {
-        return termsRepositoryCustom.findFirstByTitleOrderByVersionDesc(type);
+    public List<TermsDto> findLatestTermsByTitle(TermsType type) {
+        List<Terms> termsList = termsRepositoryCustom.findFirstByTitleOrderByVersionDesc(type);
+
+        List<TermsDto> termsDtos = termsList.stream()
+                .map(terms -> {
+                    return TermsDto.from(terms);
+                }).collect(Collectors.toList());
+        return termsDtos;
     }
 
     public boolean checkAllMandatoryTermsAgreed(List<TermsDto> termsList) {
         List<Terms> mandatoryTerms = termsRepository.findByMandatoryTrueAndType(TermsType.SIGNIN);
 
         if (mandatoryTerms.size() != termsList.size()) {
-            return false;
+            throw new KboTicketException(ErrorCode.NOT_CHECKED_MANDATORY_TERMS);
         }
 
         for (Terms mandatoryTerm : mandatoryTerms) {
             boolean found = false;
             for (TermsDto dto : termsList) {
-
                 if (mandatoryTerm.getTermsPk().getTitle().equals(dto.getTitle()) &&
                         mandatoryTerm.getTermsPk().getVersion().equals(dto.getVersion())) {
                     found = true;
@@ -56,7 +64,7 @@ public class TermsService {
                 }
             }
             if (!found) {
-                return false;
+                throw new KboTicketException(ErrorCode.NOT_CHECKED_MANDATORY_TERMS);
             }
         }
         return true;

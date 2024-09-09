@@ -1,7 +1,7 @@
 package com.kboticket.controller.terms;
 
 import com.kboticket.common.CommonResponse;
-import com.kboticket.domain.Terms;
+import com.kboticket.controller.terms.dto.TermsListResponse;
 import com.kboticket.dto.TermsDto;
 import com.kboticket.enums.TermsType;
 import com.kboticket.service.terms.TermsService;
@@ -32,8 +32,11 @@ public class TermsController {
      * 약관 리스트
      */
     @PostMapping("/latest")
-    public CommonResponse<List<Terms>> termsList(@RequestParam TermsType type) {
-        List<Terms> response = termsService.findLatestTermsByTitle(type);
-        return new CommonResponse<>(response);
+    public CommonResponse<TermsListResponse> termsList(@RequestParam TermsType type) {
+        List<TermsDto> response = termsService.findLatestTermsByTitle(type);
+
+        TermsListResponse termsListResponse = TermsListResponse.from(response);
+
+        return new CommonResponse<>(termsListResponse);
     }
 }

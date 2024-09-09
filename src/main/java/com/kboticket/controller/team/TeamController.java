@@ -2,7 +2,7 @@ package com.kboticket.controller.team;
 
 import com.kboticket.common.CommonResponse;
 import com.kboticket.dto.TeamDto;
-import com.kboticket.dto.response.TeamsResponse;
+import com.kboticket.controller.team.dto.TeamsResponse;
 import com.kboticket.enums.KboTeam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;

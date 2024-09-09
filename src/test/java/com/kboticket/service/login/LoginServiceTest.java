@@ -1,7 +1,7 @@
 package com.kboticket.service.login;
 
 import com.kboticket.config.jwt.JwtTokenProvider;
-import com.kboticket.dto.login.LoginDto;
+import com.kboticket.service.login.dto.LoginDto;
 import com.kboticket.enums.ErrorCode;
 import com.kboticket.enums.TokenType;
 import com.kboticket.exception.KboTicketException;

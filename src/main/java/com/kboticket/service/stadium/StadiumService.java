@@ -1,8 +1,11 @@
 package com.kboticket.service.stadium;
 
 import com.kboticket.domain.Stadium;
-import com.kboticket.dto.StadiumDto;
+import com.kboticket.controller.stadium.dto.StadiumDetailResponse;
+import com.kboticket.enums.ErrorCode;
+import com.kboticket.exception.KboTicketException;
 import com.kboticket.repository.StadiumRepository;
+import com.kboticket.service.stadium.dto.StadiumDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,13 +20,13 @@ public class StadiumService {
     private final StadiumRepository stadiumRepository;
 
     public StadiumDto view(String stadiumId) {
-        Optional<Stadium> optionalStadium = stadiumRepository.findById(stadiumId);
-        Stadium stadium = optionalStadium.get();
+        Stadium stadium = stadiumRepository.findById(stadiumId).orElseThrow(() -> {
+            throw new KboTicketException(ErrorCode.NOT_FOUND_STADIUM);
+        });
 
-        return StadiumDto.builder()
-                .address(stadium.getAddress())
-                .name(stadium.getName())
-                .build();
+        StadiumDto stadiumDto = StadiumDto.from(stadium);
+
+        return stadiumDto;
     }
 
     public boolean isExistsId(String stadiumId) {

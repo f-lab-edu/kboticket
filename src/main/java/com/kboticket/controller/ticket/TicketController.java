@@ -1,14 +1,14 @@
 package com.kboticket.controller.ticket;
 
 import com.kboticket.common.CommonResponse;
+import com.kboticket.controller.ticket.dto.TicketResponse;
 import com.kboticket.dto.TicketDto;
 import com.kboticket.dto.payment.PaymentCancelInput;
 import com.kboticket.dto.payment.PaymentCancelResponse;
 import com.kboticket.service.OrderFacade;
+import com.kboticket.service.ticket.TicketService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/tickets")
@@ -16,15 +16,18 @@ import java.util.List;
 public class TicketController {
 
     private final OrderFacade orderFacade;
+    private final TicketService ticketService;
 
     /**
-     * 티켓 목록
+     * 티켓 상세
      */
-    @GetMapping("/{orderId}")
-    public CommonResponse<List<TicketDto>> list(@PathVariable String orderId) {
-        List<TicketDto> tickets = orderFacade.getTickets(orderId);
+    @GetMapping("/{ticketId}")
+    public CommonResponse<TicketResponse> list(@PathVariable Long tickketId) {
+        TicketDto ticketDto = ticketService.getTicket(tickketId);
 
-        return new CommonResponse<>(tickets);
+        TicketResponse response = TicketResponse.from(ticketDto);
+
+        return new CommonResponse<>(response);
     }
 
     /**

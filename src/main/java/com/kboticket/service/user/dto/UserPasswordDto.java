@@ -1,4 +1,4 @@
-package com.kboticket.dto.user;
+package com.kboticket.service.user.dto;
 
 import com.kboticket.controller.user.dto.ChangePasswordRequest;
 import lombok.*;

@@ -3,7 +3,7 @@ package com.kboticket.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kboticket.controller.login.LoginController;
 import com.kboticket.controller.login.dto.LoginRequest;
-import com.kboticket.dto.login.LoginDto;
+import com.kboticket.service.login.dto.LoginDto;
 import com.kboticket.service.login.LoginService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
