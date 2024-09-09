@@ -1,4 +1,4 @@
-package com.kboticket.dto.login;
+package com.kboticket.service.login.dto;
 
 import com.kboticket.controller.login.dto.LoginRequest;
 import lombok.*;

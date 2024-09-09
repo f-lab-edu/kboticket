@@ -1,4 +1,4 @@
-package com.kboticket.dto.user;
+package com.kboticket.service.user.dto;
 
 import lombok.Builder;
 import lombok.Getter;

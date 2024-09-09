@@ -1,4 +1,4 @@
-package com.kboticket.dto.seat;
+package com.kboticket.service.seat.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;

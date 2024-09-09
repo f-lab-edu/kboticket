@@ -1,4 +1,4 @@
-package com.kboticket.dto.response;
+package com.kboticket.controller.team.dto;
 
 import com.kboticket.dto.TeamDto;
 import lombok.AllArgsConstructor;

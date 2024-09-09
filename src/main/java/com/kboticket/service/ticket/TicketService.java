@@ -69,7 +69,7 @@ public class TicketService {
                     return TicketDto.builder()
                             .orderSeat(ticket.getOrderSeat())
                             .ticketNumber(ticket.getTicketNumber())
-                            .title(ticket.getName())
+                            .name(ticket.getName())
                             .status(ticket.getStatus())
                             .issuedAt(ticket.getIssuedAt())
                             .build();
@@ -77,5 +77,14 @@ public class TicketService {
                 .collect(Collectors.toList());
 
         return tickets;
+    }
+
+    // 티켓 록록
+    public TicketDto getTicket(Long ticketId) {
+        Ticket ticket = ticketRepository.findById(ticketId).orElseThrow(() -> {
+            throw new KboTicketException(ErrorCode.NOT_FOUND_TICKET);
+        });
+
+        return TicketDto.from(ticket);
     }
 }

@@ -44,12 +44,6 @@ public class OrderService {
         orderRepository.save(order);
     }
 
-    public Order getOrder(String orderId) {
-        return orderRepository.findById(orderId).orElseThrow(() -> {
-            throw new KboTicketException(ErrorCode.NOT_FOUND_ORDER);
-        });
-    }
-
     // 주문 완료
     public void completeOrder(Order order) {
         String title = order.getGame().getHomeTeam().getName() +
@@ -75,6 +69,13 @@ public class OrderService {
                 .orElseThrow(() -> new KboTicketException(ErrorCode.NOT_FOUND_ORDER));
 
         return OrderDetailResponse.from(orderDto);
+    }
+
+    // 주문 조회
+    public Order getOrder(String orderId) {
+        return orderRepository.findById(orderId).orElseThrow(() -> {
+            throw new KboTicketException(ErrorCode.NOT_FOUND_ORDER);
+        });
     }
 }
 

@@ -1,12 +1,11 @@
 package com.kboticket.controller.user;
 
 import com.kboticket.common.CommonResponse;
-import com.kboticket.common.util.PasswordUtils;
 import com.kboticket.controller.user.dto.ChangePasswordRequest;
 import com.kboticket.controller.user.dto.UpdateUserRequest;
-import com.kboticket.dto.user.UserDto;
-import com.kboticket.dto.user.UserInfoDto;
-import com.kboticket.dto.user.UserPasswordDto;
+import com.kboticket.service.user.dto.UserDto;
+import com.kboticket.service.user.dto.UserInfoDto;
+import com.kboticket.service.user.dto.UserPasswordDto;
 import com.kboticket.enums.ErrorCode;
 import com.kboticket.exception.KboTicketException;
 import com.kboticket.service.user.UserService;

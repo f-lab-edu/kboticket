@@ -1,6 +1,5 @@
-package com.kboticket.dto;
+package com.kboticket.controller.user.dto;
 
-import com.kboticket.controller.user.dto.SmsRequest;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

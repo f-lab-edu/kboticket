@@ -1,4 +1,4 @@
-package com.kboticket.dto.game;
+package com.kboticket.controller.game.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,7 +8,7 @@ import lombok.Setter;
 @Builder
 @Getter @Setter
 @AllArgsConstructor
-public class GameSearchDto {
+public class GameSearchRequest {
 
     private String[] teams;
     private String homeTeam;

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kboticket.config.jwt.JwtTokenProvider;
 import com.kboticket.controller.user.UserApiController;
 import com.kboticket.controller.user.dto.SignupRequest;
-import com.kboticket.dto.SmsRequestDto;
+import com.kboticket.controller.user.dto.SmsRequestDto;
 import com.kboticket.dto.TokenDto;
 import com.kboticket.enums.ErrorCode;
 import com.kboticket.exception.KboTicketException;
