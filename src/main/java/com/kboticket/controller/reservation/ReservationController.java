@@ -29,7 +29,7 @@ public class ReservationController {
         String email = authentication.getName();
 
         Set<Long> seatIds = reservationDto.getSeatIds().stream()
-                .map(seatService::getSeat)
+                .map(seatService::getSeatDto)
                 .map(seat -> seat.getId())
                 .collect(Collectors.toSet());
 

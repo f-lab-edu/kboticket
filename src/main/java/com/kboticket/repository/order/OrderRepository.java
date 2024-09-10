@@ -18,7 +18,7 @@ public interface OrderRepository extends JpaRepository<Order, String>, OrderCust
             " t.orderSeat.seat.level, t.orderSeat.seat.block, t.orderSeat.seat.number, t.price, t.ticketNumber, t.cancelAvailableAt, t.isCanceled," +
             " p.amount, p.approvedAt)"+
             "FROM Order o " +
-            "LEFT JOIN Payment p ON o.id = p.orderId " +
+            "LEFT JOIN Payment p ON o.id = p.order.id " +
             "LEFT JOIN OrderSeat os ON o.id = os.order.id " +
             "LEFT JOIN Ticket t ON os.id = t.orderSeat.id " +
            "WHERE o.id = :orderId")

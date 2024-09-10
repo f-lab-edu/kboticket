@@ -22,8 +22,9 @@ public class Payment {
     @Column(name = "payment_key")
     private String paymentKey;
 
-    @Column(name = "order_id")
-    private String orderId;
+    @OneToOne
+    @JoinColumn(name = "order_id")
+    private Order order;
 
     @Column(name = "order_nm")
     private String orderNm;

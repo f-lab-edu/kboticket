@@ -5,7 +5,6 @@ import com.kboticket.controller.ticket.dto.TicketResponse;
 import com.kboticket.dto.TicketDto;
 import com.kboticket.dto.payment.PaymentCancelInput;
 import com.kboticket.dto.payment.PaymentCancelResponse;
-import com.kboticket.service.OrderFacade;
 import com.kboticket.service.ticket.TicketService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -15,14 +14,13 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class TicketController {
 
-    private final OrderFacade orderFacade;
     private final TicketService ticketService;
 
     /**
      * 티켓 상세
      */
     @GetMapping("/{ticketId}")
-    public CommonResponse<TicketResponse> list(@PathVariable Long tickketId) {
+    public CommonResponse<TicketResponse> view(@PathVariable Long tickketId) {
         TicketDto ticketDto = ticketService.getTicket(tickketId);
 
         TicketResponse response = TicketResponse.from(ticketDto);
@@ -35,8 +33,9 @@ public class TicketController {
      */
     @PostMapping("/cancel")
     public CommonResponse<PaymentCancelResponse> cancelTicket(@RequestBody PaymentCancelInput paymentCancelInput) {
-        PaymentCancelResponse response = orderFacade.cancelTickets(paymentCancelInput);
+        // PaymentCancelResponse response = orderFacade.cancelTickets(paymentCancelInput);
 
+        PaymentCancelResponse response = null;
         return new CommonResponse<>(response);
     }
 }

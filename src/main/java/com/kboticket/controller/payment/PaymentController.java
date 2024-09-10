@@ -1,10 +1,14 @@
 package com.kboticket.controller.payment;
 
 import com.kboticket.common.CommonResponse;
+import com.kboticket.domain.Game;
+import com.kboticket.domain.Seat;
+import com.kboticket.domain.User;
 import com.kboticket.dto.payment.PaymentFailResponse;
 import com.kboticket.dto.payment.PaymentRequestDto;
 import com.kboticket.dto.payment.PaymentSuccessResponse;
 import com.kboticket.service.OrderFacade;
+import com.kboticket.service.payment.PaymentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,13 +16,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Set;
+
 @Slf4j
 @RestController
 @RequestMapping("/payment")
 @RequiredArgsConstructor
 public class PaymentController {
 
-    private final OrderFacade orderFacade;
+    private final PaymentService paymentService;
 
     /**
      * 결제  요청
@@ -28,8 +35,11 @@ public class PaymentController {
     public void requestPayment(@RequestBody @Valid PaymentRequestDto paymentRequestDto,
                                Authentication authentication) {
         String loginId = authentication.getName();
+        Long gameId = paymentRequestDto.getGameId();
+        Long amount = paymentRequestDto.getAmount();
 
-        orderFacade.createOrderAndRequestPayment(paymentRequestDto, loginId);
+        paymentService.createOrderAndRequestPayment(loginId, gameId, amount);
+
     }
 
     /**
@@ -39,7 +49,8 @@ public class PaymentController {
     public CommonResponse<PaymentSuccessResponse> success(@RequestParam String paymentKey,
                                                           @RequestParam String orderId,
                                                           @RequestParam Long amount) {
-        PaymentSuccessResponse paymentSuccessResponse = orderFacade.handlePaymentSuccess(paymentKey, orderId, amount);
+
+        PaymentSuccessResponse paymentSuccessResponse = paymentService.paymentSuccess(paymentKey, orderId, amount);
 
         return new CommonResponse<>(paymentSuccessResponse);
     }
@@ -51,7 +62,8 @@ public class PaymentController {
     public CommonResponse<PaymentFailResponse> fail(@RequestParam String code,
                                                     @RequestParam String orderId,
                                                     @RequestParam String message) {
-        PaymentFailResponse paymentFailResponse = orderFacade.handlePaymentFailure(code, orderId, message);
+
+        PaymentFailResponse paymentFailResponse = paymentService.paymentFail(code, orderId, message);
 
         return new CommonResponse<>(paymentFailResponse);
     }
