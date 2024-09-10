@@ -2,8 +2,10 @@ package com.kboticket.service.stadium.dto;
 
 import com.kboticket.domain.Stadium;
 import lombok.Builder;
+import lombok.Getter;
 
 @Builder
+@Getter
 public class StadiumDto {
 
     private String id;

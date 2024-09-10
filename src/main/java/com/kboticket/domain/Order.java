@@ -40,4 +40,15 @@ public class Order {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderSeat> orderSeats;
 
+    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
+    private Payment payment;
+
+    public static Order createOrder(String orderId, Game game, User user) {
+        return Order.builder()
+                .id(orderId)
+                .game(game)
+                .user(user)
+                .status(OrderStatus.ORDER)
+                .build();
+    }
 }

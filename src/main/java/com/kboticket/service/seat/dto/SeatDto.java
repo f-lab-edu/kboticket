@@ -1,6 +1,7 @@
 package com.kboticket.service.seat.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.kboticket.domain.Seat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,5 +22,18 @@ public class SeatDto {
 
     public SeatDto(Long id) {
         this.id = id;
+    }
+
+    public static SeatDto from(Seat seat) {
+        return SeatDto.builder()
+                .id(seat.getId())
+                .level(seat.getLevel())
+                .block(seat.getBlock())
+                .seatX(seat.getSeatX())
+                .seatY(seat.getSeatY())
+                .seatZ(seat.getSeatZ())
+                .number(seat.getNumber())
+                .price(seat.getPrice())
+                .build();
     }
 }

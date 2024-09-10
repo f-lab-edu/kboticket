@@ -43,6 +43,13 @@ public class SeatService {
                 .orElseThrow(() -> new KboTicketException(ErrorCode.NOT_FOUND_SEAT_INFO));
     }
 
+    public SeatDto getSeatDto(Long seatId) {
+        Seat seat =  seatRepository.findById(seatId)
+                .orElseThrow(() -> new KboTicketException(ErrorCode.NOT_FOUND_SEAT_INFO));
+
+        return SeatDto.from(seat);
+    }
+
     // 좌석 정보
     public SeatDto getSeatInfo(Long seatId) {
         Seat seat = seatRepository.findById(seatId)
