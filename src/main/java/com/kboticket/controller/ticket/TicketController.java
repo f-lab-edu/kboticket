@@ -3,7 +3,7 @@ package com.kboticket.controller.ticket;
 import com.kboticket.common.CommonResponse;
 import com.kboticket.controller.ticket.dto.TicketResponse;
 import com.kboticket.dto.TicketDto;
-import com.kboticket.dto.payment.PaymentCancelInput;
+import com.kboticket.dto.payment.PaymentCancelRequest;
 import com.kboticket.dto.payment.PaymentCancelResponse;
 import com.kboticket.service.ticket.TicketService;
 import lombok.RequiredArgsConstructor;
@@ -32,10 +32,9 @@ public class TicketController {
      * 티켓 취소
      */
     @PostMapping("/cancel")
-    public CommonResponse<PaymentCancelResponse> cancelTicket(@RequestBody PaymentCancelInput paymentCancelInput) {
-        // PaymentCancelResponse response = orderFacade.cancelTickets(paymentCancelInput);
+    public CommonResponse<PaymentCancelResponse> cancelTicket(@RequestBody PaymentCancelRequest paymentCancelRequest) {
+        PaymentCancelResponse response = ticketService.cancel(paymentCancelRequest);
 
-        PaymentCancelResponse response = null;
         return new CommonResponse<>(response);
     }
 }

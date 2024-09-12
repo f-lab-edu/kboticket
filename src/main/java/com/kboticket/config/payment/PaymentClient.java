@@ -3,7 +3,7 @@ package com.kboticket.config.payment;
 import com.kboticket.common.constants.KboConstant;
 import com.kboticket.config.PaymentConfig;
 import com.kboticket.dto.payment.PaymentRequestInput;
-import com.kboticket.dto.payment.PaymentCancelInput;
+import com.kboticket.dto.payment.PaymentCancelRequest;
 import com.kboticket.dto.payment.PaymentCancelResponse;
 import com.kboticket.dto.payment.PaymentSuccessResponse;
 import com.kboticket.enums.ErrorCode;
@@ -70,7 +70,7 @@ public class PaymentClient {
     }
 
 
-    public PaymentCancelResponse cancelPayment(PaymentCancelInput input) {
+    public PaymentCancelResponse cancelPayment(PaymentCancelRequest input) {
         String paymentKey = input.getPaymentKey();
 
         return restClient.method(HttpMethod.POST)

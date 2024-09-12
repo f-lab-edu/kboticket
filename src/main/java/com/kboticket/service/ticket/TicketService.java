@@ -2,12 +2,18 @@ package com.kboticket.service.ticket;
 
 import com.kboticket.domain.Order;
 import com.kboticket.domain.OrderSeat;
+import com.kboticket.domain.Payment;
 import com.kboticket.domain.Ticket;
 import com.kboticket.dto.TicketDto;
+import com.kboticket.dto.payment.PaymentCancelRequest;
+import com.kboticket.dto.payment.PaymentCancelResponse;
 import com.kboticket.enums.ErrorCode;
 import com.kboticket.enums.TicketStatus;
 import com.kboticket.exception.KboTicketException;
+import com.kboticket.repository.PaymentRepository;
 import com.kboticket.repository.TicketRepository;
+import com.kboticket.repository.order.OrderRepository;
+import com.kboticket.service.payment.PaymentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,6 +30,8 @@ import java.util.stream.Collectors;
 public class TicketService {
 
     private final TicketRepository ticketRepository;
+    private final OrderRepository orderRepository;
+    private final PaymentRepository paymentRepository;
 
     public void createTicket(Order order) {
         List<OrderSeat> orderSeats = order.getOrderSeats();
@@ -37,6 +46,40 @@ public class TicketService {
                 .collect(Collectors.toList());
 
         ticketRepository.saveAll(tickets);
+    }
+
+    public PaymentCancelResponse cancel(PaymentCancelRequest request) {
+        String orderId = request.getOrderId();
+        Long[] ticketIds = request.getTicketId();
+        int cancelAmount = request.getCancelAmount();
+
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> {
+            throw new KboTicketException(ErrorCode.NOT_FOUND_ORDER);
+        });
+
+        Payment payment = paymentRepository.findByOrderId(orderId).orElseThrow(() -> {
+            throw new KboTicketException(ErrorCode.PAYMENT_NOT_FOUND);
+        });
+
+        boolean isAllTicketCancelled = areAllTicketIdsMatching(ticketIds, order);
+
+        //PaymentCancelResponse paymentCancelResponse = paymentService.cancel(order, payment, isAllTicketCancelled, cancelAmount);
+        PaymentCancelResponse paymentCancelResponse = null;
+
+        if (paymentCancelResponse != null) {
+            // 민약 여기서 에러가 나면? 에러찍기
+            cancelTickets(order, ticketIds);
+        }
+        return paymentCancelResponse;
+    }
+
+    private boolean areAllTicketIdsMatching(Long[] ticketIds, Order order) {
+        Set<Long> existingTicketIds = getTickets(order).stream()
+                .map(TicketDto::getId)
+                .collect(Collectors.toSet());
+
+        return Arrays.stream(ticketIds)
+                .allMatch(existingTicketIds::contains);
     }
 
     public void cancelTickets(Order order, Long[] ticketIds) {
