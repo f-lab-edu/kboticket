@@ -5,7 +5,7 @@ import lombok.*;
 @Builder
 @Getter @Setter
 @AllArgsConstructor
-public class PaymentCancelInput {
+public class PaymentCancelRequest {
     private String paymentKey;
     private String cancelReason;
     private int cancelAmount;

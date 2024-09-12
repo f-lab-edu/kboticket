@@ -93,8 +93,7 @@ public class PaymentService {
         }
 
         // order 상태 변경
-        String title = order.getGame().getHomeTeam().getName() +
-                " VS " +  order.getGame().getAwayTeam().getName();
+        String title = order.getGame().getHomeTeam().getName() + " VS " +  order.getGame().getAwayTeam().getName();
         order.setStatus(OrderStatus.COMPLETE);
         order.setOrderDate(LocalDateTime.now());
         order.setName(title);
@@ -133,7 +132,7 @@ public class PaymentService {
      */
     public PaymentCancelResponse paymentCancelPart(Payment payment, String cancelReason, int cancelAmount) {
         String paymentKey = payment.getPaymentKey();
-        PaymentCancelInput input = PaymentCancelInput.builder()
+        PaymentCancelRequest input = PaymentCancelRequest.builder()
                 .paymentKey(paymentKey)
                 .cancelReason(cancelReason)
                 .cancelAmount(cancelAmount)
@@ -159,7 +158,7 @@ public class PaymentService {
      */
     public PaymentCancelResponse paymentCancelAll(Payment payment, String cancelReason) {
         String paymentKey = payment.getPaymentKey();
-        PaymentCancelInput input = PaymentCancelInput.builder()
+        PaymentCancelRequest input = PaymentCancelRequest.builder()
                 .paymentKey(paymentKey)
                 .cancelReason(cancelReason)
                 .build();
