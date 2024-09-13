@@ -4,18 +4,16 @@ import com.kboticket.common.constants.KboConstant;
 import com.kboticket.config.PaymentConfig;
 import com.kboticket.config.payment.PaymentClient;
 import com.kboticket.domain.*;
-import com.kboticket.dto.payment.PaymentRequestInput;
 import com.kboticket.dto.ReservedSeatInfo;
 import com.kboticket.dto.payment.*;
 import com.kboticket.enums.ErrorCode;
 import com.kboticket.enums.PaymentStatus;
 import com.kboticket.exception.KboTicketException;
+import com.kboticket.repository.PaymentRepository;
 import com.kboticket.repository.SeatRepository;
 import com.kboticket.repository.UserRepository;
 import com.kboticket.repository.game.GameRepository;
 import com.kboticket.repository.order.OrderRepository;
-import com.kboticket.repository.PaymentRepository;
-import com.kboticket.service.ticket.TicketService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RBucket;
@@ -26,7 +24,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -37,8 +38,6 @@ public class PaymentService {
 
     private final RedissonClient redissonClient;
     private final PaymentConfig paymentConfig;
-
-    private final TicketService ticketService;
 
     private final PaymentRepository paymentRepository;
     private final OrderRepository orderRepository;
@@ -103,8 +102,6 @@ public class PaymentService {
         payment.setOrder(order);
 
         paymentRepository.save(payment);
-
-        ticketService.createTicket(order);
 
         return response;
     }
