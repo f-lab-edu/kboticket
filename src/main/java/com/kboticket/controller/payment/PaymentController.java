@@ -5,6 +5,7 @@ import com.kboticket.dto.payment.PaymentFailResponse;
 import com.kboticket.dto.payment.PaymentRequestDto;
 import com.kboticket.dto.payment.PaymentSuccessResponse;
 import com.kboticket.service.payment.PaymentService;
+import com.kboticket.service.ticket.TicketService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 public class PaymentController {
 
     private final PaymentService paymentService;
+    private final TicketService ticketService;
 
     /**
      * 결제  요청
@@ -44,6 +46,11 @@ public class PaymentController {
                                                           @RequestParam Long amount) {
 
         PaymentSuccessResponse paymentSuccessResponse = paymentService.paymentSuccess(paymentKey, orderId, amount);
+
+        // 티켓 생성
+        if (paymentSuccessResponse != null) {
+            ticketService.createTicket(orderId);
+        }
 
         return new CommonResponse<>(paymentSuccessResponse);
     }

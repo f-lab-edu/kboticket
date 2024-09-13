@@ -1,8 +1,7 @@
 package com.kboticket.controller.payment;
 
-import com.kboticket.enums.PaymentStatus;
-import com.kboticket.service.order.OrderService;
 import com.kboticket.service.payment.PaymentService;
+import com.kboticket.service.ticket.TicketService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,12 +23,15 @@ public class PaymentControllerTest {
     @MockBean
     private PaymentService paymentService;
 
+    @MockBean
+    private TicketService ticketService;
+
     @Mock
     private Authentication authentication;
 
     @BeforeEach
     void setUp() {
-        PaymentController paymentController = new PaymentController(paymentService);
+        PaymentController paymentController = new PaymentController(paymentService, ticketService);
         this.mockMvc = MockMvcBuilders.standaloneSetup(paymentController).build();
     }
 

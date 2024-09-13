@@ -15,6 +15,7 @@ import com.kboticket.repository.TicketRepository;
 import com.kboticket.repository.order.OrderRepository;
 import com.kboticket.service.payment.PaymentService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,16 +25,22 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class TicketService {
 
+    private final PaymentService paymentService;
+
     private final TicketRepository ticketRepository;
     private final OrderRepository orderRepository;
     private final PaymentRepository paymentRepository;
 
-    public void createTicket(Order order) {
+    public void createTicket(String orderId) {
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> {
+            throw new KboTicketException(ErrorCode.NOT_FOUND_ORDER);
+        });
         List<OrderSeat> orderSeats = order.getOrderSeats();
         List<Ticket> tickets = orderSeats.stream()
                 .map(orderSeat -> Ticket.builder()
@@ -63,12 +70,16 @@ public class TicketService {
 
         boolean isAllTicketCancelled = areAllTicketIdsMatching(ticketIds, order);
 
-        //PaymentCancelResponse paymentCancelResponse = paymentService.cancel(order, payment, isAllTicketCancelled, cancelAmount);
         PaymentCancelResponse paymentCancelResponse = null;
+        try {
+             paymentCancelResponse = paymentService.cancel(order, payment, isAllTicketCancelled, cancelAmount);
 
-        if (paymentCancelResponse != null) {
-            // 민약 여기서 에러가 나면? 에러찍기
-            cancelTickets(order, ticketIds);
+            if (paymentCancelResponse != null) {
+                cancelTickets(order, ticketIds);
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new KboTicketException(ErrorCode.PAYMENT_CANCEL_EXCEPTION, null, log::error);
         }
         return paymentCancelResponse;
     }
