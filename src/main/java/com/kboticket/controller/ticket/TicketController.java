@@ -32,8 +32,8 @@ public class TicketController {
      * 티켓 취소
      */
     @PostMapping("/cancel")
-    public CommonResponse<PaymentCancelResponse> cancelTicket(@RequestBody PaymentCancelRequest paymentCancelRequest) {
-        PaymentCancelResponse response = ticketService.cancel(paymentCancelRequest);
+    public CommonResponse<PaymentCancelResponse> cancelTicket(@RequestBody PaymentCancelRequest request) {
+        PaymentCancelResponse response = ticketService.cancel(request);
 
         return new CommonResponse<>(response);
     }

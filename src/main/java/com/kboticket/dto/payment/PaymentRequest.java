@@ -8,7 +8,7 @@ import java.util.Set;
 @Getter @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class PaymentRequestDto {
+public class PaymentRequest {
 
     private String orderId;
     private Long gameId;

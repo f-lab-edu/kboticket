@@ -2,7 +2,7 @@ package com.kboticket.controller.payment;
 
 import com.kboticket.common.CommonResponse;
 import com.kboticket.dto.payment.PaymentFailResponse;
-import com.kboticket.dto.payment.PaymentRequestDto;
+import com.kboticket.dto.payment.PaymentRequest;
 import com.kboticket.dto.payment.PaymentSuccessResponse;
 import com.kboticket.service.payment.PaymentService;
 import com.kboticket.service.ticket.TicketService;
@@ -27,13 +27,13 @@ public class PaymentController {
      */
     @PostMapping
     @ResponseStatus(HttpStatus.OK)
-    public void requestPayment(@RequestBody @Valid PaymentRequestDto paymentRequestDto,
+    public void requestPayment(@RequestBody @Valid PaymentRequest paymentRequest,
                                Authentication authentication) {
-        String loginId = authentication.getName();
-        Long gameId = paymentRequestDto.getGameId();
-        Long amount = paymentRequestDto.getAmount();
+        String email = authentication.getName();
+        Long gameId = paymentRequest.getGameId();
+        Long amount = paymentRequest.getAmount();
 
-        paymentService.createOrderAndRequestPayment(loginId, gameId, amount);
+        paymentService.createOrderAndRequestPayment(email, gameId, amount);
 
     }
 

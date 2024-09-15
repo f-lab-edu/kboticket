@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kboticket.common.CommonResponse;
 import com.kboticket.controller.ticket.dto.TicketResponse;
 import com.kboticket.dto.TicketDto;
+import com.kboticket.dto.payment.PaymentCancelRequest;
+import com.kboticket.dto.payment.PaymentCancelResponse;
 import com.kboticket.enums.TicketStatus;
 import com.kboticket.service.ticket.TicketService;
 import net.bytebuddy.asm.Advice;
@@ -14,9 +16,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import java.time.LocalDateTime;
 
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
@@ -24,6 +29,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -73,7 +79,24 @@ public class TicketControllerTest {
 
     @Test
     @DisplayName("[SUCCESS] 티켓 취소")
-    void cancelTest() {
+    void cancelTest() throws Exception {
+        PaymentCancelRequest request = new PaymentCancelRequest();
+        PaymentCancelResponse response = PaymentCancelResponse.builder()
+                .cancelAmount(1000L)
+                .build();
 
+        given(ticketService.cancel(request)).willReturn(response);
+
+        String jsonRequest = new ObjectMapper().writeValueAsString(request);
+        String jsonResponse = new ObjectMapper().writeValueAsString(new CommonResponse<>(response));
+
+        mockMvc.perform(post("/tickets/cancel")
+                .content(jsonRequest)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(APPLICATION_JSON))
+                .andExpect(content().json(jsonResponse));
+
+        verify(ticketService, times(1)).cancel(request);
     }
 }
