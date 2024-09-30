@@ -15,6 +15,7 @@ import com.kboticket.exception.KboTicketException;
 import com.kboticket.service.SmsSenderService;
 import com.kboticket.service.terms.TermsService;
 import com.kboticket.service.user.UserService;
+import com.kboticket.service.user.dto.UserDto;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -74,7 +75,9 @@ public class UserApiController {
         if (!isAgreeAllMandaotryTerms) {
             throw new KboTicketException(ErrorCode.NOT_CHECKED_MANDATORY_TERMS);
         }
-        userService.signup(request);
+
+        UserDto userDto = UserDto.from(request);
+        userService.signup(userDto);
     }
 
     /**

@@ -4,6 +4,7 @@ import com.kboticket.common.util.PasswordUtils;
 import com.kboticket.config.jwt.JwtTokenProvider;
 import com.kboticket.controller.user.dto.SignupRequest;
 import com.kboticket.domain.User;
+import com.kboticket.service.user.dto.UserDto;
 import com.kboticket.service.user.dto.UserPasswordDto;
 import com.kboticket.enums.ErrorCode;
 import com.kboticket.exception.KboTicketException;
@@ -29,8 +30,7 @@ public class UserServiceTest {
     private UserRepository userRepository;
     @Mock
     private JwtTokenProvider jwtTokenProvider;
-    @Mock
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
+
     @InjectMocks
     private UserService userService;
 
@@ -41,10 +41,10 @@ public class UserServiceTest {
         MockitoAnnotations.openMocks(this);
 
         testUser = User.builder()
-                .email("test@example.com")
-                .password(new BCryptPasswordEncoder().encode("password"))
-                .phone("010-1234-5678")
-                .build();
+            .email("test@example.com")
+            .password(new BCryptPasswordEncoder().encode("Password12**"))
+            .phone("010-1234-5678")
+            .build();
     }
 
 
@@ -52,19 +52,22 @@ public class UserServiceTest {
     @DisplayName("[SUCCESS] 회원가입 성공")
     void signSuccessTest() {
         // given
-        SignupRequest signupRequest = SignupRequest.builder()
-                .email("test@test.com")
-                .password("1111")
-                .confirmpassword("1111")
-                .verificationKey("11111")
-                .terms(new ArrayList<>())
-                .build();
+        SignupRequest request = SignupRequest.builder()
+            .email("test@test.com")
+            .password("Password12**")
+            .confirmpassword("Password12**")
+            .verificationKey("111")
+            .terms(new ArrayList<>())
+            .build();
 
-        given(userRepository.existsByEmail(signupRequest.getEmail())).willReturn(false);
-        given(jwtTokenProvider.getPhoneFromToken(signupRequest.getVerificationKey())).willReturn("010-1234-5678");
+        given(userRepository.existsByEmail(request.getEmail())).willReturn(false);
+        given(jwtTokenProvider.getPhoneFromToken(request.getVerificationKey()))
+            .willReturn("010-1234-5678");
+
+        UserDto userDto = UserDto.from(request);
 
         // When
-        userService.signup(signupRequest);
+        userService.signup(userDto);
 
         // Then
         verify(userRepository, times(1)).save(any(User.class));
@@ -74,19 +77,21 @@ public class UserServiceTest {
     @DisplayName("[SUCCESS] 이메일 중복 검사")
     void signupDuplicateEmail() {
         // given
-        SignupRequest signupRequest = SignupRequest.builder()
-                .email("test@test.com")
-                .password("1111")
-                .confirmpassword("1111")
-                .verificationKey("11111")
-                .terms(new ArrayList<>())
-                .build();
+        SignupRequest request = SignupRequest.builder()
+            .email("test@test.com")
+            .password("Password12**")
+            .confirmpassword("Password12**")
+            .verificationKey("11111")
+            .terms(new ArrayList<>())
+            .build();
 
-        given(userRepository.existsByEmail(signupRequest.getEmail())).willReturn(true);
+        given(userRepository.existsByEmail(request.getEmail())).willReturn(true);
+
+        UserDto userDto = UserDto.from(request);
 
         // When & Then
         KboTicketException exception = assertThrows(KboTicketException.class, () -> {
-            userService.signup(signupRequest);
+            userService.signup(userDto);
         });
 
         assertEquals(ErrorCode.EMAIL_DUPLICATTE.code, exception.getCode());
@@ -97,7 +102,7 @@ public class UserServiceTest {
     void verifyPassword() {
         // given
         String email = "test@example.com";
-        String correctPassword = "password";
+        String correctPassword = "Password12**";
 
         given(userRepository.findByEmail(email)).willReturn(Optional.of(testUser));
 
@@ -115,11 +120,11 @@ public class UserServiceTest {
         // given
         String email = "test@example.com";
         UserPasswordDto userPasswordDto = UserPasswordDto.builder()
-                .email(email)
-                .currentPassword("password")
-                .confirmPassword("newPassword")
-                .newPassword("newPassword")
-                .build();
+            .email(email)
+            .currentPassword("Password12**")
+            .confirmPassword("Password12**")
+            .newPassword("Password123**")
+            .build();
 
         given(userRepository.findByEmail(email)).willReturn(Optional.of(testUser));
         given(userRepository.save(any(User.class))).willReturn(testUser);
@@ -138,11 +143,11 @@ public class UserServiceTest {
         // given
         String email = "test@example.com";
         UserPasswordDto userPasswordDto = UserPasswordDto.builder()
-                .email(email)
-                .currentPassword("wrongPassword")
-                .confirmPassword("newPassword")
-                .newPassword("newPassword")
-                .build();
+            .email(email)
+            .currentPassword("wrongPassword")
+            .confirmPassword("Password12**")
+            .newPassword("Password1234**")
+            .build();
 
         given(userRepository.findByEmail(email)).willReturn(Optional.of(testUser));
 

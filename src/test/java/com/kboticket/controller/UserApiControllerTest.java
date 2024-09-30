@@ -11,6 +11,7 @@ import com.kboticket.exception.KboTicketException;
 import com.kboticket.service.SmsSenderService;
 import com.kboticket.service.terms.TermsService;
 import com.kboticket.service.user.UserService;
+import com.kboticket.service.user.dto.UserDto;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -90,11 +91,21 @@ public class UserApiControllerTest {
     @DisplayName("[SUCCESS] 회원 가입")
     void signupSuccessTest() throws Exception {
         // given
-        SignupRequest signupRequest = new SignupRequest("test@example.com", "1111", "1111", "00000", new ArrayList<>());
-        String json = new ObjectMapper().writeValueAsString(signupRequest);
+        SignupRequest request = SignupRequest.builder()
+            .email("test@gmail.com")
+            .password("123")
+            .confirmpassword("123")
+            .verificationKey("vertificationkey")
+            .terms(new ArrayList<>())
+            .build();
 
-        given(termsService.checkAllMandatoryTermsAgreed(signupRequest.getTerms())).willReturn(true);
-        doNothing().when(userService).signup(signupRequest);
+        String json = new ObjectMapper().writeValueAsString(request);
+
+        given(termsService.checkAllMandatoryTermsAgreed(request.getTerms())).willReturn(true);
+
+        UserDto userDto = UserDto.from(request);
+
+        doNothing().when(userService).signup(userDto);
 
         // when & then
         mockMvc.perform(post("/api/user/signup")
@@ -107,10 +118,17 @@ public class UserApiControllerTest {
     @DisplayName("[FAIL] 회원 가입 실패")
     void signupFailedTest() throws Exception {
         // given
-        SignupRequest signupRequest = new SignupRequest("test@example.com", "1111", "1111", "00000", new ArrayList<>());
-        String json = new ObjectMapper().writeValueAsString(signupRequest);
+        SignupRequest request = SignupRequest.builder()
+            .email("test@gmail.com")
+            .password("123")
+            .confirmpassword("123")
+            .verificationKey("vertificationkey")
+            .terms(new ArrayList<>())
+            .build();
 
-        given(termsService.checkAllMandatoryTermsAgreed(signupRequest.getTerms())).willReturn(false);
+        String json = new ObjectMapper().writeValueAsString(request);
+
+        given(termsService.checkAllMandatoryTermsAgreed(request.getTerms())).willReturn(false);
 
         // when & then
         mockMvc.perform(post("/api/user/signup")
