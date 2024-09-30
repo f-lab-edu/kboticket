@@ -32,11 +32,11 @@ public class UserService {
     private final JwtTokenProvider jwtTokenProvider;
 
     @Transactional
-    public void signup(SignupRequest request) {
-        String email = request.getEmail();
-        String password = request.getPassword();
-        String confirmPassword = request.getConfirmpassword();
-        String verificationKey = request.getVerificationKey();
+    public void signup(UserDto userDto) {
+        String email = userDto.getEmail();
+        String password = userDto.getPassword();
+        String confirmPassword = userDto.getConfirmpassword();
+        String verificationKey = userDto.getVertificationKey();
 
         // 이메일 중복 검사
         if (userRepository.existsByEmail(email)) {
@@ -64,7 +64,7 @@ public class UserService {
                 .phone(phone)
                 .build();
 
-        List<Agreed> agreedList = request.getTerms().stream()
+        List<Agreed> agreedList = userDto.getTerms().stream()
                 .map(t -> {
                     TermsPk termsPk = new TermsPk(t.getTitle(), t.getVersion());
                     Terms terms = termsRepository.findById(termsPk)
