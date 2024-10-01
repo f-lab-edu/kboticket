@@ -2,8 +2,8 @@ package com.kboticket.service.user;
 
 import com.kboticket.common.util.PasswordUtils;
 import com.kboticket.config.jwt.JwtTokenProvider;
-import com.kboticket.controller.user.dto.SignupRequest;
 import com.kboticket.domain.*;
+import com.kboticket.dto.TermsDto;
 import com.kboticket.dto.TokenDto;
 import com.kboticket.service.user.dto.UserDto;
 import com.kboticket.service.user.dto.UserInfoDto;
@@ -38,44 +38,61 @@ public class UserService {
         String confirmPassword = userDto.getConfirmpassword();
         String verificationKey = userDto.getVertificationKey();
 
-        // 이메일 중복 검사
+        checkDuplicateEmail(email);
+        validatePassword(password, confirmPassword);
+
+        String phone = getPhoneFromKey(verificationKey);
+
+        User user = createUser(email, password, phone);
+
+        List<Agreed> agreedList = saveAgreedTerms(user, userDto.getTerms());
+
+        user.setAgreedList(agreedList);
+
+        userRepository.save(user);
+    }
+
+    private void checkDuplicateEmail(String email) {
         if (userRepository.existsByEmail(email)) {
             throw new KboTicketException(ErrorCode.EMAIL_DUPLICATTE);
         }
+    }
 
+    private void validatePassword(String password, String confirmPassword) {
         if (!PasswordUtils.validate(password)) {
             throw new KboTicketException(ErrorCode.INVALID_PASSWORD_FORMAT);
         }
 
-        // password, confirmPassword 비교
         if (!password.equals(confirmPassword)) {
             throw new KboTicketException(ErrorCode.PASSWORD_MISMATCH);
         }
+    }
 
-        // 인증키 확인
+    private String getPhoneFromKey(String verificationKey) {
         String phone = jwtTokenProvider.getPhoneFromToken(verificationKey);
         if (phone == null) {
             throw new KboTicketException(ErrorCode.INVALID_VERIFICATION_CODE);
         }
 
-        User user = User.builder()
-                .email(email)
-                .password(PasswordUtils.encrypt(password))
-                .phone(phone)
-                .build();
+        return phone;
+    }
 
-        List<Agreed> agreedList = userDto.getTerms().stream()
-                .map(t -> {
-                    TermsPk termsPk = new TermsPk(t.getTitle(), t.getVersion());
-                    Terms terms = termsRepository.findById(termsPk)
-                            .orElseThrow(() -> new KboTicketException(ErrorCode.TERM_NOT_FOUND_EXCEPTION));
+    private User createUser(String email, String password, String phone) {
+        return User.builder()
+            .email(email)
+            .password(PasswordUtils.encrypt(password))
+            .phone(phone)
+            .build();
+    }
 
-                    return new Agreed(terms, user, LocalDateTime.now());
-                })
-                .collect(Collectors.toList());
-
-        user.setAgreedList(agreedList);
-        userRepository.save(user);
+    private List<Agreed> saveAgreedTerms(User user, List<TermsDto> termDtos) {
+        return termDtos.stream()
+            .map(termDto -> {
+                Terms terms = termsRepository.findById(new TermsPk(termDto.getTitle(), termDto.getVersion()))
+                    .orElseThrow(() -> new KboTicketException(ErrorCode.TERM_NOT_FOUND_EXCEPTION));
+                return new Agreed(terms, user, LocalDateTime.now());
+            })
+            .collect(Collectors.toList());
     }
 
     public boolean verifyPassword(String email, String inputPassword) {
@@ -90,7 +107,6 @@ public class UserService {
         return new TokenDto(newAccessToken, refreshToken);
     }
 
-    // user 정보 변경
     public void updateUserInfo(String email, UserInfoDto userInfoDto) {
         User user = getUserByEmail(email);
 
@@ -104,7 +120,6 @@ public class UserService {
         userRepository.save(user);
     }
 
-    // password 변경
     public void updatePassword(UserPasswordDto userPasswordDto) {
         String email = userPasswordDto.getEmail();
         String currentPassword = userPasswordDto.getCurrentPassword();
@@ -113,17 +128,18 @@ public class UserService {
 
         User user = getUserByEmail(email);
 
-        if (!PasswordUtils.matches(currentPassword, user.getPassword())) {
-            throw new KboTicketException(ErrorCode.INCORRECT_PASSWORD);
-        }
+        validateCurrentPassword(currentPassword, user.getPassword());
+        validatePassword(newPassword, confirmPassword);
 
-        // newPassword, confirmPassword 일치 여부 확인
-        if (!newPassword.equals(confirmPassword)) {
-            throw new KboTicketException(ErrorCode.PASSWORD_MISMATCH);
-        }
 
         user.setPassword(PasswordUtils.encrypt(newPassword));
         userRepository.save(user);
+    }
+
+    private void validateCurrentPassword(String inputPassword, String storedPassword) {
+        if (!PasswordUtils.matches(inputPassword, storedPassword)) {
+            throw new KboTicketException(ErrorCode.INCORRECT_PASSWORD);
+        }
     }
 
     public User findById(Long userId) {
@@ -145,20 +161,19 @@ public class UserService {
                 .orElseThrow(() -> new KboTicketException(ErrorCode.NOT_FOUND_USER));
     }
 
-    // email 존재 여부
     public boolean isExistEmail(String email) {
+
         return userRepository.existsByEmail(email);
     }
 
-    // phone 존재 여부
     public boolean isExistPhone(String phone) {
         return userRepository.existsByPhone(phone);
     }
 
-    // 전화번호로 이메일 찾기
-    public String findbyPhone(String phone) {
+    public String findEmailbyPhone(String phone) {
         User user = userRepository.findByPhone(phone)
                 .orElseThrow(() -> new KboTicketException(ErrorCode.NOT_FOUND_USER));
+
         return user.getEmail();
     }
 }

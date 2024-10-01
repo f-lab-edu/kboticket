@@ -108,7 +108,7 @@ public class UserApiController {
      */
     @GetMapping("/find-email")
     public CommonResponse<EmailResponse> findEmail(@RequestParam String phone) {
-        String email = userService.findbyPhone(phone);
+        String email = userService.findEmailbyPhone(phone);
 
         return new CommonResponse<>(new EmailResponse(email));
     }

@@ -66,10 +66,10 @@ public class UserServiceTest {
 
         UserDto userDto = UserDto.from(request);
 
-        // When
+        // when
         userService.signup(userDto);
 
-        // Then
+        // then
         verify(userRepository, times(1)).save(any(User.class));
     }
 
@@ -89,7 +89,7 @@ public class UserServiceTest {
 
         UserDto userDto = UserDto.from(request);
 
-        // When & Then
+        // when & then
         KboTicketException exception = assertThrows(KboTicketException.class, () -> {
             userService.signup(userDto);
         });
@@ -106,10 +106,10 @@ public class UserServiceTest {
 
         given(userRepository.findByEmail(email)).willReturn(Optional.of(testUser));
 
-        // When
+        // when
         boolean result = userService.verifyPassword(email, correctPassword);
 
-        // Then
+        // then
         assertTrue(result);
     }
 
@@ -129,10 +129,10 @@ public class UserServiceTest {
         given(userRepository.findByEmail(email)).willReturn(Optional.of(testUser));
         given(userRepository.save(any(User.class))).willReturn(testUser);
 
-        // When
+        // when
         userService.updatePassword(userPasswordDto);
 
-        // Then
+        // then
         verify(userRepository, times(1)).save(any(User.class));
         assertTrue(PasswordUtils.matches("newPassword", testUser.getPassword()));
     }
