@@ -1,6 +1,7 @@
 package com.kboticket.controller.game.dto;
 
 import com.kboticket.service.game.dto.GameDetailDto;
+import java.time.LocalDate;
 import lombok.*;
 
 @Builder
@@ -12,21 +13,24 @@ public class GameDetailResponse {
     private Long id;
     private String homeTeam;
     private String awayTeam;
+    private String stadium;
     private String gameDate;
     private String startTime;
-    private String stadium;
-    // 약관, 요일, 팀을 클래스로, boolean 예매 오픈되었는지notnull, false인경우 시간 추가nullable, 딱지 boolean,
+    private String gameDay;
+    private String gameStatus;      // 경기 상태 (SCHEDULED/OPEN/CLOSE)
+    private LocalDate openDate;     // 티켓 오픈 일자 (경기일 - 7)
+    private String openTime;        // 티켓 오픈 시간 (11:00)
 
-    public static GameDetailResponse from (GameDetailDto detailDto) {
+    public static GameDetailResponse from (GameDetailDto dto) {
         return GameDetailResponse.builder()
-                .homeTeam(detailDto.getHomeTeam())
-                .awayTeam(detailDto.getAwayTeam())
-                .gameDate(detailDto.getGameDate())
-                .startTime(detailDto.getStartTime())
-                .stadium(detailDto.getStadium())
+                .homeTeam(dto.getHomeTeam())
+                .awayTeam(dto.getAwayTeam())
+                .stadium(dto.getStadium())
+                .gameDate(dto.getGameDate())
+                .startTime(dto.getStartTime())
+                .gameDate(dto.getGameDate())
+                .gameStatus(dto.getGameStatus())
+                .openDate(dto.getOpenDate())
                 .build();
     }
 }
-
-// 홈팀에 정보가 더 있으면 클래스로 , 홈팀, 이미지 url
-// enum 으로 lg

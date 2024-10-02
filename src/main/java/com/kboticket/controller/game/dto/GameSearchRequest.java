@@ -10,11 +10,9 @@ import lombok.Setter;
 @AllArgsConstructor
 public class GameSearchRequest {
 
-    private String[] teams;
-    private String homeTeam;
-    private String awayTeam;
-    private String startDate;
-    private String endDate;
+    private String team;
     private String stadium;
+    private String month;
+    private String dayOfMonth;
 
 }
