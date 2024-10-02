@@ -21,9 +21,9 @@ public class GameController {
      */
     @GetMapping("/list")
     public CommonResponse<GameSearchResponse> list(@RequestBody GameSearchRequest gameSearchRequest,
-                                                   @RequestParam(value = "cursor", required = false) String cursor,
+                                                   @RequestParam(value = "cursor", required = false) String cursorId,
                                                    @RequestParam(value = "limit", defaultValue = "10") int limit) {
-        GameSearchResponse gameList = gameService.getGameList(gameSearchRequest, cursor, limit);
+        GameSearchResponse gameList = gameService.getGameList(gameSearchRequest, cursorId, limit);
 
         return new CommonResponse<>(gameList);
     }

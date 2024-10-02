@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface GameCustomRepository {
 
-    List<GameDetailResponse> getByCursor(GameSearchRequest gameSearchRequest, String cursor, int limit);
+    List<GameDetailResponse> getByCursor(GameSearchRequest gameSearchRequest, String cursorId, int limit);
 }
