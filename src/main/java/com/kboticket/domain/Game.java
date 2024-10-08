@@ -1,6 +1,7 @@
 package com.kboticket.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.kboticket.enums.GameStatus;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -37,12 +38,14 @@ public class Game {
     @OneToMany(mappedBy = "game")
     private List<Reservation> reservations;
 
+    @JoinColumn(name = "game_date")
     private String gameDate;
 
+    @JoinColumn(name = "start_time")
     private String startTime;
 
-    private String gameInfo;
-
-
+    @Enumerated(value = EnumType.STRING)
+    @JoinColumn(name = "game_status")
+    private GameStatus gameStatus;
 
 }

@@ -4,7 +4,8 @@ import com.kboticket.controller.login.dto.LoginRequest;
 import lombok.*;
 
 @Builder
-@Getter @Setter
+@Getter
+@Setter
 @AllArgsConstructor
 public class LoginDto {
 
@@ -13,8 +14,8 @@ public class LoginDto {
 
     public static LoginDto from(LoginRequest request) {
         return LoginDto.builder()
-                .username(request.getUsername())
-                .password(request.getPassword())
-                .build();
+            .username(request.getUsername())
+            .password(request.getPassword())
+            .build();
     }
 }

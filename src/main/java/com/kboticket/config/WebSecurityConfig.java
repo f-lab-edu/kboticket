@@ -23,7 +23,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-public class WebSecurityConfig{
+public class WebSecurityConfig {
 
     private final UserDetailsService userService;
     private final LogoutService logoutService;
@@ -32,35 +32,37 @@ public class WebSecurityConfig{
     @Bean
     public WebSecurityCustomizer configure() {
         return (web) -> web.ignoring()
-                .requestMatchers(new AntPathRequestMatcher("/static/**"));
+            .requestMatchers(new AntPathRequestMatcher("/static/**"));
     }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
-                .authorizeHttpRequests(auth -> auth
-                    .requestMatchers( "/login",
-                            "/api/user/**",
-                            "/api/sms/**",
-                            "/terms/**",
-                            "/games/**",
-                            "/game/**",
-                            "/seat/**","/payment-page",
-                            "/payment/**"
-                    ).permitAll()
-                    .anyRequest().authenticated())
-                .logout(logout -> logout
-                    .logoutUrl("/logout")
-                    .addLogoutHandler(logoutService)
-                    .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext()))
-                .csrf(AbstractHttpConfigurer::disable)
-                .addFilterBefore(new TokenAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
-                .build();
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/login",
+                    "/api/user/**",
+                    "/api/sms/**",
+                    "/terms/**",
+                    "/games/**",
+                    "/game/**",
+                    "/seat/**", "/payment-page",
+                    "/payment/**"
+                ).permitAll()
+                .anyRequest().authenticated())
+            .logout(logout -> logout
+                .logoutUrl("/logout")
+                .addLogoutHandler(logoutService)
+                .logoutSuccessHandler(
+                    (request, response, authentication) -> SecurityContextHolder.clearContext()))
+            .csrf(AbstractHttpConfigurer::disable)
+            .addFilterBefore(new TokenAuthenticationFilter(jwtTokenProvider),
+                UsernamePasswordAuthenticationFilter.class)
+            .build();
     }
 
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity httpSecurity,
-                                                       BCryptPasswordEncoder bCryptPasswordEncoder) {
+        BCryptPasswordEncoder bCryptPasswordEncoder) {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(userService);
         authProvider.setPasswordEncoder(bCryptPasswordEncoder);
