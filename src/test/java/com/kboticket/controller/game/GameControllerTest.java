@@ -1,5 +1,6 @@
 package com.kboticket.controller.game;
 
+import com.kboticket.config.kafka.producer.KafkaProducer;
 import com.kboticket.controller.game.dto.GameSearchRequest;
 import com.kboticket.controller.game.dto.GameSearchResponse;
 import com.kboticket.service.game.GameService;
@@ -8,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -32,9 +34,12 @@ public class GameControllerTest {
     @MockBean
     private GameService gameService;
 
+    @MockBean
+    private KafkaProducer producer;
+
     @BeforeEach
     void setUp() {
-        GameController gameController = new GameController(gameService);
+        GameController gameController = new GameController(gameService, producer);
         this.mockMvc = MockMvcBuilders.standaloneSetup(gameController).build();
     }
 

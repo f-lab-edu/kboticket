@@ -1,10 +1,9 @@
 package com.kboticket.controller.reservation;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kboticket.dto.ReservationDto;
 import com.kboticket.enums.SeatLevel;
-import com.kboticket.service.ReservationService;
+import com.kboticket.service.reserve.ReservationService;
 import com.kboticket.service.seat.SeatService;
 import com.kboticket.service.seat.dto.SeatDto;
 import org.junit.jupiter.api.BeforeEach;
