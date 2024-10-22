@@ -90,7 +90,7 @@ public class ReservationControllerTest {
                 .andExpect(status().isOk());
 
         verify(reservationService, times(1))
-                .reserve(Set.of(1L, 2L), 1L, "user@example.com");
+                .selectSeat(Set.of(1L, 2L), 1L, "user@example.com");
 
     }
 }

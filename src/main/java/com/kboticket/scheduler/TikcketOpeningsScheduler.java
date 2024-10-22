@@ -1,3 +1,4 @@
+
 package com.kboticket.scheduler;
 
 import com.kboticket.service.game.GameService;
@@ -13,7 +14,7 @@ public class TikcketOpeningsScheduler {
 
     private final GameService gameService;
 
-    @Scheduled(cron = "0 0 11 * * ?")
+    @Scheduled(cron = "0 48 13 * * ?")
     public void ticketOpen() {
         gameService.openTicketing();
     }

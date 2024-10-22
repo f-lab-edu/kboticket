@@ -1,6 +1,18 @@
 package com.kboticket.controller.game;
 
-import com.kboticket.config.kafka.producer.KafkaProducer;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import com.kboticket.controller.QueueService;
 import com.kboticket.controller.game.dto.GameSearchRequest;
 import com.kboticket.controller.game.dto.GameSearchResponse;
 import com.kboticket.service.game.GameService;
@@ -9,21 +21,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(GameController.class)
 @ExtendWith(SpringExtension.class)
@@ -35,11 +37,12 @@ public class GameControllerTest {
     private GameService gameService;
 
     @MockBean
-    private KafkaProducer producer;
+    private QueueService queueService;
+
 
     @BeforeEach
     void setUp() {
-        GameController gameController = new GameController(gameService, producer);
+        GameController gameController = new GameController(gameService, queueService);
         this.mockMvc = MockMvcBuilders.standaloneSetup(gameController).build();
     }
 

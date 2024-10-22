@@ -1,16 +1,11 @@
 package com.kboticket.service.reserve;
 
-import com.kboticket.common.constants.KboConstant;
-import com.kboticket.config.redisson.DistributedLock;
 import com.kboticket.dto.ReservedSeatInfo;
 import com.kboticket.enums.ErrorCode;
 import com.kboticket.exception.KboTicketException;
-import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RBucket;
