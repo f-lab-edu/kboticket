@@ -1,7 +1,7 @@
 package com.kboticket.controller.reservation;
 
 import com.kboticket.dto.ReservationDto;
-import com.kboticket.service.ReservationService;
+import com.kboticket.service.reserve.ReservationService;
 import com.kboticket.service.seat.SeatService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,15 +24,14 @@ public class ReservationController {
     @ResponseStatus(HttpStatus.OK)
     public void reservations(Authentication authentication,
                              @RequestBody ReservationDto reservationDto,
-                             @RequestParam Long gameId) {
+                             @RequestParam Long gameId) throws InterruptedException {
 
         String email = authentication.getName();
 
         Set<Long> seatIds = reservationDto.getSeatIds().stream()
-                .map(seatService::getSeatDto)
-                .map(seat -> seat.getId())
-                .collect(Collectors.toSet());
+            .collect(Collectors.toSet());
 
-        reservationService.reserve(seatIds, gameId, email);
+        reservationService.selectSeat(seatIds, gameId, email);
+
     }
 }

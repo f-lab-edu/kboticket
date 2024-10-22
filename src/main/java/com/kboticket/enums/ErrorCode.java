@@ -71,9 +71,10 @@ public enum ErrorCode {
     EXCEED_SEATS_LIMIT(30025, "The maximum number of seats : 4", HttpStatus.BAD_REQUEST),
     FAILED_RESERVATION(30026, "reservation be failed", HttpStatus.BAD_REQUEST),
     INVALID_START_DATE(30027, "Start date cannot be before the current date", HttpStatus.BAD_REQUEST),
-    EXIST_SELECTED_SEATS(30028, "The selected seat(s) already exist(s)", HttpStatus.BAD_REQUEST),
+    EXIST_SELECTED_SEATS(30028, "You already have a selected seat.", HttpStatus.BAD_REQUEST),
     NOT_FOUND_RESERVATION(30029, "Reservation could not be found", HttpStatus.NOT_FOUND),
     FAILED_TRY_ROCK(30030, "Failed to acquire lock", HttpStatus.CONFLICT),
+    ALREADY_SELECTED_SEATS(30031, "This seat has already been selected.", HttpStatus.CONFLICT),
 
 
     PAYMENT_TIMEOUT_EXCEPTION(30031, "An tiemout error occurred during payment. ", HttpStatus.CONFLICT),
@@ -81,7 +82,8 @@ public enum ErrorCode {
     PAYMENT_CANCEL_EXCEPTION(30033, "An error occurred during cancel payment.", HttpStatus.CONFLICT),
     PAYMENT_NOT_FOUND(30034, "payment could not be found", HttpStatus.NOT_FOUND),
     PAYMENT_AMOUNT_EXP(30035, "invalid payment amount", HttpStatus.CONFLICT),
-    ALREADY_APPROVED(30036, "already approved", HttpStatus.CONFLICT)
+    ALREADY_APPROVED(30036, "already approved", HttpStatus.CONFLICT),
+    FAILED_DURING_TRANSACTION(30037, "fail to lock during transaction", HttpStatus.CONFLICT)
     ;
     public final int code;
     public final String message;

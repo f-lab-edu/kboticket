@@ -59,6 +59,14 @@ dependencies {
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
+
+	/* kafka */
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.kafka:spring-kafka'
+
+	testImplementation 'org.mockito:mockito-core:4.0.0'
+
+	implementation 'org.springframework.boot:spring-boot-starter-aop'
 }
 
 tasks.named('test') {
