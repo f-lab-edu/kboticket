@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" href="/favicon.ico" type="image/x-icon">
+  <title>대기 순번 조회</title>
+</head>
+<body>
+<h1>대기자 접속 페이지</h1>
+<div id="queueStatus">현재 대기 순번: 대기 중...</div>
+<div id="yourTurnMessage">당신의 차례입니다! 화면을 전환합니다...</div>
+
+
+
+
+<script type="text/javascript">
+  const gameId = '2332';
+  const eventSource = new EventSource(`/game/queue-status/` + gameId);
+
+  eventSource.addEventListener("queueStatus", function (event) {
+    const queueStatus = JSON.parse(event.data);
+    document.getElementById('queueStatus').textContent = `현재 대기 순번: ${queueStatus.offset}`; // 대기 순번 업데이트
+  });
+
+  eventSource.addEventListener('yourTurn', function(event) {
+    const message = event.data;
+    document.getElementById('yourTurnMessage').textContent = message;
+    document.getElementById('yourTurnMessage').style.display = 'block';
+
+    setTimeout(() => {
+      window.location.href = `/game/` + gameId;
+    }, 2000);
+  });
+
+  eventSource.addEventListener('error', function(event) {
+    console.error(event.data);
+    console.error('Error occurred:', event);
+    // 오류 발생` 시 추가 처리
+  });
+
+  window.addEventListener('beforeunload', function() {
+    eventSource.close();
+  });
+</script>
+</body>
+</html>

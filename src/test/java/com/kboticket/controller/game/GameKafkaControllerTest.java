@@ -12,6 +12,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.core.Authentication;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @Slf4j
@@ -24,6 +25,8 @@ public class GameKafkaControllerTest {
 
     @Autowired
     private KafkaProducer producer;
+
+    private Authentication authentication;
 
     private static final Long gameId = 123L;
 
@@ -68,7 +71,7 @@ public class GameKafkaControllerTest {
             String email = "test" + i;
             executerService.submit(() -> {
                 try {
-                    gameController.getQueueStatus(gameId, email);
+                    gameController.getQueueStatus(gameId, authentication);
                 } catch (Exception e) {
                     log.info("[Exception] ====> {}", e.getMessage());
                 } finally {

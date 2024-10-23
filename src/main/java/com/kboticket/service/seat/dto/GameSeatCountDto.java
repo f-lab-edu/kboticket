@@ -8,6 +8,11 @@ import lombok.Setter;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class GameSeatCountDto implements SeatCount{
     private String level;
-    private String block;
+    private Long block;
     private Long count;
+
+    public GameSeatCountDto(String level, Long block) {
+        this.level = level;
+        this.block = block;
+    }
 }

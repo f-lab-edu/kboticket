@@ -102,7 +102,6 @@ public class SeatService {
 
     public List<GameSeatCountDto> getSeatBlockAndCounts(Long gameId, String level) {
         List<GameSeatCountDto> seatCountList = seatRepository.findSeatBlocksAndCounts(gameId, level);
-
         return seatCountList;
     }
 
