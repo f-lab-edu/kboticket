@@ -5,7 +5,11 @@ import com.kboticket.service.seat.dto.GameSeatCountDto;
 import lombok.Builder;
 
 import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 @Builder
 public class SeatResponse {
 

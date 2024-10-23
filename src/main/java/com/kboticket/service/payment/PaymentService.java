@@ -206,7 +206,7 @@ public class PaymentService {
         }
     }
 
-    // 최종 결제 승인 요청을 보내기 위해 필요한 정보를 담아 post로 보냄
+    // 최종 결제 승인 요청을 보내기 위해 필요한 정보를 담아 post로 보냄s
     public PaymentSuccessResponse requestPaymentAccept(String paymentKey, String orderId, Long amount) {
         PaymentRequestInput paymentRequestInput = PaymentRequestInput.builder()
                 .paymentKey(paymentKey)
@@ -254,7 +254,6 @@ public class PaymentService {
     }
 
     public void createOrderAndRequestPayment(String loginId, Long gameId, Long amount) {
-        // 내가 건 락이 없거나 실패한 경우 추가
         Set<Long> seatIds = checkUserSelectedSeats(loginId, gameId);
 
         User user = userRepository.findByEmail(loginId).orElseThrow(() -> {

@@ -25,10 +25,7 @@ import java.util.Base64;
 
 @Component
 public class PaymentClient {
-    
 
-
-    
     private final PaymentConfig paymentConfig;
     private RestClient restClient;
     

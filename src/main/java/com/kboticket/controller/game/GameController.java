@@ -8,6 +8,7 @@ import com.kboticket.controller.game.dto.GameSearchResponse;
 import com.kboticket.service.game.GameService;
 import com.kboticket.service.game.dto.GameDetailDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -53,7 +54,8 @@ public class GameController {
      * 실시간 순번 조회 및 경기 좌석 예매 화면 진입
      */
     @GetMapping(value = "/queue-status/{gameId}", produces = "text/event-stream")
-    public SseEmitter getQueueStatus(@PathVariable Long gameId, String email) {
+    public SseEmitter getQueueStatus(@PathVariable Long gameId, Authentication authentication) {
+        String email = authentication.getName();
         SseEmitter sseEmitter = queueService.createEmitter(email);
 
         queueService.sendEvents();
