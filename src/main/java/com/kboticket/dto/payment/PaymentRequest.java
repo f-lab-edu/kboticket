@@ -10,9 +10,10 @@ import java.util.Set;
 @NoArgsConstructor
 public class PaymentRequest {
 
+    private String payType;
+    private Long amount;
     private String orderId;
     private Long gameId;
     private Set<Long> seatIds;
-    private Long amount;
 
 }

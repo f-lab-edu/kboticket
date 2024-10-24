@@ -17,13 +17,14 @@ public class ReserveInternalService {
     private final RedissonClient redissonClient;
 
     @DistributedLock(key = "#lockName")
-    public void lockSeat(String lockName, String email) {
-        holdSeat(lockName, email);
+    public void lockSeat(String lockName, String email, Long seatId) {
+        holdSeat(lockName, email, seatId);
     }
 
-    public void holdSeat(String seatKey, String email) {
+    public void holdSeat(String seatKey, String email, Long seatId) {
         RMap<String, String> lockMap = redissonClient.getMap(seatKey);
         lockMap.put("email", email);
+        lockMap.put("seatId", seatId.toString());
     }
 
 }

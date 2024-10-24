@@ -27,8 +27,7 @@ public class PaymentController {
    */
   @PostMapping
   @ResponseStatus(HttpStatus.OK)
-  public void requestPayment(@RequestBody @Valid PaymentRequest paymentRequest,
-      Authentication authentication) {
+  public void requestPayment(Authentication authentication, @RequestBody @Valid PaymentRequest paymentRequest) {
     String email = authentication.getName();
     Long gameId = paymentRequest.getGameId();
     Long amount = paymentRequest.getAmount();
@@ -41,12 +40,12 @@ public class PaymentController {
    * 결제 성공
    */
   @GetMapping("/success")
-  public CommonResponse<PaymentSuccessResponse> success(@RequestParam String paymentKey,
+  public CommonResponse<PaymentSuccessResponse> success(Authentication authentication,
+      @RequestParam String paymentKey,
       @RequestParam String orderId,
       @RequestParam Long amount) {
-
-    PaymentSuccessResponse paymentSuccessResponse = paymentService
-        .paymentSuccess(paymentKey, orderId, amount);
+    String email = authentication.getName();
+    PaymentSuccessResponse paymentSuccessResponse = paymentService.paymentSuccess(paymentKey, orderId, amount);
 
     // 티켓 생성
     if (paymentSuccessResponse != null) {

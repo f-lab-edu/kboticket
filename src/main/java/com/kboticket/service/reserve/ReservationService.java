@@ -37,7 +37,7 @@ public class ReservationService {
 
         for (Long seatId : seatIds) {
             String seatKey = "TICKET_" + gameId + seatId;
-            internalService.lockSeat(seatKey, email);
+            internalService.lockSeat(seatKey, email, seatId);
         }
     }
 
