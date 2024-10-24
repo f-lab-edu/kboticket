@@ -77,6 +77,6 @@ coolsms:
 payment:
   client-key: test_ck_4yKeq5bgrpXkgK7lG4NxrGX0lzW6
   secret-key: test_sk_QbgMGZzorzzyAGEAgokjrl5E1em4
-  base-url: https://api.tosspayments.com/v1/payments/
+  base-url: https://api.tosspayments.com/v1/payments
   confirm-endpoint: /confirm
   cancel-endpoint: /%s/cancel

@@ -2,6 +2,8 @@ package com.kboticket.config.payment;
 
 import com.kboticket.enums.ErrorCode;
 import com.kboticket.exception.KboTicketException;
+import java.io.EOFException;
+import org.apache.commons.collections.functors.ExceptionPredicate;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
@@ -18,6 +20,7 @@ public class PaymentExceptionInterceptor implements ClientHttpRequestInterceptor
         } catch (IOException e) {
             throw new KboTicketException(ErrorCode.PAYMENT_TIMEOUT_EXCEPTION);
         } catch (Exception e) {
+            e.printStackTrace();
             throw new KboTicketException(ErrorCode.PAYMENT_CONFIRM_EXCEPTION);
         }
     }

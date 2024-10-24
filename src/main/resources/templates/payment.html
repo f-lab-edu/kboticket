@@ -5,8 +5,6 @@
 <head>
     <meta charset="utf-8" />
     <title>결제하기</title>
-
-    <!-- 1. 스크립트 추가 -->
     <script src="https://js.tosspayments.com/v1/payment"></script>
 </head>
 <body>
@@ -21,9 +19,8 @@
     button.addEventListener("click", function () {
         tossPayments.requestPayment("카드", {
             amount: 1000,
-            orderId: '2482293706',
+            orderId: '9430250501',
             orderName: "토스 티셔츠 외 2건",
-            seatIds: [9607],
             successUrl: "http://localhost:8080/payment/success",
             failUrl: "http://localhost:8080/payment/fail",
         });

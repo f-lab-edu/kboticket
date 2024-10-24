@@ -54,15 +54,11 @@ public class PaymentClient {
     }
 
     public PaymentSuccessResponse requestPayment(PaymentRequestInput paymentRequestInput) {
-
         return restClient.method(HttpMethod.POST)
-                .uri(paymentConfig.getBaseUrl() + paymentRequestInput.getPaymentKey())
+                .uri("https://api.tosspayments.com/v1/payments/confirm" )
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(paymentRequestInput)
                 .retrieve()
-                .onStatus(HttpStatusCode::isError, ((request, response) -> {
-                    throw new KboTicketException(ErrorCode.PAYMENT_CONFIRM_EXCEPTION);
-                }))
                 .body(PaymentSuccessResponse.class);
     }
 

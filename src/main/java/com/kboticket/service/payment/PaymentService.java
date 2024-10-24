@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RBucket;
 import org.redisson.api.RKeys;
 import org.redisson.api.RLock;
+import org.redisson.api.RMap;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,7 +51,6 @@ public class PaymentService {
      */
     public void requestPayment(Game game, Set<Long> seatIds, User user, Long amount, String orderId) {
         Long gameId = game.getId();
-
         // 선점된 좌석인지
         isReservedSeats(gameId, seatIds);
         //결제를 진행하는 유저가 해당 좌석을 선점한 유저인지
@@ -77,8 +77,9 @@ public class PaymentService {
      *  결제 성공
      */
     public PaymentSuccessResponse paymentSuccess(String paymentKey, String orderId, Long amount) {
+
         Payment payment = getPayment(orderId);
-        // 결제 요청된 금액과 실제 결제된 금액이 같은지 확인
+
         isVerifyPayment(payment, amount);
 
         Order order = orderRepository.findById(orderId).orElseThrow(() -> {
@@ -188,11 +189,10 @@ public class PaymentService {
     private void isUserAuthorizedForPayment(Long gameId, Set<Long> seatIds, String loginId) {
         for (Long id : seatIds) {
             String key = KboConstant.SEAT_LOCK + gameId + id;
-            RBucket<ReservedSeatInfo> bucket = redissonClient.getBucket(key);
+            RMap<String, String> dataMap = redissonClient.getMap(key);
 
-            ReservedSeatInfo seatInfo = bucket.get();
-            String reservedId = seatInfo.getEmail();
-            if (!reservedId.equals(loginId)) {
+            String rockEmail = dataMap.get("email");
+            if (!rockEmail.equals(loginId)) {
                 throw new KboTicketException(ErrorCode.USER_NOT_AUTHORIZED);
             }
         }
@@ -296,13 +296,23 @@ public class PaymentService {
 
     public Set<Long> checkUserSelectedSeats(String loginId, Long gameId) {
         RKeys keys = redissonClient.getKeys();
-        Iterable<String> keysIterable = keys.getKeysByPattern("seatLock:" + gameId + "*");
+
+        Iterable<String> keysIterable = keys.getKeysByPattern("TICKET_" + gameId + "*");
+        if (!keysIterable.iterator().hasNext()) {
+            throw new KboTicketException(ErrorCode.EMPTY_SEATS_EXCEPTION);
+        }
+
         Set<Long> seatIds = new HashSet<>();
         for (String key : keysIterable) {
-            RBucket<ReservedSeatInfo> seatBucket = redissonClient.getBucket(key);
-            ReservedSeatInfo data = seatBucket.get();
-            if (data != null && data.getEmail().equals(loginId)) {
-                seatIds.add(data.getSeatId());
+            if (!redissonClient.getMap(key).isExists()) {
+                throw new KboTicketException(ErrorCode.EMPTY_SEATS_EXCEPTION);
+            }
+            RMap<String, String> seatMap = redissonClient.getMap(key);
+
+            String email = seatMap.get("email");
+            String seatId = seatMap.get("seatId");
+            if (email.equals(loginId)) {
+                seatIds.add(Long.parseLong(seatId));
             }
         }
         return seatIds;

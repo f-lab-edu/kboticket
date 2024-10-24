@@ -4,7 +4,7 @@ import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public class KboConstant {
-    public static final String SEAT_LOCK = "seatLock:";
+    public static final String SEAT_LOCK = "TICKET_";
     public static final String ACCESS_LOCK = "access";
     public static final String REFRESH_LOCK = "refresh";
 
