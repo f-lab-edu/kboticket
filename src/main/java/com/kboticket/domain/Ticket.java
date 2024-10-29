@@ -26,11 +26,11 @@ public class Ticket {
 
     private String ticketNumber;
 
-    @JoinColumn(name = "ticket_nm")
+    @Column(name = "ticket_nm")
     private String name;
 
     @ColumnDefault("0")
-    private int price;
+    private int price = 0;
 
     private LocalDateTime issuedAt;
 
@@ -38,7 +38,7 @@ public class Ticket {
 
     private LocalDateTime canceledAt;
 
-    private Boolean isCanceled;
+    private Boolean isCanceled = false;
 
     private TicketStatus status;
 

@@ -1,6 +1,7 @@
 package com.kboticket.dto.order;
 
 import com.kboticket.domain.OrderStatus;
+import com.kboticket.repository.UserRepository;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -15,7 +16,7 @@ public class OrderDto {
     private String orderId;
     /* 주문_명 */
     private String name;
-    /* 주문자_이메일 */
+    /* 주문자_아이디 */
     private String email;
     /* 경기_시작_시간 */
     private String startTime;
@@ -31,24 +32,21 @@ public class OrderDto {
     private Long cnt;
 
 
-    /************************
-     *  티켓 정보
-     ************************/
-    private String seatLevel;
-    private String seatBlock;
-    private String seatNumber;
-    private Integer price;
-    private String ticketNumber;
-    private LocalDateTime cancelAvailableAt;
-    private Boolean isCanceled;
-
-
-    /************************
-     *  결제 정보
-     ************************/
-    /* 주문_긍맥 */
-    private Long amout;
-    /* 주문_일시 */
-    private LocalDateTime approvedAt;
+//    /************************
+//     *  티켓 정보
+//     ************************/
+//    private String seatLevel;
+//    private String seatBlock;
+//    private String seatNumber;
+//    private Integer price;
+//
+//
+//    /************************
+//     *  결제 정보
+//     ************************/
+//    /* 주문_긍맥 */
+//    private Long amout;
+//    /* 주문_일시 */
+//    private LocalDateTime approvedAt;
 
 }

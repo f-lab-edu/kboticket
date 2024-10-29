@@ -19,53 +19,51 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class PaymentController {
 
-  private final PaymentService paymentService;
-  private final TicketService ticketService;
+    private final PaymentService paymentService;
+    private final TicketService ticketService;
 
-  /**
-   * 결제  요청
-   */
-  @PostMapping
-  @ResponseStatus(HttpStatus.OK)
-  public void requestPayment(Authentication authentication, @RequestBody @Valid PaymentRequest paymentRequest) {
-    String email = authentication.getName();
-    Long gameId = paymentRequest.getGameId();
-    Long amount = paymentRequest.getAmount();
+    /**
+     * 결제  요청
+     */
+    @PostMapping
+    @ResponseStatus(HttpStatus.OK)
+    public void requestPayment(Authentication authentication,
+        @RequestBody @Valid PaymentRequest paymentRequest) {
+        String email = authentication.getName();
+        Long gameId = paymentRequest.getGameId();
+        Long amount = paymentRequest.getAmount();
 
-    paymentService.createOrderAndRequestPayment(email, gameId, amount);
-
-  }
-
-  /**
-   * 결제 성공
-   */
-  @GetMapping("/success")
-  public CommonResponse<PaymentSuccessResponse> success(Authentication authentication,
-      @RequestParam String paymentKey,
-      @RequestParam String orderId,
-      @RequestParam Long amount) {
-    String email = authentication.getName();
-    PaymentSuccessResponse paymentSuccessResponse = paymentService.paymentSuccess(paymentKey, orderId, amount);
-
-    // 티켓 생성
-    if (paymentSuccessResponse != null) {
-      ticketService.createTicket(orderId);
+        paymentService.createOrderAndRequestPayment(email, gameId, amount);
     }
 
-    return new CommonResponse<>(paymentSuccessResponse);
-  }
+    /**
+     * 인증 성공 -> 결제 요청 및 처리
+     */
+    @GetMapping("/success")
+    public CommonResponse<PaymentSuccessResponse> success(@RequestParam String paymentKey,
+        @RequestParam String orderId, @RequestParam Long amount) {
+        PaymentSuccessResponse paymentSuccessResponse = paymentService
+            .paymentSuccess(paymentKey, orderId, amount);
 
-  /**
-   * 결제 실패
-   */
-  @GetMapping("/fail")
-  public CommonResponse<PaymentFailResponse> fail(@RequestParam String code,
-      @RequestParam String orderId,
-      @RequestParam String message) {
+        if (paymentSuccessResponse != null) {
+            ticketService.createTicket(orderId);
+        }
 
-    PaymentFailResponse paymentFailResponse = paymentService.paymentFail(code, orderId, message);
+        return new CommonResponse<>(paymentSuccessResponse);
+    }
 
-    return new CommonResponse<>(paymentFailResponse);
-  }
+    /**
+     * 인증 실패
+     */
+    @GetMapping("/fail")
+    public CommonResponse<PaymentFailResponse> fail(@RequestParam String code,
+        @RequestParam String orderId,
+        @RequestParam String message) {
+
+        PaymentFailResponse paymentFailResponse = paymentService
+            .paymentFail(code, orderId, message);
+
+        return new CommonResponse<>(paymentFailResponse);
+    }
 
 }
