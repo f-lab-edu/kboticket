@@ -9,7 +9,7 @@ import lombok.*;
 public class PaymentCancelRequest {
     private String paymentKey;
     private String cancelReason;
-    private int cancelAmount;
+    private Integer cancelAmount;
     private String orderId;
     private Long[] ticketId;
 }

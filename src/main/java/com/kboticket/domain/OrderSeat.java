@@ -26,10 +26,15 @@ public class OrderSeat {
     @JoinColumn(name = "order_id")
     private Order order;
 
-    public static OrderSeat createOrderSeat(Seat seat, Order order) {
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "game_id")
+    private Game game;
+
+    public static OrderSeat createOrderSeat(Seat seat, Order order, Game game) {
         return OrderSeat.builder()
                 .seat(seat)
                 .order(order)
+                .game(game)
                 .build();
     }
 }

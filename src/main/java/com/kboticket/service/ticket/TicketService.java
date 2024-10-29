@@ -2,6 +2,7 @@ package com.kboticket.service.ticket;
 
 import com.kboticket.domain.Order;
 import com.kboticket.domain.OrderSeat;
+import com.kboticket.domain.OrderStatus;
 import com.kboticket.domain.Payment;
 import com.kboticket.domain.Ticket;
 import com.kboticket.dto.TicketDto;
@@ -43,14 +44,15 @@ public class TicketService {
         });
         List<OrderSeat> orderSeats = order.getOrderSeats();
         List<Ticket> tickets = orderSeats.stream()
-                .map(orderSeat -> Ticket.builder()
-                            .orderSeat(orderSeat)
-                            .status(TicketStatus.ISSUED)
-                            .name(orderSeat.getSeat().getLevel() + " " +  orderSeat.getSeat().getBlock() + " " +  orderSeat.getSeat().getNumber())
-                            .issuedAt(LocalDateTime.now())
-                            .price(orderSeat.getSeat().getPrice())
-                            .build())
-                .collect(Collectors.toList());
+            .map(orderSeat -> Ticket.builder()
+                .orderSeat(orderSeat)
+                .status(TicketStatus.ISSUED)
+                .name(orderSeat.getSeat().getLevel() + " " + orderSeat.getSeat().getBlock() + " "
+                    + orderSeat.getSeat().getNumber())
+                .issuedAt(LocalDateTime.now())
+                .price(orderSeat.getSeat().getPrice())
+                .build())
+            .collect(Collectors.toList());
 
         ticketRepository.saveAll(tickets);
     }
@@ -58,49 +60,60 @@ public class TicketService {
     public PaymentCancelResponse cancel(PaymentCancelRequest request) {
         String orderId = request.getOrderId();
         Long[] ticketIds = request.getTicketId();
-        int cancelAmount = request.getCancelAmount();
 
-        Order order = orderRepository.findById(orderId).orElseThrow(() -> {
-            throw new KboTicketException(ErrorCode.NOT_FOUND_ORDER);
-        });
+        Order order = orderRepository.findById(orderId)
+            .orElseThrow(() -> { throw new KboTicketException(ErrorCode.NOT_FOUND_ORDER); });
 
-        Payment payment = paymentRepository.findByOrderId(orderId).orElseThrow(() -> {
-            throw new KboTicketException(ErrorCode.PAYMENT_NOT_FOUND);
-        });
+        Payment payment = paymentRepository.findByOrderId(orderId)
+            .orElseThrow(() -> {throw new KboTicketException(ErrorCode.PAYMENT_NOT_FOUND); });
+
+        payment.setCancelReason(request.getCancelReason());
 
         boolean isAllTicketCancelled = areAllTicketIdsMatching(ticketIds, order);
 
-        PaymentCancelResponse paymentCancelResponse = null;
-        try {
-             paymentCancelResponse = paymentService.cancel(order, payment, isAllTicketCancelled, cancelAmount);
+        return processPaymentCancellation(request, payment, order, ticketIds, isAllTicketCancelled);
+    }
 
-            if (paymentCancelResponse != null) {
-                cancelTickets(order, ticketIds);
+    private PaymentCancelResponse processPaymentCancellation(PaymentCancelRequest request,
+        Payment payment, Order order, Long[] ticketIds, boolean isAllTicketCancelled) {
+        try {
+            PaymentCancelResponse response = null;
+            if (isAllTicketCancelled) {
+                order.setStatus(OrderStatus.CANCELLED_ALL);
+                response = paymentService.paymentCancelAll(payment);
+            } else {
+                int cancelPrice = request.getCancelAmount();
+                order.setStatus(OrderStatus.CANCELLED_PART);    // 부분 취소인 경우
+                response = paymentService.paymentCancelPart(payment, cancelPrice);
             }
+
+            if (response != null) {
+                cancelTickets(ticketIds);
+            }
+            return response;
         } catch (Exception e) {
             log.error(e.getMessage());
             throw new KboTicketException(ErrorCode.PAYMENT_CANCEL_EXCEPTION, null, log::error);
         }
-        return paymentCancelResponse;
     }
 
     private boolean areAllTicketIdsMatching(Long[] ticketIds, Order order) {
         Set<Long> existingTicketIds = getTickets(order).stream()
-                .map(TicketDto::getId)
-                .collect(Collectors.toSet());
+            .map(TicketDto::getId)
+            .collect(Collectors.toSet());
 
-        return Arrays.stream(ticketIds)
-                .allMatch(existingTicketIds::contains);
+        return existingTicketIds.size() == ticketIds.length &&
+            Arrays.stream(ticketIds).allMatch(existingTicketIds::contains);
     }
 
-    public void cancelTickets(Order order, Long[] ticketIds) {
+    public void cancelTickets(Long[] ticketIds) {
         // 티켓 상태 변경 (ISSUED -> CANCELLED)
         List<Ticket> ticketsToCancel = Arrays.stream(ticketIds)
-                .map(id ->  {
-                    return ticketRepository.findById(id).orElseThrow(() -> {
-                        throw new KboTicketException(ErrorCode.NOT_FOUND_TICKET);
-                    });
-                }).collect(Collectors.toList());
+            .map(id -> {
+                return ticketRepository.findById(id).orElseThrow(() -> {
+                    throw new KboTicketException(ErrorCode.NOT_FOUND_TICKET);
+                });
+            }).collect(Collectors.toList());
 
         for (Ticket ticket : ticketsToCancel) {
             if (ticket.getStatus() == TicketStatus.CANCELLED) {
@@ -112,23 +125,23 @@ public class TicketService {
         ticketRepository.saveAll(ticketsToCancel);
     }
 
-    // 티켓 록록
+    // 티켓 목록
     public List<TicketDto> getTickets(Order order) {
         List<OrderSeat> orderSeats = order.getOrderSeats();
 
         List<TicketDto> tickets = orderSeats.stream()
-                .map(orderSeat -> {
-                    Ticket ticket = ticketRepository.findByOrderSeat(orderSeat);
-
-                    return TicketDto.builder()
-                            .orderSeat(ticket.getOrderSeat())
-                            .ticketNumber(ticket.getTicketNumber())
-                            .name(ticket.getName())
-                            .status(ticket.getStatus())
-                            .issuedAt(ticket.getIssuedAt())
-                            .build();
-                })
-                .collect(Collectors.toList());
+            .map(orderSeat -> {
+                Ticket ticket = ticketRepository.findByOrderSeat(orderSeat);
+                return TicketDto.builder()
+                    .id(ticket.getId())
+                    .orderSeat(ticket.getOrderSeat())
+                    .ticketNumber(ticket.getTicketNumber())
+                    .name(ticket.getName())
+                    .status(ticket.getStatus())
+                    .issuedAt(ticket.getIssuedAt())
+                    .build();
+            })
+            .collect(Collectors.toList());
 
         return tickets;
     }

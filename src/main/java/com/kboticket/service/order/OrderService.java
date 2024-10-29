@@ -3,6 +3,7 @@ package com.kboticket.service.order;
 import com.kboticket.controller.order.dto.OrderDetailResponse;
 import com.kboticket.controller.order.dto.OrderListResponse;
 import com.kboticket.domain.*;
+import com.kboticket.dto.order.OrderDetailDto;
 import com.kboticket.dto.order.OrderDto;
 import com.kboticket.dto.order.OrderSearchDto;
 import com.kboticket.enums.ErrorCode;
@@ -25,7 +26,9 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
 
-    // 주문 생성
+    /**
+     * 주문 생성
+     */
     public void createOrder(String orderId, Game game, List<Seat> seats, User user) {
         Order order = Order.builder()
                 .id(orderId)
@@ -36,7 +39,7 @@ public class OrderService {
 
         List<OrderSeat> orderSeats = new ArrayList<>();
         for (Seat seat : seats) {
-            OrderSeat orderSeat = OrderSeat.createOrderSeat(seat, order);
+            OrderSeat orderSeat = OrderSeat.createOrderSeat(seat, order, game);
             orderSeats.add(orderSeat);
         }
         order.setOrderSeats(orderSeats);
@@ -44,7 +47,9 @@ public class OrderService {
         orderRepository.save(order);
     }
 
-    // 주문 완료
+    /**
+     * 주문 완료
+     */
     public void completeOrder(Order order) {
         String title = order.getGame().getHomeTeam().getName() +
                 " VS " +  order.getGame().getAwayTeam().getName();
@@ -54,7 +59,9 @@ public class OrderService {
         orderRepository.save(order);
     }
 
-    // 주문 목록
+    /**
+     * 주문 목록
+     */
     public OrderListResponse getOrderList(OrderSearchDto orderSearchDto, String cursor, int limit) {
         List<OrderDto> orders = orderRepository.getByCursor(orderSearchDto, cursor, limit);
 
@@ -63,15 +70,16 @@ public class OrderService {
                 .build();
     }
 
-    // 주문 상세
+    /**
+     * 주문 상세
+     */
     public OrderDetailResponse getOrderDetails(String orderId) {
-        OrderDto orderDto = orderRepository.findOrderDetailById(orderId)
+        OrderDetailDto orderDetailDto = orderRepository.findOrderDetailById(orderId)
                 .orElseThrow(() -> new KboTicketException(ErrorCode.NOT_FOUND_ORDER));
 
-        return OrderDetailResponse.from(orderDto);
+        return OrderDetailResponse.from(orderDetailDto);
     }
 
-    // 주문 조회
     public Order getOrder(String orderId) {
         return orderRepository.findById(orderId).orElseThrow(() -> {
             throw new KboTicketException(ErrorCode.NOT_FOUND_ORDER);

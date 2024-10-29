@@ -36,12 +36,15 @@ public class OrderCustomRepositoryImpl implements OrderCustomRepository {
 
         return  queryFactory
                 .select(Projections.constructor(OrderDto.class,
-                        order.id,
-                        order.name,
-                        order.game.gameDate,
-                        order.orderDate,
-                        order.status,
-                        orderSeat.id.count().as("cnt")
+                    order.id,
+                    order.name,
+                    order.user.email,
+                    order.game.startTime,
+                    order.game.stadium.id,
+                    order.game.gameDate,
+                    order.orderDate,
+                    order.status,
+                    orderSeat.id.count().as("cnt")
                 ))
                 .from(order)
                 .leftJoin(orderSeat).on(order.id.eq(orderSeat.order.id))
@@ -64,9 +67,6 @@ public class OrderCustomRepositoryImpl implements OrderCustomRepository {
                 break;
             case "2":
                 startDateTime = now.minusMonths(2);
-                break;
-            case "3":
-                startDateTime = now.minusMonths(3);
                 break;
             default:
                 startDateTime = now.minusMonths(3);
