@@ -2,6 +2,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.2.5'
 	id 'io.spring.dependency-management' version '1.1.4'
+	id 'jacoco'
 	// id 'com.ewerk.gradle.plugins.querydsl' version '1.0.10'
 }
 
@@ -20,6 +21,21 @@ configurations {
 
 repositories {
 	mavenCentral()
+}
+
+test {
+	finalizedBy jacocoTestReport
+}
+
+jacoco {
+	toolVersion = "0.8.12"
+}
+
+jacocoTestReport {
+	dependsOn test
+	reports {
+		xml.required.set(true)
+	}
 }
 
 dependencies {
