@@ -66,7 +66,6 @@ public class ReservationServiceTest {
         latch.await();
         executorService.shutdown();
 
-        log.info("좌석예약에 실패한 사용자 수 ======> {}", failureCounter.get());
         assertEquals(1, successCounter.get(), "하나의 사용자만 좌석 예약에 성공해야 합니다.");
         assertEquals(threadNum - 1, failureCounter.get(), "한 명을 제외한 사용자는 좌석 예약에 실패합니다.");
     }
@@ -90,10 +89,9 @@ public class ReservationServiceTest {
                     successCounter.incrementAndGet();
 
                 } catch (KboTicketException e) {
-                    log.error("[kboException]사용자 {} 락 실패 : {}", email, e.getMessage());
                     failureCounter.incrementAndGet();
                 } catch (Exception e) {
-                    log.error("[Exception]사용자 {} 좌석 예약 실패: {}", email, e.getMessage());
+                    e.printStackTrace();
                 } finally {
                     latch.countDown();
                 }
@@ -102,10 +100,6 @@ public class ReservationServiceTest {
 
         latch.await();
         executorService.shutdown();
-
-        log.info("failureCounter ======> {}", failureCounter.get());
-        log.info("successCounter ======> {}", successCounter.get());
-
 
         assertEquals(1, successCounter.get(), "하나의 사용자만 좌석 예약에 성공해야 합니다.");
     }
