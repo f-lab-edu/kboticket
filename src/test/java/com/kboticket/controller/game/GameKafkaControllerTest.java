@@ -44,7 +44,7 @@ public class GameKafkaControllerTest {
                 try {
                     producer.create(gameId, email);
                 } catch (Exception e) {
-                    log.info("[Exception] 사용자 {} ====> {}", email, e.getMessage());
+                    e.printStackTrace();
                 } finally {
                     latch.countDown();
                 }
@@ -55,7 +55,6 @@ public class GameKafkaControllerTest {
         latch.await();
         executerService.shutdown();
 
-        log.info("Remaining latch count: {}", latch.getCount());
         assertEquals(0, latch.getCount(), "All requests should be processed");
     }
 
@@ -73,7 +72,7 @@ public class GameKafkaControllerTest {
                 try {
                     gameController.getQueueStatus(gameId, authentication);
                 } catch (Exception e) {
-                    log.info("[Exception] ====> {}", e.getMessage());
+                    e.printStackTrace();
                 } finally {
                     latch.countDown();
                 }
@@ -83,7 +82,6 @@ public class GameKafkaControllerTest {
         Thread.sleep(100000);
         executerService.shutdown();
 
-        log.info("Remaining latch count: {}", latch.getCount());
         assertEquals(0, latch.getCount(), "All requests should be processed");
     }
 }
