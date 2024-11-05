@@ -29,12 +29,31 @@ test {
 
 jacoco {
 	toolVersion = "0.8.12"
+	reportsDirectory = layout.buildDirectory.dir('jacocoReport')
 }
 
 jacocoTestReport {
 	dependsOn test
 	reports {
 		xml.required.set(true)
+	}
+	finalizedBy 'jacocoTestCoverageVerification'
+}
+
+jacocoTestCoverageVerification {
+	violationRules{
+		rule {
+			enabled = true;
+			element = "CLASS"
+
+			// 라인 커버리지 제한을 90% 로 설정
+			limit {
+				counter = 'LINE'
+				value = 'COVEREDRATIO'
+				minimum = 0.90
+			}
+
+		}
 	}
 }
 
