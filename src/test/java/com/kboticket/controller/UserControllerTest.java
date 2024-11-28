@@ -5,7 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kboticket.controller.user.UserController;
 import com.kboticket.controller.user.dto.ChangePasswordRequest;
 import com.kboticket.controller.user.dto.UpdateUserRequest;
+import com.kboticket.enums.ErrorCode;
+import com.kboticket.exception.KboTicketException;
 import com.kboticket.service.user.UserService;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -49,8 +52,8 @@ public class UserControllerTest {
         String email = "test@naver.com";
         String password = "1111";
 
-        given(authentication.getName()).willReturn(email);
-        given(userService.verifyPassword(anyString(), anyString())).willReturn(true);
+        when(authentication.getName()).thenReturn(email);
+        when(userService.verifyPassword(anyString(), anyString())).thenReturn(true);
 
         // when & then
         mockMvc.perform(post("/users/verify-password")
@@ -70,16 +73,17 @@ public class UserControllerTest {
         String email = "test@naver.com";
         String password = "failtest";
 
-        given(authentication.getName()).willReturn(email);
+        when(authentication.getName()).thenReturn(email);
         doNothing().when(userService).updateUserInfo(anyString(), any());
 
         // when & then
-        mockMvc.perform(post("/users/verify-password")
+        Assertions.assertThatThrownBy(() ->
+            mockMvc.perform(post("/users/verify-password")
                 .principal(authentication)
                 .content(password)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(result -> System.out.println("Response status: " + result.getResponse().getStatus()))
-                .andExpect(status().isOk());
+            ).hasCause(new KboTicketException(ErrorCode.INCORRECT_PASSWORD));
 
         verify(userService).verifyPassword(email, password);
     }

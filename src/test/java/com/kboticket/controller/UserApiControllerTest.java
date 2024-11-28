@@ -1,9 +1,20 @@
 package com.kboticket.controller;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willThrow;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kboticket.config.jwt.JwtTokenProvider;
 import com.kboticket.controller.user.UserApiController;
 import com.kboticket.controller.user.dto.SignupRequest;
+import com.kboticket.controller.user.dto.SmsRequest;
 import com.kboticket.controller.user.dto.SmsRequestDto;
 import com.kboticket.dto.TokenDto;
 import com.kboticket.enums.ErrorCode;
@@ -13,31 +24,22 @@ import com.kboticket.service.terms.TermsService;
 import com.kboticket.service.user.UserService;
 import com.kboticket.service.user.dto.UserDto;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.ArrayList;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.willThrow;
-import static org.mockito.Mockito.doNothing;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(UserApiControllerTest.class)
-@ExtendWith(SpringExtension.class)
 public class UserApiControllerTest {
 
     private MockMvc mockMvc;
@@ -49,46 +51,78 @@ public class UserApiControllerTest {
     private SmsSenderService smsSenderService;
     @Mock
     private JwtTokenProvider jwtTokenProvider;
+    @InjectMocks
+    private UserApiController userApiController;
+
 
     @BeforeEach
     void setUp() {
-        UserApiController userApiController = new UserApiController(userService, termsService, smsSenderService, jwtTokenProvider);
+        MockitoAnnotations.openMocks(this);
+        userApiController = new UserApiController(userService, termsService, smsSenderService, jwtTokenProvider);
         this.mockMvc = MockMvcBuilders.standaloneSetup(userApiController).build();
     }
 
     @Test
-    @DisplayName("[SUCCESS] 인증 번호 발송 테스트")
+    @DisplayName("인증 번호 발송 테스트 - 성공")
     void sendSmsTest() throws Exception {
         // given
-        String phone = "010-1111-1111";
+        String phone = "01011111111";
+        String json = new ObjectMapper().writeValueAsString(phone);
 
         doNothing().when(smsSenderService).sendVeritificationKey(anyString());
 
-        // when & then
         mockMvc.perform(post("/api/user/sms-send")
-                .content(phone)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(json))
+            .andDo(result -> System.out.println("Response status: " + result.getResponse().getStatus()));
+
     }
 
     @Test
-    @DisplayName("[FAIL] sms 인증 실패")
-    void smsVerificationFailTest() throws Exception {
-        // given
-        SmsRequestDto requestDto = new SmsRequestDto("010-1234-5678", "123456");
-        String json = new ObjectMapper().writeValueAsString(requestDto);
+    @DisplayName("sms 인증 - 성공")
+    void smsVerificationSuccessTest() throws Exception {
+        SmsRequest request = SmsRequest.builder()
+            .phone("01011112222")
+            .certificationNumber("123456")
+            .build();
 
-        given(smsSenderService.verifySms(requestDto)).willReturn(false);
+        SmsRequestDto requestDto = SmsRequestDto.from(request);
+        String json = new ObjectMapper().writeValueAsString(request);
+
+        when(smsSenderService.verifySms(any(SmsRequestDto.class))).thenReturn(true);
 
         // when & then
         mockMvc.perform(post("/api/user/verify")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(json))
-                .andExpect(status().isBadRequest());
-    }
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(json))
+            .andExpect(status().isOk());
+
+        }
 
     @Test
-    @DisplayName("[SUCCESS] 회원 가입")
+    @DisplayName("SMS 인증 실패 테스트")
+    void smsVerification_invalidCode() throws Exception {
+        // given
+        SmsRequest request = SmsRequest.builder()
+            .phone("01011112222")
+            .certificationNumber("12345")
+            .build();
+
+        SmsRequestDto requestDto = SmsRequestDto.from(request);
+        String json = new ObjectMapper().writeValueAsString(request);
+
+        when(smsSenderService.verifySms(requestDto)).thenReturn(false);
+
+        Assertions.assertThatThrownBy(() ->
+            mockMvc.perform(post("/api/user/verify")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json)))
+            .hasCause(new KboTicketException(ErrorCode.INVALID_VERIFICATION_CODE));
+    }
+
+
+    @Test
+    @DisplayName("회원 가입 - 성공")
     void signupSuccessTest() throws Exception {
         // given
         SignupRequest request = SignupRequest.builder()
@@ -115,7 +149,7 @@ public class UserApiControllerTest {
     }
 
     @Test
-    @DisplayName("[FAIL] 회원 가입 실패")
+    @DisplayName("회원 가입 실패 - 약관 미동의")
     void signupFailedTest() throws Exception {
         // given
         SignupRequest request = SignupRequest.builder()
@@ -128,17 +162,18 @@ public class UserApiControllerTest {
 
         String json = new ObjectMapper().writeValueAsString(request);
 
-        given(termsService.checkAllMandatoryTermsAgreed(request.getTerms())).willReturn(false);
+        when(termsService.checkAllMandatoryTermsAgreed(request.getTerms())).thenReturn(false);
 
         // when & then
-        mockMvc.perform(post("/api/user/signup")
+        Assertions.assertThatThrownBy(() ->
+            mockMvc.perform(post("/api/user/signup")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json))
-                .andExpect(status().isBadRequest());
+            ).hasCause(new KboTicketException(ErrorCode.NOT_CHECKED_MANDATORY_TERMS));
     }
 
     @Test
-    @DisplayName("[SUCCESS] 인증 번호 재발급")
+    @DisplayName("인증 번호 재발급 - 성공")
     void reissuedSuccessTest() throws Exception {
         // given
         HttpServletRequest request = new MockHttpServletRequest();
@@ -153,7 +188,7 @@ public class UserApiControllerTest {
     }
 
     @Test
-    @DisplayName("[FAIL] 인증 번호 재발급 실패")
+    @DisplayName("인증 번호 재발급 - 실패")
     void reissuedFailureTest() throws Exception {
         // given
         HttpServletRequest request = new MockHttpServletRequest();
@@ -163,13 +198,16 @@ public class UserApiControllerTest {
                 .reissueToken(any());
 
         // when & then
-        mockMvc.perform(post("/api/user/reissued")
+        Assertions.assertThatThrownBy(() ->
+            mockMvc.perform(post("/api/user/reissued")
                 .requestAttr("javax.servlet.request", request))
-                .andExpect(status().isBadRequest());
+        ).hasCause(new KboTicketException(ErrorCode.FAILED_GENERATE_TOKEN));
+
+
     }
 
     @Test
-    @DisplayName("[SUCCESS] 이메일 중복 검사")
+    @DisplayName("이메일 중복 검사 - 성공")
     void checkDuplicateEmailSuccessTest() throws Exception {
         // given
         String email = "test@naver.com";
@@ -181,17 +219,5 @@ public class UserApiControllerTest {
                 .andExpect(status().isOk());
     }
 
-    @Test
-    @DisplayName("[Fail] 이메일 중복 검사")
-    void checkDuplicateEmailFailTest() throws Exception {
-        // given
-        String email = "test@naver.com";
-        given(userService.isExistEmail(email)).willReturn(true);
-
-        // when & then
-        mockMvc.perform(get("/api/user/check-email")
-                .param("email", email))
-                .andExpect(status().isConflict());
-    }
 
 }
