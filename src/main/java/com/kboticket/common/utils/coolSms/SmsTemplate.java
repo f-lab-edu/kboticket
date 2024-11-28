@@ -1,4 +1,4 @@
-package com.kboticket.common.util.coolSms;
+package com.kboticket.common.utils.coolSms;
 
 public class SmsTemplate {
 

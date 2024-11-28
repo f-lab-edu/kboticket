@@ -1,4 +1,4 @@
-package com.kboticket.config.kafka.Consumer;
+package com.kboticket.config.kafka.consumer;
 
 import com.kboticket.controller.QueueService;
 import lombok.RequiredArgsConstructor;

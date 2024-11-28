@@ -11,7 +11,7 @@ import com.kboticket.enums.StadiumInfo;
 import com.kboticket.exception.KboTicketException;
 import com.kboticket.service.game.dto.AvailableSeatResponse;
 import com.kboticket.service.seat.SeatService;
-import com.kboticket.common.util.SeatArrangement;
+import com.kboticket.common.utils.SeatArrangement;
 import com.kboticket.service.stadium.StadiumService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;

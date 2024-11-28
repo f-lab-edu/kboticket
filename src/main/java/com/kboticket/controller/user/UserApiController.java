@@ -59,7 +59,7 @@ public class UserApiController {
             throw new KboTicketException(ErrorCode.INVALID_VERIFICATION_CODE);
         }
 
-        String verificationToken = jwtTokenProvider.generateToken(requestDto.getPhone(), TokenType.ACCESS);
+        String verificationToken = jwtTokenProvider.createJwtToken(requestDto.getPhone(), TokenType.ACCESS);
 
         return new CommonResponse(new VerificationResponse(verificationToken));
     }

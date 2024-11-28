@@ -1,6 +1,6 @@
 package com.kboticket.service.user;
 
-import com.kboticket.common.util.PasswordUtils;
+import com.kboticket.common.utils.PasswordUtils;
 import com.kboticket.config.jwt.JwtTokenProvider;
 import com.kboticket.controller.user.dto.SignupRequest;
 import com.kboticket.domain.User;

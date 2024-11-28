@@ -9,6 +9,7 @@ import com.kboticket.service.game.GameService;
 import com.kboticket.service.game.dto.GameDetailDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @RestController
+@Controller
 @RequestMapping("/game")
 @RequiredArgsConstructor
 public class GameController {

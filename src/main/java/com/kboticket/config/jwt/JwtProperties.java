@@ -18,6 +18,8 @@ public class JwtProperties {
 
     private String issuer;
     private String secretKey;
+    private String tokenPrefix;
+    private String headerString;
     private Long expired;
 
     public Key getSecretKey() {
