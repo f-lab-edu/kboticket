@@ -1,13 +1,18 @@
 package com.kboticket.config;
 
+import com.kboticket.common.filter.JwtTokenRenewalFilter;
+import com.kboticket.common.filter.JwtAuthenticationFilter;
+import com.kboticket.common.filter.TokenAuthenticationFilter;
 import com.kboticket.config.jwt.JwtTokenProvider;
 import com.kboticket.service.login.LogoutService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -19,15 +24,15 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
-
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-public class WebSecurityConfig {
+public class WebSecurityConfig extends SecurityConfigurerAdapter {
 
     private final UserDetailsService userService;
     private final LogoutService logoutService;
     private final JwtTokenProvider jwtTokenProvider;
+    private final RedisTemplate<String, Object> redisTemplate;
 
     @Bean
     public WebSecurityCustomizer configure() {
@@ -37,6 +42,9 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        JwtAuthenticationFilter jwtAuthenticationFilter =
+            new JwtAuthenticationFilter(jwtTokenProvider, authenticationManagerBean());
+
         return http
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/login",
@@ -45,7 +53,7 @@ public class WebSecurityConfig {
                     "/terms/**",
                     "/games/**",
                     "/game/**",
-                    "/seat/**", "/payment-page","/favicon.ico",
+                    "/seat/**", "/payment-page", "/favicon.ico",
                     "/ticket-page/**"
                 ).permitAll()
                 .anyRequest().authenticated())
@@ -57,8 +65,12 @@ public class WebSecurityConfig {
             .csrf(AbstractHttpConfigurer::disable)
             .addFilterBefore(new TokenAuthenticationFilter(jwtTokenProvider),
                 UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(new JwtTokenRenewalFilter(jwtTokenProvider, redisTemplate),
+                TokenAuthenticationFilter.class)
+            .addFilterBefore(jwtAuthenticationFilter, JwtTokenRenewalFilter.class)
             .build();
     }
+
 
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity httpSecurity,
@@ -71,7 +83,16 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public BCryptPasswordEncoder bCryptPasswordEncoder() {
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(userService);
+        authProvider.setPasswordEncoder(passwordEncoder());
+
+        return new ProviderManager(authProvider);
+    }
+
+    @Bean
+    public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 

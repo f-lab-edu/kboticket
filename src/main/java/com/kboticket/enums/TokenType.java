@@ -4,12 +4,14 @@ import lombok.Getter;
 
 @Getter
 public enum TokenType {
-    ACCESS(1 * 60 * 60 * 1000L),
-    REFRESH(7 * 24 * 60 * 60 * 1000L);
+    ACCESS("access", 1 * 60 * 60 * 1000L),
+    REFRESH("refresh", 7 * 24 * 60 * 60 * 1000L);
 
+    private final String name;
     private final Long expireTime;
 
-    TokenType(Long expireTime) {
+    TokenType(String name, Long expireTime) {
+        this.name = name;
         this.expireTime = expireTime;
     }
 }

@@ -1,4 +1,4 @@
-package com.kboticket.common.util;
+package com.kboticket.common.utils;
 
 import com.kboticket.domain.Seat;
 import com.kboticket.domain.Stadium;

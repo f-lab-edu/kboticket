@@ -1,12 +1,17 @@
 package com.kboticket.config.jwt;
 
+import com.kboticket.common.CommonResponse;
 import com.kboticket.enums.ErrorCode;
 import com.kboticket.enums.TokenType;
 import com.kboticket.exception.KboTicketException;
 import io.jsonwebtoken.*;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.struts.util.ResponseUtils;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -26,25 +31,22 @@ public class JwtTokenProvider {
     private final JwtProperties jwtProperties;
     private final RedisTemplate<String, Object> redisTemplate;
 
-    public String generateToken(String email, TokenType type){
-        Date now = new Date();
-        return makeToken(new Date(now.getTime() + type.getExpireTime()), email);
+    public String createJwtToken(String email, TokenType type){
+        return makeToken(new Date(System.currentTimeMillis() + type.getExpireTime()), email, type.name());
     }
 
-    private String makeToken(Date expiry, String email) {
-        Date now = new Date();
-
+    private String makeToken(Date expiry, String email, String type) {
         return Jwts.builder()
                 .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
                 .setIssuer(jwtProperties.getIssuer())
-                .setIssuedAt(now)
+                .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(expiry)
-                .setSubject(email)
+                .setSubject(type)
+                .claim("email", email)
                 .signWith(SignatureAlgorithm.HS256, jwtProperties.getSecretKey())
                 .compact();
     }
 
-    // 유효성 검증
     public boolean validToken(String token) {
         try{
             Jwts.parser()
@@ -60,11 +62,10 @@ public class JwtTokenProvider {
     }
 
     public Authentication getAuthentication(String token) {
-        // 토큰 복호
         Claims claims = getClaims(token);
         Set<SimpleGrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority("ROLE_USER"));
-        // UserDetails 객체를 만들어서 Authentication 리턴
-        return new UsernamePasswordAuthenticationToken(new org.springframework.security.core.userdetails.User(claims.getSubject(), "", authorities), token, authorities);
+        return new
+            UsernamePasswordAuthenticationToken(new org.springframework.security.core.userdetails.User(claims.getSubject(), "", authorities), token, authorities);
     }
 
 
@@ -119,14 +120,27 @@ public class JwtTokenProvider {
     }
 
     public void deleteStoredToken(String tokenKey) {
-        // 기존에 redis에 있는 accessToken 무효화
         redisTemplate.delete(tokenKey);
     }
 
     private String generateNewAccessToken(String email, String tokenKey) {
-        String newAccessToken = generateToken(email, TokenType.ACCESS);
+        String newAccessToken = createJwtToken(email, TokenType.ACCESS);
         redisTemplate.opsForValue().set(tokenKey, newAccessToken, 6 * 60 * 60 * 1000L, TimeUnit.MILLISECONDS);
 
         return newAccessToken;
+    }
+
+    public static String getTokenData(String tokenRawData) throws ArrayIndexOutOfBoundsException {
+        String[] jwtContents = tokenRawData.split(" ");
+        return jwtContents[1];
+    }
+
+    public static String getTokenType(String tokenRawData) throws ArrayIndexOutOfBoundsException {
+        String[] jwtContents = tokenRawData.split(" ");
+        return jwtContents[2];
+    }
+
+    public static void returnErrorCodeWithHeader(HttpServletResponse response, String message, HttpStatus status) {
+        response.setHeader(HttpHeaders.WWW_AUTHENTICATE, "error=" + message);
     }
 }

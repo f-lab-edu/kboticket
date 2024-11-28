@@ -1,4 +1,4 @@
-package com.kboticket.config.kafka.hadler;
+package com.kboticket.config.kafka.handler;
 
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
