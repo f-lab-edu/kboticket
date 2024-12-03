@@ -54,7 +54,7 @@ public class WebSecurityConfig extends SecurityConfigurerAdapter {
                     "/games/**",
                     "/game/**",
                     "/seat/**", "/payment-page", "/favicon.ico",
-                    "/ticket-page/**"
+                    "/ticket-page/**", "/game/queue-status/**"
                 ).permitAll()
                 .anyRequest().authenticated())
             .logout(logout -> logout
@@ -63,10 +63,8 @@ public class WebSecurityConfig extends SecurityConfigurerAdapter {
                 .logoutSuccessHandler(
                     (request, response, authentication) -> SecurityContextHolder.clearContext()))
             .csrf(AbstractHttpConfigurer::disable)
-            .addFilterBefore(new TokenAuthenticationFilter(jwtTokenProvider),
-                UsernamePasswordAuthenticationFilter.class)
-            .addFilterBefore(new JwtTokenRenewalFilter(jwtTokenProvider, redisTemplate),
-                TokenAuthenticationFilter.class)
+            .addFilterBefore(new TokenAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(new JwtTokenRenewalFilter(jwtTokenProvider, redisTemplate), TokenAuthenticationFilter.class)
             .addFilterBefore(jwtAuthenticationFilter, JwtTokenRenewalFilter.class)
             .build();
     }

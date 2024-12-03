@@ -36,9 +36,9 @@ public class JwtTokenRenewalFilter extends OncePerRequestFilter {
         throws IOException, ServletException {
         String accessToken = request.getHeader("Authorization");
         String refreshToken = request.getHeader("X-Refresh-Token");
-
         if (accessToken == null || accessToken.isEmpty()) {
             logger.info("accessToken is null");
+            filterChain.doFilter(request, response);
             return;
         }
         if (!jwtTokenProvider.validToken(accessToken)) {
@@ -73,7 +73,7 @@ public class JwtTokenRenewalFilter extends OncePerRequestFilter {
         }
         // 두 토큰이 모두 없는 경우 또는 유효하지 않은 경우, 인증 실패 응답
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        response.getWriter().write("Invalid refresh token");
+        response.getWriter().write("Invalid token");
 
     }
 
