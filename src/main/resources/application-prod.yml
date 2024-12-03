@@ -18,9 +18,3 @@ redis:
     port: 6379
     password: kboticketredis
     database: 1
-
-  user:
-    host: 101.101.210.13
-    port: 6380
-    password: kboticketredis
-    database: 2

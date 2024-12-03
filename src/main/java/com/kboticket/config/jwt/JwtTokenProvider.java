@@ -41,8 +41,7 @@ public class JwtTokenProvider {
                 .setIssuer(jwtProperties.getIssuer())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(expiry)
-                .setSubject(type)
-                .claim("email", email)
+                .setSubject(email)
                 .signWith(SignatureAlgorithm.HS256, jwtProperties.getSecretKey())
                 .compact();
     }
@@ -52,6 +51,7 @@ public class JwtTokenProvider {
             Jwts.parser()
                 .setSigningKey(jwtProperties.getSecretKey())
                 .parseClaimsJws(token);
+            log.info("Received token: " + token);
 
             return true;
         } catch (ExpiredJwtException | UnsupportedJwtException | IllegalArgumentException |

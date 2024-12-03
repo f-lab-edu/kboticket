@@ -1,6 +1,8 @@
 package com.kboticket.controller.game;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 import com.kboticket.config.kafka.producer.KafkaProducer;
 import java.util.concurrent.CountDownLatch;
@@ -10,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.Authentication;
@@ -26,6 +29,7 @@ public class GameKafkaControllerTest {
     @Autowired
     private KafkaProducer producer;
 
+    @Mock
     private Authentication authentication;
 
     private static final Long gameId = 123L;
@@ -44,17 +48,18 @@ public class GameKafkaControllerTest {
                 try {
                     producer.create(gameId, email);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    log.info("[Exception] 사용자 {} ====> {}", email, e.getMessage());
                 } finally {
                     latch.countDown();
                 }
             });
         }
+        Thread.sleep(10000);
 
-        Thread.sleep(100000);
         latch.await();
         executerService.shutdown();
 
+        log.info("Remaining latch count: {}", latch.getCount());
         assertEquals(0, latch.getCount(), "All requests should be processed");
     }
 
@@ -68,20 +73,21 @@ public class GameKafkaControllerTest {
 
         for (int i = 0; i < threadNum; i++) {
             String email = "test" + i;
+            when(authentication.getName()).thenReturn(email);
             executerService.submit(() -> {
                 try {
                     gameController.getQueueStatus(gameId, authentication);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    log.info("[Exception] ====> {}", e.getMessage());
                 } finally {
                     latch.countDown();
                 }
             });
         }
         latch.await();
-        Thread.sleep(100000);
         executerService.shutdown();
 
+        log.info("Remaining latch count: {}", latch.getCount());
         assertEquals(0, latch.getCount(), "All requests should be processed");
     }
 }
