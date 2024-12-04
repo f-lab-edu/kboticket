@@ -12,7 +12,7 @@ spring:
   # Redis 인스턴스 설정
   data:
     redis:
-      host: 118.67.132.142
+      host: 10.41.182.192
       port: 6379
       password: kboticketredis
       database: 1
