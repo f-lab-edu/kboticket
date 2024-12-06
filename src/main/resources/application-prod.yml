@@ -18,4 +18,4 @@ spring:
       database: 1
 
   kafka:
-    bootstrap-servers: 10.41.151.97:9092
+    bootstrap-servers: 118.67.132.142:9092
