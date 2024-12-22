@@ -7,8 +7,9 @@ COPY pinpoint-agent-2.5.1 /pinpoint
 ARG JAR_FILE=build/libs/*-SNAPSHOT.jar
 COPY ${JAR_FILE} kbo-ticketing.jar
 
-ENTRYPOINT ["java ", \\
- "-javaagent:/pinpoint/pinpoint-bootstrap-2.5.1.jar ", \\
- "-Dpinpoint.agentId=kbo-agent ", \\
- "-Dpinpoint.applicationName=kbo-ticketing ", \\
- "-jar ", "/kbo-ticketing.jar"]
+ENTRYPOINT ["java","-jar", \
+ "-javaagent:/usr/local/pinpoint-agent-2.5.2/pinpoint-bootstrap-2.5.2.jar", \
+ "-Dpinpoint.applicationName=kbo-ticketing", \
+ "-Dpinpoint.config=/usr/local/pinpoint-agent-2.5.2/pinpoint-root.config", \
+ "-Dspring.profiles.active=prod", \
+ "/app.jar"]
