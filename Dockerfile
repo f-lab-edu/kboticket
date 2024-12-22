@@ -6,5 +6,5 @@ COPY ${JAR_FILE} app.jar
 ENTRYPOINT ["java",
             "-javaagent:/pinpoint/pinpoint-bootstrap-2.5.1.jar",
             "-Dpinpoint.agentId=kbo-agent",
-            "-Dpinpoint.applicationName=kboticket",
+            "-Dpinpoint.applicationName=kboticket", 
             "-jar", "app.jar"]
