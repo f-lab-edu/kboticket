@@ -119,6 +119,7 @@ public class UserServiceTest {
     void passwordUpdateTest() {
         // given
         String email = "test@example.com";
+        String newPassword = "Password123**";
         UserPasswordDto userPasswordDto = UserPasswordDto.builder()
             .email(email)
             .currentPassword("Password12**")
@@ -134,7 +135,7 @@ public class UserServiceTest {
 
         // then
         verify(userRepository, times(1)).save(any(User.class));
-        assertTrue(PasswordUtils.matches("newPassword", testUser.getPassword()));
+        assertTrue(PasswordUtils.matches(newPassword, testUser.getPassword()));
     }
 
     @Test

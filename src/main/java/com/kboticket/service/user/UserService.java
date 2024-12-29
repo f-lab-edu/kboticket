@@ -39,7 +39,9 @@ public class UserService {
         String verificationKey = userDto.getVertificationKey();
 
         checkDuplicateEmail(email);
-        validatePassword(password, confirmPassword);
+
+        isPasswordMatch(password, confirmPassword);
+        validatePasswordFormat(password);
 
         String phone = getPhoneFromKey(verificationKey);
 
@@ -58,12 +60,14 @@ public class UserService {
         }
     }
 
-    private void validatePassword(String password, String confirmPassword) {
+    private void validatePasswordFormat(String password) {
         if (!PasswordUtils.validate(password)) {
             throw new KboTicketException(ErrorCode.INVALID_PASSWORD_FORMAT);
         }
+    }
 
-        if (!password.equals(confirmPassword)) {
+    private void isPasswordMatch(String password1, String password2) {
+        if (!password1.equals(password2)) {
             throw new KboTicketException(ErrorCode.PASSWORD_MISMATCH);
         }
     }
@@ -122,15 +126,18 @@ public class UserService {
 
     public void updatePassword(UserPasswordDto userPasswordDto) {
         String email = userPasswordDto.getEmail();
+
         String currentPassword = userPasswordDto.getCurrentPassword();
-        String newPassword = userPasswordDto.getNewPassword();
         String confirmPassword = userPasswordDto.getConfirmPassword();
+
+        String newPassword = userPasswordDto.getNewPassword();
 
         User user = getUserByEmail(email);
 
         validateCurrentPassword(currentPassword, user.getPassword());
-        validatePassword(newPassword, confirmPassword);
+        validatePasswordFormat(newPassword);
 
+        isPasswordMatch(currentPassword, confirmPassword);
 
         user.setPassword(PasswordUtils.encrypt(newPassword));
         userRepository.save(user);
