@@ -135,7 +135,7 @@ public class UserService {
         User user = getUserByEmail(email);
 
         validateCurrentPassword(currentPassword, user.getPassword());
-        validatePasswordFormat(newPassword);
+        validatePasswordFormat(newPassword); 
 
         isPasswordMatch(currentPassword, confirmPassword);
 
