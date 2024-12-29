@@ -2,6 +2,8 @@ FROM openjdk:17
 
 EXPOSE 8080
 
+COPY pinpoint-agent-2.5.1 /pinpoint
+
 ARG JAR_FILE=build/libs/*-SNAPSHOT.jar
 COPY ${JAR_FILE} kbo-ticketing.jar
 
