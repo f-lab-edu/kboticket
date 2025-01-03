@@ -1,6 +1,6 @@
 spring:
   datasource:
-#  sql:
+  sql:
     init:
       mode: always
 
@@ -27,7 +27,7 @@ spring:
       hibernate.format_sql: true
       dialect: org.hibernate.dialect.MySQL8InnoDBDialect
     defer-datasource-initialization: true
-#    generate-ddl: true
+    generate-ddl: true
 
 
   profiles:
