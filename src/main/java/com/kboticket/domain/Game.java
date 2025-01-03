@@ -38,6 +38,9 @@ public class Game {
     @OneToMany(mappedBy = "game")
     private List<Reservation> reservations;
 
+    @JoinColumn(name = "game_info")
+    private String gameInfo;
+
     @JoinColumn(name = "game_date")
     private String gameDate;
 
