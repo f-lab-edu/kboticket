@@ -1,8 +1,8 @@
 
 -- 약관
 INSERT INTO terms (title, mandatory, version, content, terms_type)
-VALUES ('서비스 약관', 1, '1.0'
-        '<h1>제1장 총칙</h1><li>제소 당시 회원의 주소 또는 거소가 명확하지 아니한 경우의 관할법원은 민사소송법에 따라 정합니다.</li>','RESERVER');
+VALUES ('서비스 약관', 1, '1.0',
+        '<h1>제1장 총칙</h1><li>제소 당시 회원의 주소 또는 거소가 명확하지 아니한 경우의 관할법원은 민사소송법에 따라 정합니다.</li>', 'RESERVER');
 
 INSERT INTO terms (title, mandatory ,version, content, terms_type)
 VALUES ('전자금융거래 약관', 1, '1.0',
