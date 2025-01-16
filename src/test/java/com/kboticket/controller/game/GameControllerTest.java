@@ -29,6 +29,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -42,6 +43,8 @@ public class GameControllerTest {
     private GameService gameService;
     @Mock
     private QueueService queueService;
+    @Mock
+    private RedisTemplate<String, Object> redisTemplate;
     @InjectMocks
     private GameController gameController;
 
@@ -49,7 +52,7 @@ public class GameControllerTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        gameController = new GameController(gameService, queueService);
+        gameController = new GameController(gameService, queueService, redisTemplate);
         this.mockMvc = MockMvcBuilders.standaloneSetup(gameController).build();
     }
 

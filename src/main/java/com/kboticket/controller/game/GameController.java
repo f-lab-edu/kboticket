@@ -8,6 +8,7 @@ import com.kboticket.controller.game.dto.GameSearchResponse;
 import com.kboticket.service.game.GameService;
 import com.kboticket.service.game.dto.GameDetailDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,8 +26,9 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 public class GameController {
 
     private final GameService gameService;
-
     private final QueueService queueService;
+
+    private final RedisTemplate<String, Object> redisTemplate;
 
     /**
      * 경기 목록 조회
@@ -61,6 +63,10 @@ public class GameController {
         SseEmitter sseEmitter = queueService.createEmitter(email);
 
         queueService.sendEvents();
+
+        sseEmitter.onCompletion(() -> {
+            redisTemplate.opsForZSet().remove("ticketing-queue", email);
+        });
 
         return sseEmitter;
     }
