@@ -37,12 +37,12 @@ VALUES ('HH', '한화 이글스', 'DJ'),
        ('OB', '두산 베어스', 'SE');
 
 -- 경기
-INSERT INTO game (gameDate, startTime, away_team_id, home_team_id, stadium_id, game_info)
+INSERT INTO game (game_date, startTime, away_team_id, home_team_id, stadium_id, game_info)
 VALUES ("2024-05-05","14:00","NC","SK","IN","우천취소"),
        ("2024-05-05","14:00","LT","SS","DG","우천취소"),
        ("2024-05-05","14:00","WO","KT","SU","우천취소"),
        ("2024-05-05","14:00","HH","HT","KJ","우천취소"),
-       ("2024-05-07","18:30","SK","LG","SE","-"),
+       ("2024-05-07","18:30","SK","LG","SE",ㄹ"-"),
        ("2024-05-07","18:30","HH","LT","BU","우천취소"),
        ("2024-05-07","18:30","HT","SS","DG","우천취소"),
        ("2024-05-07","18:30","NC","KT","SU","그라운드사정"),
