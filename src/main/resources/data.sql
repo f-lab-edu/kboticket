@@ -292,5 +292,5 @@ VALUES ("2024-05-05","14:00","NC","SK","IN","우천취소"),
         ("2024-08-29","18:30","HH","LT","BU","-"),("2024-08-29","18:30","OB","NC","CH","-"),
         ("2024-08-29","18:30","SK","HT","KJ","-"),("2024-08-29","18:30","SS","WO","GO","-");
 
-INSERT INTO (user_id, email, password, phone)
+INSERT INTO user (user_id, email, password, phone)
 VALUES(1, "test@naver.com", "$2a$10$QgQxU.cVd7i/frP1uMElwuVAjiPJGy5JF1V69gdPSOAcSS2uj/slm", "01099495201");
