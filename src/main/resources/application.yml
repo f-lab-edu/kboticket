@@ -1,8 +1,8 @@
 spring:
   datasource:
   sql:
-#    init:
-#      mode: always
+    init:
+      mode: always
 
     hikari:
       cachePrepStmts: true
