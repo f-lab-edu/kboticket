@@ -1,10 +1,13 @@
 package com.kboticket.controller.game;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import com.kboticket.config.kafka.producer.KafkaProducer;
+import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -68,15 +71,16 @@ public class GameKafkaControllerTest {
     public void testGetQueueStatus() throws InterruptedException {
         int threadNum = 10;
         CountDownLatch latch = new CountDownLatch(threadNum);
-
         ExecutorService executerService = Executors.newFixedThreadPool(threadNum);
 
+        ConcurrentLinkedQueue<String> results = new ConcurrentLinkedQueue<>();
         for (int i = 0; i < threadNum; i++) {
             String email = "test" + i;
             when(authentication.getName()).thenReturn(email);
             executerService.submit(() -> {
                 try {
                     gameController.getQueueStatus(gameId, authentication);
+                    results.add(authentication.getName());
                 } catch (Exception e) {
                     log.info("[Exception] ====> {}", e.getMessage());
                 } finally {
@@ -89,5 +93,8 @@ public class GameKafkaControllerTest {
 
         log.info("Remaining latch count: {}", latch.getCount());
         assertEquals(0, latch.getCount(), "All requests should be processed");
+
+        assertEquals(threadNum, results.size(), "All threads should return a result");
+        results.forEach(result -> assertNotNull(result, "Result should not be null"));
     }
 }

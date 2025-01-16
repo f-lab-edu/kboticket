@@ -34,7 +34,7 @@ public class QueueService {
      */
     public void addToRedisQueue(String userId, Long offset) {
         long now = System.currentTimeMillis();
-        redisTemplate.opsForZSet().add("ticketing-queue", userId, offset);
+        redisTemplate.opsForZSet().add(QUEUE_ID, userId, offset);
         log.info("대기열에 추가되었습니다. {} /{}초", userId, now);
     }
 
