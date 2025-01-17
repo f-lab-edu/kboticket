@@ -64,7 +64,7 @@ public class GameControllerTest {
 
         String json = new ObjectMapper().writeValueAsString(request);
 
-        when(gameService.getGameList(any(GameSearchRequest.class), anyString(), anyInt())).thenReturn(response);
+        when(gameService.getGameList(any(GameSearchRequest.class), anyString(), anyString(), anyInt())).thenReturn(response);
 
         // Act & Assert
         mockMvc.perform(get("/game/list")

@@ -13,7 +13,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -38,8 +37,9 @@ public class GameController {
         @RequestParam(value = "limit", defaultValue = "10") int limit,
         @RequestParam(value = "team", required = false) String team,
         @RequestParam(value = "stadium", required = false) String stadium,
-        @RequestParam(value = "month", required = false) String month,
-        @RequestParam(value = "dayOfMonth", required = false) String dayOfMonth) {
+        @RequestParam(value = "month", required = true) String month,
+        @RequestParam(value = "dayOfMonth", required = true) String dayOfMonth) {
+
         GameSearchRequest request = GameSearchRequest.builder()
             .team(team)
             .stadium(stadium)
@@ -47,7 +47,9 @@ public class GameController {
             .dayOfMonth(dayOfMonth)
             .build();
 
-        GameSearchResponse gameList = gameService.getGameList(request, cursorId, limit);
+        String gameKey = String.format("%s-%s", month, dayOfMonth);
+
+        GameSearchResponse gameList = gameService.getGameList(request, gameKey, cursorId, limit);
 
         return new CommonResponse<>(gameList);
     }

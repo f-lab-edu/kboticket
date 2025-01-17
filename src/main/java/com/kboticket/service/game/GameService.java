@@ -10,7 +10,6 @@ import com.kboticket.service.game.dto.GameDetailDto;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -23,8 +22,8 @@ public class GameService {
 
     private final GameRepository gameRepository;
 
-    @Cacheable(value="gamelist", key="#gameId")
-    public GameSearchResponse getGameList(GameSearchRequest gameSearchRequest, String cursorId, int limit) {
+    @Cacheable(value="gamelist", key="#gameKey")
+    public GameSearchResponse getGameList(GameSearchRequest gameSearchRequest, String gameKey, String cursorId, int limit) {
         List<GameDetailResponse> games = gameRepository.getByCursor(gameSearchRequest, cursorId, limit);
 
         boolean hasNext = false;
