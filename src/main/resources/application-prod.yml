@@ -20,4 +20,4 @@ spring:
   kafka:
     bootstrap-servers: 118.67.132.142:9092
 
-
+logging.level.root: warn
