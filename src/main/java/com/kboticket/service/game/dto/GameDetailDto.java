@@ -15,5 +15,5 @@ public class GameDetailDto {
     private String startTime;
     private String gameDay;
     private String gameStatus;      // 경기 상태(SCHEDULED/OPEN/CLOSE)
-    private LocalDate openDate;        // 티켓 오픈 일자 (경기일 - 7)
+    private String openDate;        // 티켓 오픈 일자 (경기일 - 7)
 }

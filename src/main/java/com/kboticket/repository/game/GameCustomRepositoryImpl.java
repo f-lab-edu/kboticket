@@ -68,7 +68,10 @@ public class GameCustomRepositoryImpl implements GameCustomRepository{
 
                     String format = openDateTime.getHour() + ":" + String.format("%02d", openDateTime.getMinute());
 
+
                     String dayOfWeek = openDate.getDayOfWeek().toString();
+                    String openDateToString = String.format("%d-%02d-%02d",
+                        openDate.getYear(), openDate.getMonthValue(), openDate.getDayOfMonth());
 
                     return GameDetailResponse.builder()
                         .id(data.getId())
@@ -77,7 +80,7 @@ public class GameCustomRepositoryImpl implements GameCustomRepository{
                         .stadium(data.getStadium().getId())
                         .gameDate(data.getGameDate())
                         .startTime(data.getStartTime())
-                        .openDate(openDate)
+                        .openDate(openDateToString)
                         .openTime(format)
                         .gameStatus("SCHEDULED")
                         .gameDay(dayOfWeek)
