@@ -34,10 +34,20 @@ public class GameController {
      * 경기 목록 조회
      */
     @GetMapping("/list")
-    public CommonResponse<GameSearchResponse> list(@RequestBody GameSearchRequest gameSearchRequest,
-        @RequestParam(value = "cursor", required = false) String cursorId,
-        @RequestParam(value = "limit", defaultValue = "10") int limit) {
-        GameSearchResponse gameList = gameService.getGameList(gameSearchRequest, cursorId, limit);
+    public CommonResponse<GameSearchResponse> list( @RequestParam(value = "cursor", required = false) String cursorId,
+        @RequestParam(value = "limit", defaultValue = "10") int limit,
+        @RequestParam(value = "team", required = false) String team,
+        @RequestParam(value = "stadium", required = false) String stadium,
+        @RequestParam(value = "month", required = false) String month,
+        @RequestParam(value = "dayOfMonth", required = false) String dayOfMonth) {
+        GameSearchRequest request = GameSearchRequest.builder()
+            .team(team)
+            .stadium(stadium)
+            .month(month)
+            .dayOfMonth(dayOfMonth)
+            .build();
+
+        GameSearchResponse gameList = gameService.getGameList(request, cursorId, limit);
 
         return new CommonResponse<>(gameList);
     }

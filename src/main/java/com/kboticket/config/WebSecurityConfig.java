@@ -51,7 +51,6 @@ public class WebSecurityConfig extends SecurityConfigurerAdapter {
                     "/api/user/**",
                     "/api/sms/**",
                     "/terms/**",
-                    "/games/**",
                     "/game/**",
                     "/seat/**", "/payment-page", "/favicon.ico",
                     "/ticket-page/**", "/game/queue-status/**"

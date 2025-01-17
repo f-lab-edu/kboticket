@@ -12,7 +12,7 @@ import org.hibernate.annotations.ColumnDefault;
 import java.util.List;
 
 @Entity
-@Table(name = "game", uniqueConstraints = {@UniqueConstraint(columnNames = {"home_team_id", "away_team_id", "gameDate"})})
+@Table(name = "game", uniqueConstraints = {@UniqueConstraint(columnNames = {"home_team_id", "away_team_id", "game_date"})})
 @Getter @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Game {
