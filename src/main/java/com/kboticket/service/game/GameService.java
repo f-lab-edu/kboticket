@@ -22,7 +22,7 @@ public class GameService {
 
     private final GameRepository gameRepository;
 
-    @Cacheable(value="gamelist", key="#gameKey")
+//    @Cacheable(value="gamelist", key="#gameKey")
     public GameSearchResponse getGameList(GameSearchRequest gameSearchRequest, String gameKey, String cursorId, int limit) {
         List<GameDetailResponse> games = gameRepository.getByCursor(gameSearchRequest, cursorId, limit);
 
