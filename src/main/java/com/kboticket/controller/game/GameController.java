@@ -76,9 +76,13 @@ public class GameController {
 
         queueService.sendEvents();
 
-        sseEmitter.onCompletion(() -> {
-            redisTemplate.opsForZSet().remove("ticketing-queue", email);
-        });
+//        sseEmitter.onCompletion(() -> {
+//            redisTemplate.opsForZSet().remove("ticketing-queue", email);
+//        });
+//
+//        sseEmitter.onError((e) -> {
+//            redisTemplate.opsForZSet().remove("ticketing-queue", email);
+//        });
 
         return sseEmitter;
     }
