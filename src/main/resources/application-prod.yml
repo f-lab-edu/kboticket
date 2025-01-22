@@ -12,6 +12,7 @@ spring:
     hibernate:
       ddl-auto: create
 
+
   # Redis 인스턴스 설정
   data:
     redis:
@@ -25,6 +26,5 @@ spring:
 
 logging:
   level:
-    root: warn
-    org:
-      springframework: warn
+    org.hibernate: DEBUG
+    org.springframework.orm.jpa: DEBUG
