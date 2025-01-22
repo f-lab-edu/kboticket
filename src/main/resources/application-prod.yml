@@ -21,4 +21,8 @@ spring:
     bootstrap-servers: 118.67.132.142:9092
 
 
+logging:
+  level:
+    com.zaxxer.hikari: DEBUG
+    org.hibernate: DEBUG
 
