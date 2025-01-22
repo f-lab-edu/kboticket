@@ -4,14 +4,10 @@ spring:
     url: jdbc:mysql://db-q1an9.pub-cdb.ntruss.com:3306/kboticket?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
     username: kboadmin
     password: dbfla1004**
-  sql:
-    init:
-      mode: always
 
   jpa:
     hibernate:
       ddl-auto: create
-
 
   # Redis 인스턴스 설정
   data:
@@ -24,7 +20,5 @@ spring:
   kafka:
     bootstrap-servers: 118.67.132.142:9092
 
-logging:
-  level:
-    org.hibernate: DEBUG
-    org.springframework.orm.jpa: DEBUG
+
+
