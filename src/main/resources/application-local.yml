@@ -4,15 +4,17 @@ spring:
     url: jdbc:mysql://localhost:3306/kbo_ticket?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
     username: root
     password: dbfla1004
-
+#  sql:
+#    init:
+#      mode: always
 
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
 
   data:
     redis:
-      host: localhost
+      host: prod
       port: 6379
 
   kafka:
