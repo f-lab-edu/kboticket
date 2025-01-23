@@ -10,7 +10,7 @@ spring:
       ddl-auto: create
 
   # Redis 인스턴스 설정
-  data:
+  data:   
     redis:
       host: 10.41.182.192
       port: 6379
