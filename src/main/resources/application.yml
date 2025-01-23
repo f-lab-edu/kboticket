@@ -15,7 +15,7 @@ spring:
       rewriteBatchedStatements: true
       cacheResultSetMetadata: true
       cacheServerConfiguration: true
-      elideSetAutoCommits: true  
+      elideSetAutoCommits: true
       maintainTimeStats: false
       connection-timeout: 30000
       idle-timeout: 60000
