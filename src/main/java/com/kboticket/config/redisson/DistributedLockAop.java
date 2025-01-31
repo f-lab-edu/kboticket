@@ -44,8 +44,8 @@ public class DistributedLockAop {
             if (!available) {
                 throw new KboTicketException(ErrorCode.FAILED_TRY_ROCK);
             }
-
             return aopForTransaction.proceed(joinPoint);
+
         } catch (KboTicketException e) {
             if (rLock.isHeldByCurrentThread()) {
                 rLock.unlock();

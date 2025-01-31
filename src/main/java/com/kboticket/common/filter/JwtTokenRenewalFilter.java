@@ -1,6 +1,7 @@
 package com.kboticket.common.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kboticket.common.constants.Constant;
 import com.kboticket.common.constants.KboConstant;
 import com.kboticket.config.jwt.JwtTokenProvider;
 import com.kboticket.enums.TokenType;
@@ -10,8 +11,10 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.lang.module.Configuration;
 import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.util.bcel.Const;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -22,7 +25,6 @@ public class JwtTokenRenewalFilter extends OncePerRequestFilter {
     private final RedisTemplate<String, Object> redisTemplate;
     private final String ACCESS_LOCK = KboConstant.ACCESS_LOCK;
     private final String REFRESH_LOCK = KboConstant.REFRESH_LOCK;
-    private final String BASIC_DLIIMITER = KboConstant.BASIC_DLIIMITER;
 
     public JwtTokenRenewalFilter(JwtTokenProvider jwtTokenProvider,
         RedisTemplate<String, Object> redisTemplate) {
@@ -34,8 +36,8 @@ public class JwtTokenRenewalFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
         FilterChain filterChain)
         throws IOException, ServletException {
-        String accessToken = request.getHeader("Authorization");
-        String refreshToken = request.getHeader("X-Refresh-Token");
+        String accessToken = request.getHeader(Constant.HEADER_AUTHORIZATION);
+        String refreshToken = request.getHeader(Constant.X_REFRESH_TOKEN);
         if (accessToken == null || accessToken.isEmpty()) {
             logger.info("accessToken is null");
             filterChain.doFilter(request, response);
@@ -50,8 +52,8 @@ public class JwtTokenRenewalFilter extends OncePerRequestFilter {
             String newAccessToken = jwtTokenProvider.createJwtToken(email, TokenType.ACCESS);
             String newRefreshToken = jwtTokenProvider.createJwtToken(email, TokenType.REFRESH);
 
-            String accessKey = ACCESS_LOCK + BASIC_DLIIMITER + email;
-            String refreshKey = REFRESH_LOCK + BASIC_DLIIMITER + email;
+            String accessKey = String.format("%s:%s", ACCESS_LOCK, email);
+            String refreshKey = String.format("%s:%s", REFRESH_LOCK, email);
 
             invalidatePreviousToken(accessKey, refreshKey);
 
@@ -60,8 +62,8 @@ public class JwtTokenRenewalFilter extends OncePerRequestFilter {
             saveToken(refreshKey, newRefreshToken, TokenType.REFRESH.getExpireTime(),
                 TimeUnit.DAYS);
 
-            response.setContentType("application/json");
-            response.setHeader("Authorization", "Bearer " + newAccessToken);
+            response.setContentType(Constant.APPLICATION_JSON);
+            response.setHeader(Constant.HEADER_AUTHORIZATION, Constant.TOKEN_PREFIX + newAccessToken);
 
             ObjectMapper objectMapper = new ObjectMapper();
             String jsonResponse = objectMapper
@@ -83,6 +85,7 @@ public class JwtTokenRenewalFilter extends OncePerRequestFilter {
     }
 
     private void saveToken(String key, String token, long duration, TimeUnit timeUnit) {
+
         redisTemplate.opsForValue().set(key, token, duration, timeUnit);
     }
 }

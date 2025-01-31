@@ -1,5 +1,6 @@
 package com.kboticket.config.jwt;
 
+import com.kboticket.common.constants.Constant;
 import com.kboticket.enums.ErrorCode;
 import com.kboticket.enums.TokenType;
 import com.kboticket.exception.KboTicketException;
@@ -88,7 +89,7 @@ public class JwtTokenProvider {
     }
 
     public String resolveToken(String authorization) {
-        if (StringUtils.hasText(authorization) && authorization.startsWith("Bearer ")) {
+        if (StringUtils.hasText(authorization) && authorization.startsWith(Constant.TOKEN_PREFIX)) {
             return authorization.substring(7);
         }
         return null;
@@ -145,5 +146,14 @@ public class JwtTokenProvider {
 
     public static void returnErrorCodeWithHeader(HttpServletResponse response, String message, HttpStatus status) {
         response.setHeader(HttpHeaders.WWW_AUTHENTICATE, "error=" + message);
+    }
+
+    public long getExpiration(String token) {
+        Claims claims = Jwts.parser()
+            .setSigningKey(jwtProperties.getSecretKey())
+            .parseClaimsJws(token)
+            .getBody();
+
+        return claims.getExpiration().getTime();
     }
 }

@@ -36,7 +36,7 @@ public class ReservationService {
         isValidateSeatsCount(seatIds);
 
         for (Long seatId : seatIds) {
-            String seatKey = "TICKET_" + gameId + seatId;
+            String seatKey = String.format("TICKET_%s_%s",gameId, seatId);
             internalService.lockSeat(seatKey, email, seatId);
         }
     }
@@ -64,8 +64,6 @@ public class ReservationService {
     }
 
     public void holdSeat(String seatKey, Long gameId, Long seatId, String email) {
-        log.info("holdseat");
-
         RMap<String, String> lockMap = redissonClient.getMap(seatKey);
         lockMap.put("email", email);
     }
@@ -79,12 +77,6 @@ public class ReservationService {
     private void isValidateSeatsCount(Set<Long> seatIds) {
         int seatCnt = seatIds.size();
         if (seatCnt == 0) {
-            // KboTicketException 어디에서 발생했ㅈ는디? 특정 파라미터로 발생하ㅏㄹ 수 있는 예외일때 seatid도 같이 보내줌,
-            // 로그가 어느 클래스에서 발생? 지금은 다 global 에서 찍힘
-
-            // Map.of("seatId", seatIds), log::info -> 에러 추적이 편함, 컨슈머를 이용해서 찍음 globalexceptiㅐ 수정해야함
-            // log::info - 유저가 없는 경우 -> 로그인 하는 경우 에러, 로직에서 에러로 처리할지, 이 클래스에서 발생한 경우 빨리 처리해야한다. -> log::error
-            // 추적이 필요하지 않으면 에러코드만 넘겨도된다.
             throw new KboTicketException(ErrorCode.EMPTY_SEATS_EXCEPTION);
 
         } else if (seatCnt > 4) {
