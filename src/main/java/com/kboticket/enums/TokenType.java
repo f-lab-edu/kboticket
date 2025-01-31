@@ -4,7 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum TokenType {
-    ACCESS("access", 1 * 60 * 60 * 1000L),
+    ACCESS("access", 3 * 60 * 1000L),
     REFRESH("refresh", 7 * 24 * 60 * 60 * 1000L);
 
     private final String name;

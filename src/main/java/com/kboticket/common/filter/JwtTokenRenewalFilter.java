@@ -36,56 +36,70 @@ public class JwtTokenRenewalFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
         FilterChain filterChain)
         throws IOException, ServletException {
-        String accessToken = request.getHeader(Constant.HEADER_AUTHORIZATION);
-        String refreshToken = request.getHeader(Constant.X_REFRESH_TOKEN);
+        String accessToken = request.getHeader(Constant.HEADER_AUTHORIZATION).replace(Constant.TOKEN_PREFIX, "");
+
         if (accessToken == null || accessToken.isEmpty()) {
             logger.info("accessToken is null");
             filterChain.doFilter(request, response);
             return;
         }
-        if (!jwtTokenProvider.validToken(accessToken)) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-        if (refreshToken != null && jwtTokenProvider.validToken(refreshToken)) {
-            String email = jwtTokenProvider.getEmailFromToken(refreshToken);
-            String newAccessToken = jwtTokenProvider.createJwtToken(email, TokenType.ACCESS);
+
+        // access token 유효한 경우 -> refresh token 재발급
+        if (jwtTokenProvider.validToken(accessToken)) {
+            String email = jwtTokenProvider.getEmailFromToken(accessToken);
             String newRefreshToken = jwtTokenProvider.createJwtToken(email, TokenType.REFRESH);
 
-            String accessKey = String.format("%s:%s", ACCESS_LOCK, email);
-            String refreshKey = String.format("%s:%s", REFRESH_LOCK, email);
+            log.info("new refresh token : {}", newRefreshToken);
 
-            invalidatePreviousToken(accessKey, refreshKey);
-
-            saveToken(accessKey, newAccessToken, TokenType.ACCESS.getExpireTime(),
-                TimeUnit.MILLISECONDS);
-            saveToken(refreshKey, newRefreshToken, TokenType.REFRESH.getExpireTime(),
-                TimeUnit.DAYS);
-
-            response.setContentType(Constant.APPLICATION_JSON);
-            response.setHeader(Constant.HEADER_AUTHORIZATION, Constant.TOKEN_PREFIX + newAccessToken);
-
-            ObjectMapper objectMapper = new ObjectMapper();
-            String jsonResponse = objectMapper
-                .writeValueAsString(new TokenDto(newAccessToken, newRefreshToken));
-            response.getWriter().write(jsonResponse);
+            invalidateAndSave(newRefreshToken, email);
 
             filterChain.doFilter(request, response);
-            return;
-        }
-        // 두 토큰이 모두 없는 경우 또는 유효하지 않은 경우, 인증 실패 응답
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        response.getWriter().write("Invalid token");
 
+        } else {
+            // access token 유효하지 않은 경우 -> access/refresh token 재발급
+            String refreshToken = request.getHeader(Constant.X_REFRESH_TOKEN);
+            if (refreshToken != null && jwtTokenProvider.validToken(refreshToken)) {
+                String email = jwtTokenProvider.getEmailFromToken(refreshToken);
+
+                String newAccessToken = jwtTokenProvider.createJwtToken(email, TokenType.ACCESS);
+                String newRefreshToken = jwtTokenProvider.createJwtToken(email, TokenType.REFRESH);
+
+                invalidateAndSave(newRefreshToken, email);
+
+                log.info("new access token =====> {}", newAccessToken);
+                log.info("new refresh token =====> {}", newRefreshToken);
+
+                // response setting
+                response.setContentType(Constant.APPLICATION_JSON);
+                response.setHeader(Constant.HEADER_AUTHORIZATION, Constant.TOKEN_PREFIX + newAccessToken);
+
+                filterChain.doFilter(request, response);
+            }
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("Invalid token");
+        }
     }
 
-    private void invalidatePreviousToken(String accessKey, String refreshKey) {
-        redisTemplate.delete(accessKey);
+    private void invalidateAndSave(String newRefreshToken, String email) {
+        String refreshKey = String.format("%s:%s", REFRESH_LOCK, email);
+
+        invalidatePrevRefreshToken(refreshKey);
+
+        saveToken(refreshKey, newRefreshToken, TokenType.REFRESH.getExpireTime(), TimeUnit.DAYS);
+    }
+
+    private void invalidatePrevRefreshToken(String refreshKey) {
         redisTemplate.delete(refreshKey);
     }
 
     private void saveToken(String key, String token, long duration, TimeUnit timeUnit) {
-
         redisTemplate.opsForValue().set(key, token, duration, timeUnit);
+    }
+
+    private void reissueToken(String email, TokenType type) {
+        String token = jwtTokenProvider.createJwtToken(email, type);
+        String refreshKey = String.format("%s:%s", REFRESH_LOCK, email);
+
+
     }
 }
