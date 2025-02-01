@@ -1,6 +1,8 @@
 package com.kboticket.common.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kboticket.common.constants.Constant;
+import com.kboticket.common.constants.KboConstant;
 import com.kboticket.config.jwt.JwtTokenProvider;
 import com.kboticket.enums.TokenType;
 import com.kboticket.service.login.dto.LoginDto;
@@ -9,7 +11,9 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AccountExpiredException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -25,13 +29,15 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationManager authenticationManager;
+    private final RedisTemplate<String, Object> redisTemplate;
 
 
     public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider,
-        AuthenticationManager authenticationManager) {
+        AuthenticationManager authenticationManager, RedisTemplate<String, Object> redisTemplate) {
         this.jwtTokenProvider = jwtTokenProvider;
         this.authenticationManager = authenticationManager;
         this.setAuthenticationManager(authenticationManager);
+        this.redisTemplate = redisTemplate;
     }
 
     @Override
@@ -47,6 +53,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
             Authentication authentication = getAuthenticationManager()
                 .authenticate(authenticationToken);
+
             log.info("Authentication successful for user: " + loginDto.getUsername());
             return authentication;
 
@@ -60,21 +67,22 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     protected void unsuccessfulAuthentication(HttpServletRequest request,
         HttpServletResponse response,
         AuthenticationException failed) throws IOException, ServletException {
+
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType("application/json");
 
         String errorMessage;
 
-        if (failed instanceof BadCredentialsException) {
-            errorMessage = "Invalid username or password";  // 잘못된 사용자명 또는 비밀번호
-        } else if (failed instanceof LockedException) {
-            errorMessage = "Account is locked";  // 계정이 잠겨 있음
-        } else if (failed instanceof DisabledException) {
-            errorMessage = "Account is disabled";  // 계정 비활성화됨
-        } else if (failed instanceof AccountExpiredException) {
-            errorMessage = "Account has expired";  // 계정이 만료됨
-        } else {
-            errorMessage = "Authentication failed";  // 기타 인증 실패
+        if (failed instanceof BadCredentialsException) {         // 잘못된 사용자 명 또는 비밀 번호를 입력한 경우
+            errorMessage = "Invalid username or password";
+        } else if (failed instanceof LockedException) {          // 계정이 잠긴 경우
+            errorMessage = "Account is locked";
+        } else if (failed instanceof DisabledException) {        // 계정 비 활성화 된 경우
+            errorMessage = "Account is disabled";
+        } else if (failed instanceof AccountExpiredException) {  // 계정이 만료된 경우
+            errorMessage = "Account has expired";
+        } else {                                                 // 기타 인증 실패
+            errorMessage = "Authentication failed";
         }
         response.getWriter().write("{\"error\": \"" + errorMessage + "\"}");
     }
@@ -83,14 +91,21 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     protected void successfulAuthentication(HttpServletRequest request,
         HttpServletResponse response, FilterChain chain, Authentication authResult)
         throws IOException, ServletException {
-        String accessToken = jwtTokenProvider
-            .createJwtToken(authResult.getName(), TokenType.ACCESS);
-        String refreshToken = jwtTokenProvider
-            .createJwtToken(authResult.getName(), TokenType.REFRESH);
 
-        response.setHeader("Authorization", "Bearer " + accessToken);
-        response.setHeader("X-Refresh-Token", refreshToken);
+        String email = authResult.getName();
+        String accessToken = jwtTokenProvider.createJwtToken(email, TokenType.ACCESS);
+        String refreshToken = jwtTokenProvider.createJwtToken(email, TokenType.REFRESH);
+
+        response.setHeader(Constant.HEADER_AUTHORIZATION, Constant.TOKEN_PREFIX + accessToken);
+        response.setHeader(Constant.X_REFRESH_TOKEN, refreshToken);
         response.getWriter().write(
             "{\"accessToken\":\"" + accessToken + "\", \"refreshToken\":\"" + refreshToken + "\"}");
+
+        String refreshKey = String
+            .format("%s%s%s", KboConstant.REFRESH_LOCK, KboConstant.BASIC_DLIIMITER,
+                authResult.getName());
+
+        redisTemplate.opsForValue()
+            .set(refreshKey, refreshToken, TokenType.REFRESH.getExpireTime(), TimeUnit.DAYS);
     }
 }

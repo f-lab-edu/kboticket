@@ -1,5 +1,6 @@
 package com.kboticket.config.jwt;
 
+import com.kboticket.common.constants.Constant;
 import com.kboticket.enums.ErrorCode;
 import com.kboticket.enums.TokenType;
 import com.kboticket.exception.KboTicketException;
@@ -34,31 +35,30 @@ public class JwtTokenProvider {
     private final JwtProperties jwtProperties;
     private final RedisTemplate<String, Object> redisTemplate;
 
-    public String createJwtToken(String email, TokenType type){
+    public String createJwtToken(String email, TokenType type) {
         return makeToken(new Date(System.currentTimeMillis() + type.getExpireTime()), email, type.name());
     }
 
     private String makeToken(Date expiry, String email, String type) {
         return Jwts.builder()
-                .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
-                .setIssuer(jwtProperties.getIssuer())
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(expiry)
-                .setSubject(email)
-                .signWith(SignatureAlgorithm.HS256, jwtProperties.getSecretKey())
-                .compact();
+            .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
+            .setIssuer(jwtProperties.getIssuer())
+            .setIssuedAt(new Date(System.currentTimeMillis()))
+            .setExpiration(expiry)
+            .setSubject(email)
+            .signWith(SignatureAlgorithm.HS256, jwtProperties.getSecretKey())
+            .compact();
     }
 
     public boolean validToken(String token) {
-        try{
+        try {
             Jwts.parser()
                 .setSigningKey(jwtProperties.getSecretKey())
                 .parseClaimsJws(token);
-            log.info("Received token: " + token);
 
             return true;
         } catch (ExpiredJwtException | UnsupportedJwtException | IllegalArgumentException |
-                MalformedJwtException | SecurityException e) {
+            MalformedJwtException | SecurityException e) {
             log.info(e.getMessage());
         }
         return false;
@@ -66,29 +66,32 @@ public class JwtTokenProvider {
 
     public Authentication getAuthentication(String token) {
         Claims claims = getClaims(token);
-        Set<SimpleGrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority("ROLE_USER"));
+        Set<SimpleGrantedAuthority> authorities = Collections
+            .singleton(new SimpleGrantedAuthority("ROLE_USER"));
         return new
-            UsernamePasswordAuthenticationToken(new org.springframework.security.core.userdetails.User(claims.getSubject(), "", authorities), token, authorities);
+            UsernamePasswordAuthenticationToken(
+            new org.springframework.security.core.userdetails.User(claims.getSubject(), "",
+                authorities), token, authorities);
     }
 
 
     private Claims getClaims(String token) {
         return Jwts.parser()
-                .setSigningKey(jwtProperties.getSecretKey())
-                .parseClaimsJws(token)
-                .getBody();
+            .setSigningKey(jwtProperties.getSecretKey())
+            .parseClaimsJws(token)
+            .getBody();
     }
 
     public String getPhoneFromToken(String token) {
         return Jwts.parser()
-                .setSigningKey(jwtProperties.getSecretKey())
-                .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+            .setSigningKey(jwtProperties.getSecretKey())
+            .parseClaimsJws(token)
+            .getBody()
+            .getSubject();
     }
 
     public String resolveToken(String authorization) {
-        if (StringUtils.hasText(authorization) && authorization.startsWith("Bearer ")) {
+        if (StringUtils.hasText(authorization) && authorization.startsWith(Constant.TOKEN_PREFIX)) {
             return authorization.substring(7);
         }
         return null;
@@ -117,7 +120,8 @@ public class JwtTokenProvider {
     }
 
     public String getEmailFromToken(String token) {
-        Claims claims = Jwts.parser().setSigningKey(jwtProperties.getSecretKey()).parseClaimsJws(token).getBody();
+        Claims claims = Jwts.parser().setSigningKey(jwtProperties.getSecretKey())
+            .parseClaimsJws(token).getBody();
 
         return claims.getSubject();
     }
@@ -128,7 +132,8 @@ public class JwtTokenProvider {
 
     private String generateNewAccessToken(String email, String tokenKey) {
         String newAccessToken = createJwtToken(email, TokenType.ACCESS);
-        redisTemplate.opsForValue().set(tokenKey, newAccessToken, 6 * 60 * 60 * 1000L, TimeUnit.MILLISECONDS);
+        redisTemplate.opsForValue()
+            .set(tokenKey, newAccessToken, 3 * 60 * 1000L, TimeUnit.MILLISECONDS);
 
         return newAccessToken;
     }
@@ -143,7 +148,17 @@ public class JwtTokenProvider {
         return jwtContents[2];
     }
 
-    public static void returnErrorCodeWithHeader(HttpServletResponse response, String message, HttpStatus status) {
+    public static void returnErrorCodeWithHeader(HttpServletResponse response, String message,
+        HttpStatus status) {
         response.setHeader(HttpHeaders.WWW_AUTHENTICATE, "error=" + message);
+    }
+
+    public long getExpiration(String token) {
+        Claims claims = Jwts.parser()
+            .setSigningKey(jwtProperties.getSecretKey())
+            .parseClaimsJws(token)
+            .getBody();
+
+        return claims.getExpiration().getTime();
     }
 }
