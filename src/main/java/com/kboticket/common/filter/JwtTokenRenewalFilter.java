@@ -44,15 +44,8 @@ public class JwtTokenRenewalFilter extends OncePerRequestFilter {
             return;
         }
 
-        // access token 유효한 경우 -> refresh token 재발급
+        // access token 유효한 경우
         if (jwtTokenProvider.validToken(accessToken)) {
-            String email = jwtTokenProvider.getEmailFromToken(accessToken);
-            String newRefreshToken = jwtTokenProvider.createJwtToken(email, TokenType.REFRESH);
-
-            log.info("new refresh token : {}", newRefreshToken);
-
-            invalidateAndSave(newRefreshToken, email);
-
             filterChain.doFilter(request, response);
 
         } else {
