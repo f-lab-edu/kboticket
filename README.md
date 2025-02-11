@@ -1,4 +1,4 @@
-# KBO Ticket
+# ⚾️ KBO Ticket
 <p align="center">
   <img width="708" alt="스크린샷 2024-09-26 오전 9 05 47" src="https://github.com/user-attachments/assets/04a953d7-dc30-4cfd-9db3-2c2cebaaaa03">
 </p>
@@ -11,14 +11,18 @@ API 명세 및 프로젝트 관련 자세한 정보는 [WIKI](https://github.com
 
 <br>
 
-## 기간
+## ⚾️ 기간
 - **2024.04~** 
 
+<br>
+
+## ⚾️ 기술 및 환경
+Spring boot, JAVA, JPA, Redis, Docker, Mysql, Naver Cloud Platform
 
 
 <br>
 
-## 주제 선정 이유
+## ⚾️ 주제 선정 이유
 **첫째**, 야구 예매 시스템을 주제로 선정한 이유는 내가 야구를 좋아하기 때문이다. 특히 올해 야구의 인기가 높아지면서, 나 또한 경기를 보러 가기 위해 예매를 자주 하게 되었다. 그런데 구단마다 예매 사이트가 분리되어 있어 매우 불편했다. 한 곳에서 모든 구단의 티켓을 예매할 수 있다면 얼마나 편리할까 하는 생각이 프로젝트를 시작하는 계기가 되었다.
 
 **둘째**, 티켓팅 오픈일에는 수만 명의 사용자가 동시에 몰리곤 한다. 이처럼 대규모 트래픽에도 서버가 문제없이 작동하는 원리가 궁금해졌다.
@@ -28,23 +32,23 @@ API 명세 및 프로젝트 관련 자세한 정보는 [WIKI](https://github.com
 
 <br>
 
-## 프로젝트 목표
+## ⚾️ 프로젝트 목표
 - 객체 지향 설계 원칙에 따라 개발하기
 - 지속적인 성능 개선과 코드 리팩토링
 - 티켓팅 과정에서의 동시성 이슈 해결
 - 대용량 트래픽에도 대응 가능한 시스템 구축
 - 가독성과 유지보수성을 높이는 클린 코드 작성
 
-<br><br>
+<br>
 
-## 중점을 둔 부분
+## ⚾️ 중점을 둔 부분
 - 좌석 선점 시 발생할 수 있는 동시성 문제 해결
 - 대규모 사용자 접속 시 서버 안정성 확보 방안
 
 
-<br><br>
+<br>
 
-## 프로젝트 구조
+## ⚾️ 프로젝트 구조
 <img width="725" alt="스크린샷 2025-01-23 오후 3 43 21" src="https://github.com/user-attachments/assets/6cec6a66-e12c-4bef-ba01-9fa151e55e40" />
 
 
@@ -53,10 +57,6 @@ API 명세 및 프로젝트 관련 자세한 정보는 [WIKI](https://github.com
 
 
 
-<br>
-
-## 기술 및 환경
-Spring boot, JAVA, JPA, Redis, Docker, Mysql, Naver Cloud Platform
 
 
 
