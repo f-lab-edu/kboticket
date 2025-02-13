@@ -20,6 +20,7 @@ public class KafkaConsumer {
             log.info("대기열이 비어 있습니다.");
         }
 
+        
         long offset = record.offset();
         String email = record.value();
 
