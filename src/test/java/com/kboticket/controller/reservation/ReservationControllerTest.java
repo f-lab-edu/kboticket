@@ -1,11 +1,20 @@
 package com.kboticket.controller.reservation;
 
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kboticket.dto.ReservationDto;
 import com.kboticket.enums.SeatLevel;
 import com.kboticket.service.reserve.ReservationService;
 import com.kboticket.service.seat.SeatService;
 import com.kboticket.service.seat.dto.SeatDto;
+import java.util.List;
+import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,15 +26,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
-import java.util.Set;
-
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(ReservationController.class)
 @ExtendWith(SpringExtension.class)
@@ -44,7 +44,7 @@ public class ReservationControllerTest {
 
     @BeforeEach
     void setUp() {
-        ReservationController reservationController = new ReservationController(reservationService, seatService);
+        ReservationController reservationController = new ReservationController(reservationService);
         this.mockMvc = MockMvcBuilders.standaloneSetup(reservationController).build();
     }
 
@@ -90,7 +90,7 @@ public class ReservationControllerTest {
                 .andExpect(status().isOk());
 
         verify(reservationService, times(1))
-                .selectSeat(Set.of(1L, 2L), 1L, "user@example.com");
+                .selectSeat(List.of(1L, 2L), 1L, "user@example.com");
 
     }
 }

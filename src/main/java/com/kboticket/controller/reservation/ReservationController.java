@@ -3,12 +3,12 @@ package com.kboticket.controller.reservation;
 import com.kboticket.dto.ReservationDto;
 import com.kboticket.service.reserve.ReservationService;
 import com.kboticket.service.seat.SeatService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Set;
 import java.util.stream.Collectors;
 
 
@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 public class ReservationController {
 
     private final ReservationService reservationService;
-    private final SeatService seatService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.OK)
@@ -28,8 +27,8 @@ public class ReservationController {
 
         String email = authentication.getName();
 
-        Set<Long> seatIds = reservationDto.getSeatIds().stream()
-            .collect(Collectors.toSet());
+        List<Long> seatIds = reservationDto.getSeatIds().stream()
+            .collect(Collectors.toList());
 
         reservationService.selectSeat(seatIds, gameId, email);
 

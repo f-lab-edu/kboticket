@@ -42,7 +42,7 @@ public class DistributedLockAop {
         try {
             boolean available = rLock.tryLock(distributedLock.waitTime(), distributedLock.leaseTime(), distributedLock.timeUnit());
             if (!available) {
-                throw new KboTicketException(ErrorCode.FAILED_TRY_ROCK);
+                throw new KboTicketException(ErrorCode.FAILED_TRY_LOCK);
             }
             return aopForTransaction.proceed(joinPoint);
 

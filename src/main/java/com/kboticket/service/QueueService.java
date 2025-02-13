@@ -1,4 +1,4 @@
-package com.kboticket.controller;
+package com.kboticket.service;
 
 import java.util.Map;
 import java.util.Set;
@@ -34,6 +34,7 @@ public class QueueService {
      */
     public void addToRedisQueue(String userId, Long offset) {
         long now = System.currentTimeMillis();
+        redisTemplate.opsForZSet().add("ticketing-queue", userId, offset);
         redisTemplate.opsForZSet().add(QUEUE_ID, userId, offset);
         log.info("대기열에 추가되었습니다. {} /{}초", userId, now);
     }
@@ -53,8 +54,8 @@ public class QueueService {
         return "";
     }
 
-   @Scheduled(fixedDelay = 1000)
-   public void sendEvents(){
+    @Scheduled(fixedDelay = 1000)
+    public void sendEvents(){
         enterPageFromQueue();
         getQueuePosition();
     }
@@ -95,8 +96,14 @@ public class QueueService {
             emitter.complete();
             sseEmitters.remove(email);
         } catch (Exception e) {
-            log.info("[SSE Exception] ====> {}" + e.getMessage());
+            log.warn("[SSE Exception] Issue for user: " + email + " - " + e.getMessage());
+            redisTemplate.opsForZSet().remove(QUEUE_ID, email);
             emitter.completeWithError(e);
+
+            sseEmitters.remove(email);
+
+            log.info("User " + email + " removed from the queue due to exception.");
         }
     }
 }
+

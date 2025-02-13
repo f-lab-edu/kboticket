@@ -1,6 +1,6 @@
 package com.kboticket.config.kafka.consumer;
 
-import com.kboticket.controller.QueueService;
+import com.kboticket.service.QueueService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;

@@ -1,7 +1,8 @@
+
 package com.kboticket.controller.game;
 
 import com.kboticket.common.CommonResponse;
-import com.kboticket.controller.QueueService;
+import com.kboticket.service.QueueService;
 import com.kboticket.controller.game.dto.GameDetailResponse;
 import com.kboticket.controller.game.dto.GameSearchRequest;
 import com.kboticket.controller.game.dto.GameSearchResponse;

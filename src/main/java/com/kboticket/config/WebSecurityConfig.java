@@ -43,7 +43,7 @@ public class WebSecurityConfig extends SecurityConfigurerAdapter {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         JwtAuthenticationFilter jwtAuthenticationFilter =
-            new JwtAuthenticationFilter(jwtTokenProvider, authenticationManagerBean(), redisTemplate);
+            new JwtAuthenticationFilter(jwtTokenProvider, authenticationManager(), redisTemplate);
 
         return http
             .authorizeHttpRequests(auth -> auth
@@ -62,25 +62,14 @@ public class WebSecurityConfig extends SecurityConfigurerAdapter {
                 .logoutSuccessHandler(
                     (request, response, authentication) -> SecurityContextHolder.clearContext()))
             .csrf(AbstractHttpConfigurer::disable)
-            .addFilterBefore(new TokenAuthenticationFilter(jwtTokenProvider, redisTemplate), UsernamePasswordAuthenticationFilter.class)
-            .addFilterBefore(new JwtTokenRenewalFilter(jwtTokenProvider, redisTemplate), TokenAuthenticationFilter.class)
-            .addFilterBefore(jwtAuthenticationFilter, JwtTokenRenewalFilter.class)
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(new JwtTokenRenewalFilter(jwtTokenProvider, redisTemplate), JwtAuthenticationFilter.class)
+            .addFilterBefore(new TokenAuthenticationFilter(jwtTokenProvider, redisTemplate), JwtTokenRenewalFilter.class)
             .build();
     }
 
-
     @Bean
-    public AuthenticationManager authenticationManager(HttpSecurity httpSecurity,
-        BCryptPasswordEncoder bCryptPasswordEncoder) {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userService);
-        authProvider.setPasswordEncoder(bCryptPasswordEncoder);
-
-        return new ProviderManager(authProvider);
-    }
-
-    @Bean
-    public AuthenticationManager authenticationManagerBean() throws Exception {
+    public AuthenticationManager authenticationManager() throws Exception {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(userService);
         authProvider.setPasswordEncoder(passwordEncoder());

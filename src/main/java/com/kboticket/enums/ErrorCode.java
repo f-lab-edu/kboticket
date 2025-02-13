@@ -67,13 +67,13 @@ public enum ErrorCode {
     PAYMENT_FAILURE(30021, "Payment failed", HttpStatus.BAD_REQUEST),
     NOT_FOUND_SEAT_BLOCK(30022, "Seat block could not be found", HttpStatus.NOT_FOUND),
     INVALID_SEAT_LEVEL(30023, "Seat block could not be found", HttpStatus.BAD_REQUEST),
-    EMPTY_SEATS_EXCEPTION(30024, "No seats were selected.Please select at least one seat.", HttpStatus.BAD_REQUEST),
+    EMPTY_SEATS_EXCEPTION(30024, "No seats were selected. Please select at least one seat.", HttpStatus.BAD_REQUEST),
     EXCEED_SEATS_LIMIT(30025, "The maximum number of seats : 4", HttpStatus.BAD_REQUEST),
     FAILED_RESERVATION(30026, "reservation be failed", HttpStatus.BAD_REQUEST),
     INVALID_START_DATE(30027, "Start date cannot be before the current date", HttpStatus.BAD_REQUEST),
     EXIST_SELECTED_SEATS(30028, "You already have a selected seat.", HttpStatus.BAD_REQUEST),
     NOT_FOUND_RESERVATION(30029, "Reservation could not be found", HttpStatus.NOT_FOUND),
-    FAILED_TRY_ROCK(30030, "Failed to acquire lock", HttpStatus.CONFLICT),
+    FAILED_TRY_LOCK(30030, "Failed to acquire lock", HttpStatus.CONFLICT),
     ALREADY_SELECTED_SEATS(30031, "This seat has already been selected.", HttpStatus.CONFLICT),
 
 
@@ -83,8 +83,10 @@ public enum ErrorCode {
     PAYMENT_NOT_FOUND(30034, "payment could not be found", HttpStatus.NOT_FOUND),
     PAYMENT_AMOUNT_EXP(30035, "invalid payment amount", HttpStatus.CONFLICT),
     ALREADY_APPROVED(30036, "already approved", HttpStatus.CONFLICT),
-    FAILED_DURING_TRANSACTION(30037, "fail to lock during transaction", HttpStatus.CONFLICT)
+    FAILED_DURING_TRANSACTION(30037, "fail to lock during transaction", HttpStatus.CONFLICT),
+    FAILED_LEASE_LOCK(30038, "fail to lease lock ", HttpStatus.CONFLICT)
     ;
+
     public final int code;
     public final String message;
     public final HttpStatus httpcode;
