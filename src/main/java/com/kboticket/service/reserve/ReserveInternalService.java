@@ -20,14 +20,6 @@ public class ReserveInternalService {
 
     @DistributedLock(key = "#lockName")
     public void lockSeat(String lockName, String email, Long seatId) {
-        RMap<String, String> lockMap = redissonClient.getMap(lockName);
-
-        // 현재 좌석의 락 소유자 확인
-        String currentOwner = lockMap.get("email");
-        if (currentOwner != null && !currentOwner.equals(email)) {
-            throw new KboTicketException(ErrorCode.ALREADY_SELECTED_SEATS);
-        }
-
         holdSeat(lockName, email, seatId);
     }
 

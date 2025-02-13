@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.kboticket.exception.KboTicketException;
 import com.kboticket.service.reserve.ReservationService;
-import java.util.Set;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -27,8 +27,8 @@ public class ReservationServiceTest {
     private ReservationService reservationService;
 
     private static final Long GAME_ID = 123L;
-    private static final Set<Long> SEATS = Set.of(345L, 346L, 789L, 234L);
-    private static final Set<Long> SEAT = Set.of(34L);
+    private static final List<Long> SEATS = List.of(342L, 343L, 783L, 231L);
+    private static final List<Long> SEAT = List.of(341L);
 
     @Test
     @DisplayName("단순 호출 테스트")
@@ -36,9 +36,8 @@ public class ReservationServiceTest {
         reservationService.selectSeat(SEAT, GAME_ID, "user@example.com");
     }
 
-
     @Test
-    @DisplayName("100명 의 사용자가 동일한 하나의 좌석 선택 - 동시성 테스트")
+    @DisplayName("1000명의 사용자가 동일한 하나의 좌석 선택 - 동시성 테스트")
     public void testMultiReserve() throws InterruptedException {
         int threadNum = 1000;
         CountDownLatch latch = new CountDownLatch(threadNum);
@@ -82,10 +81,10 @@ public class ReservationServiceTest {
         ExecutorService executorService = Executors.newFixedThreadPool(threadNum);
 
         for (int i = 0; i < threadNum; i++) {
-            String email = i + "@example.com";
+            String email =  "test"+ i + "@example.com";
             executorService.submit(() -> {
                 try {
-                    reservationService.selectSeat(SEATS, GAME_ID, email);
+                    reservationService.reserve(SEATS, GAME_ID, email);
                     successCounter.incrementAndGet();
 
                 } catch (KboTicketException e) {
@@ -102,6 +101,6 @@ public class ReservationServiceTest {
         executorService.shutdown();
 
         assertEquals(1, successCounter.get(), "하나의 사용자만 좌석 예약에 성공해야 합니다.");
+        assertEquals(threadNum - 1, failureCounter.get(), "다른 사용자는 예약에 실패해야 합니다.");
     }
-
 }
